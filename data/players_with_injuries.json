@@ -1,0 +1,2642 @@
+[
+  {
+    "Name":"Gregor Kobel",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Hip problems",
+        "start":"Oct 30, 2024",
+        "end":"Nov 11, 2024",
+        "days":"13 days"
+      },
+      {
+        "type":"Rest",
+        "start":"May 10, 2024",
+        "end":"May 12, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"Stomach flu",
+        "start":"Mar 27, 2024",
+        "end":"Apr 1, 2024",
+        "days":"6 days"
+      },
+      {
+        "type":"minor knock",
+        "start":"Mar 16, 2024",
+        "end":"Mar 20, 2024",
+        "days":"5 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Feb 20, 2024",
+        "end":"Mar 6, 2024",
+        "days":"16 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Jan 23, 2024",
+        "end":"Feb 4, 2024",
+        "days":"13 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Nov 17, 2023",
+        "end":"Nov 22, 2023",
+        "days":"6 days"
+      },
+      {
+        "type":"Thigh problems",
+        "start":"Sep 11, 2023",
+        "end":"Sep 15, 2023",
+        "days":"5 days"
+      },
+      {
+        "type":"Thigh problems",
+        "start":"Mar 9, 2023",
+        "end":"Mar 29, 2023",
+        "days":"21 days"
+      },
+      {
+        "type":"Adductor pain",
+        "start":"Nov 3, 2022",
+        "end":"Nov 3, 2022",
+        "days":"1 days"
+      },
+      {
+        "type":"Back problems",
+        "start":"Sep 29, 2022",
+        "end":"Oct 3, 2022",
+        "days":"5 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Sep 5, 2022",
+        "end":"Sep 29, 2022",
+        "days":"25 days"
+      },
+      {
+        "type":"Ligament injury",
+        "start":"Apr 21, 2022",
+        "end":"May 23, 2022",
+        "days":"33 days"
+      },
+      {
+        "type":"cold",
+        "start":"Dec 16, 2021",
+        "end":"Dec 20, 2021",
+        "days":"5 days"
+      },
+      {
+        "type":"minor knock",
+        "start":"Oct 25, 2021",
+        "end":"Oct 28, 2021",
+        "days":"4 days"
+      }
+    ]
+  },
+  {
+    "Name":"Marcel Lotka",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Shoulder injury",
+        "start":"Feb 28, 2025",
+        "end":"",
+        "days":"27 days"
+      },
+      {
+        "type":"Broken nose bone",
+        "start":"May 16, 2022",
+        "end":"May 30, 2022",
+        "days":"15 days"
+      },
+      {
+        "type":"concussion",
+        "start":"May 16, 2022",
+        "end":"May 30, 2022",
+        "days":"15 days"
+      }
+    ]
+  },
+  {
+    "Name":"Alexander Meyer",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Ill",
+        "start":"Jan 9, 2025",
+        "end":"Jan 13, 2025",
+        "days":"5 days"
+      },
+      {
+        "type":"Knee bruise",
+        "start":"Apr 28, 2022",
+        "end":"May 16, 2022",
+        "days":"19 days"
+      },
+      {
+        "type":"bruise",
+        "start":"Oct 29, 2020",
+        "end":"Nov 19, 2020",
+        "days":"22 days"
+      },
+      {
+        "type":"Inner knee ligament tear",
+        "start":"Jun 11, 2020",
+        "end":"Jun 29, 2020",
+        "days":"19 days"
+      },
+      {
+        "type":"Cruciate ligament injury",
+        "start":"Jul 9, 2018",
+        "end":"Dec 31, 2018",
+        "days":"176 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Oct 26, 2017",
+        "end":"Jan 1, 2018",
+        "days":"68 days"
+      },
+      {
+        "type":"Knee medial ligament tear",
+        "start":"Nov 3, 2016",
+        "end":"Apr 13, 2017",
+        "days":"162 days"
+      },
+      {
+        "type":"Torn muscle bundle",
+        "start":"Aug 6, 2015",
+        "end":"Sep 10, 2015",
+        "days":"36 days"
+      },
+      {
+        "type":"Knee medial ligament tear",
+        "start":"Feb 24, 2014",
+        "end":"Mar 13, 2014",
+        "days":"18 days"
+      },
+      {
+        "type":"Cartilage damage",
+        "start":"Aug 5, 2013",
+        "end":"Nov 4, 2013",
+        "days":"92 days"
+      },
+      {
+        "type":"Shoulder injury",
+        "start":"Nov 5, 2012",
+        "end":"Jul 1, 2013",
+        "days":"239 days"
+      }
+    ]
+  },
+  {
+    "Name":"Nico Schlotterbeck",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Ill",
+        "start":"Jan 9, 2025",
+        "end":"Jan 14, 2025",
+        "days":"6 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Apr 23, 2023",
+        "end":"May 5, 2023",
+        "days":"13 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Apr 2, 2023",
+        "end":"Apr 20, 2023",
+        "days":"19 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Mar 26, 2023",
+        "end":"Mar 29, 2023",
+        "days":"4 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Jan 6, 2022",
+        "end":"Jan 17, 2022",
+        "days":"12 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Nov 8, 2021",
+        "end":"Nov 22, 2021",
+        "days":"15 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Nov 16, 2020",
+        "end":"Jan 11, 2021",
+        "days":"57 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Oct 1, 2020",
+        "end":"Nov 16, 2020",
+        "days":"47 days"
+      }
+    ]
+  },
+  {
+    "Name":"Niklas S\u00fcle",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Syndesmotic ligament tear",
+        "start":"Dec 8, 2024",
+        "end":"Feb 6, 2025",
+        "days":"61 days"
+      },
+      {
+        "type":"Ankle problems",
+        "start":"Oct 23, 2024",
+        "end":"Nov 28, 2024",
+        "days":"37 days"
+      },
+      {
+        "type":"Stomach flu",
+        "start":"Oct 13, 2024",
+        "end":"Oct 19, 2024",
+        "days":"7 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Feb 20, 2024",
+        "end":"Feb 27, 2024",
+        "days":"8 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Nov 27, 2023",
+        "end":"Dec 7, 2023",
+        "days":"11 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Aug 1, 2022",
+        "end":"Aug 19, 2022",
+        "days":"19 days"
+      },
+      {
+        "type":"influenza",
+        "start":"Apr 7, 2022",
+        "end":"Apr 21, 2022",
+        "days":"15 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Mar 17, 2022",
+        "end":"Mar 28, 2022",
+        "days":"12 days"
+      },
+      {
+        "type":"Back problems",
+        "start":"Jan 3, 2022",
+        "end":"Jan 6, 2022",
+        "days":"4 days"
+      },
+      {
+        "type":"Back problems",
+        "start":"Dec 16, 2021",
+        "end":"Dec 20, 2021",
+        "days":"5 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Nov 8, 2021",
+        "end":"Nov 25, 2021",
+        "days":"18 days"
+      },
+      {
+        "type":"Hip flexor problems",
+        "start":"Nov 1, 2021",
+        "end":"Nov 4, 2021",
+        "days":"4 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Apr 8, 2021",
+        "end":"Apr 26, 2021",
+        "days":"19 days"
+      },
+      {
+        "type":"Hamstring strain",
+        "start":"Mar 22, 2021",
+        "end":"Mar 25, 2021",
+        "days":"4 days"
+      },
+      {
+        "type":"Knee bruise",
+        "start":"Dec 10, 2020",
+        "end":"Dec 14, 2020",
+        "days":"5 days"
+      }
+    ]
+  },
+  {
+    "Name":"Mats Hummels",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Rest",
+        "start":"Feb 8, 2025",
+        "end":"Feb 10, 2025",
+        "days":"3 days"
+      },
+      {
+        "type":"influenza",
+        "start":"Dec 16, 2024",
+        "end":"Dec 20, 2024",
+        "days":"5 days"
+      },
+      {
+        "type":"Fever",
+        "start":"Oct 5, 2024",
+        "end":"Oct 8, 2024",
+        "days":"4 days"
+      },
+      {
+        "type":"Rest",
+        "start":"May 10, 2024",
+        "end":"May 12, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"Rest",
+        "start":"May 3, 2024",
+        "end":"May 5, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"infection",
+        "start":"Jan 12, 2024",
+        "end":"Jan 22, 2024",
+        "days":"11 days"
+      },
+      {
+        "type":"Thigh problems",
+        "start":"Nov 3, 2022",
+        "end":"Nov 3, 2022",
+        "days":"1 days"
+      },
+      {
+        "type":"cold",
+        "start":"Sep 29, 2022",
+        "end":"Oct 6, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Hip problems",
+        "start":"Aug 22, 2022",
+        "end":"Aug 25, 2022",
+        "days":"4 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Apr 11, 2022",
+        "end":"Jun 30, 2022",
+        "days":"81 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Mar 7, 2022",
+        "end":"Mar 14, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"cold",
+        "start":"Dec 16, 2021",
+        "end":"Dec 20, 2021",
+        "days":"5 days"
+      },
+      {
+        "type":"Patellar tendon problems",
+        "start":"Aug 19, 2021",
+        "end":"Sep 9, 2021",
+        "days":"22 days"
+      },
+      {
+        "type":"Patellar tendon problems",
+        "start":"Jul 1, 2021",
+        "end":"Aug 19, 2021",
+        "days":"50 days"
+      },
+      {
+        "type":"Knee problems",
+        "start":"Feb 1, 2021",
+        "end":"Feb 4, 2021",
+        "days":"4 days"
+      }
+    ]
+  },
+  {
+    "Name":"Hendry Blank",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Hamstring injury",
+        "start":"Feb 20, 2025",
+        "end":"",
+        "days":"35 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Dec 6, 2024",
+        "end":"Dec 8, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Oct 25, 2024",
+        "end":"Nov 6, 2024",
+        "days":"13 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Aug 7, 2024",
+        "end":"Aug 26, 2024",
+        "days":"20 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Mar 16, 2024",
+        "end":"Mar 18, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Mar 2, 2024",
+        "end":"Mar 4, 2024",
+        "days":"3 days"
+      }
+    ]
+  },
+  {
+    "Name":"Antonios Papadopoulos",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"muscular problems",
+        "start":"Jan 19, 2024",
+        "end":"Feb 7, 2024",
+        "days":"20 days"
+      },
+      {
+        "type":"unknown injury",
+        "start":"Nov 3, 2023",
+        "end":"Nov 13, 2023",
+        "days":"11 days"
+      }
+    ]
+  },
+  {
+    "Name":"Ian Maatsen",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Rest",
+        "start":"May 3, 2024",
+        "end":"May 5, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"Cut",
+        "start":"Oct 18, 2022",
+        "end":"Oct 23, 2022",
+        "days":"6 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Jan 4, 2022",
+        "end":"Feb 3, 2022",
+        "days":"31 days"
+      }
+    ]
+  },
+  {
+    "Name":"Ramy Bensebaini",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"muscle stiffness",
+        "start":"Feb 10, 2025",
+        "end":"Feb 17, 2025",
+        "days":"8 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Jan 8, 2025",
+        "end":"Jan 13, 2025",
+        "days":"6 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Jun 1, 2024",
+        "end":"Jun 30, 2024",
+        "days":"30 days"
+      },
+      {
+        "type":"Inner ligament injury",
+        "start":"Mar 23, 2024",
+        "end":"May 31, 2024",
+        "days":"70 days"
+      },
+      {
+        "type":"Hip problems",
+        "start":"Jan 25, 2024",
+        "end":"Jan 29, 2024",
+        "days":"5 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Dec 1, 2023",
+        "end":"Dec 4, 2023",
+        "days":"4 days"
+      },
+      {
+        "type":"Hip flexor problems",
+        "start":"May 28, 2023",
+        "end":"Jun 5, 2023",
+        "days":"9 days"
+      },
+      {
+        "type":"Hip injury",
+        "start":"Apr 24, 2023",
+        "end":"May 2, 2023",
+        "days":"9 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Mar 6, 2023",
+        "end":"Mar 13, 2023",
+        "days":"8 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Feb 10, 2023",
+        "end":"Feb 13, 2023",
+        "days":"4 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Nov 13, 2022",
+        "end":"Nov 17, 2022",
+        "days":"5 days"
+      },
+      {
+        "type":"influenza",
+        "start":"Aug 22, 2022",
+        "end":"Sep 1, 2022",
+        "days":"11 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Jul 7, 2022",
+        "end":"Jul 18, 2022",
+        "days":"12 days"
+      },
+      {
+        "type":"Thigh problems",
+        "start":"Apr 7, 2022",
+        "end":"Apr 14, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Groin injury",
+        "start":"Sep 6, 2021",
+        "end":"Oct 21, 2021",
+        "days":"46 days"
+      }
+    ]
+  },
+  {
+    "Name":"Guille Bueno",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"muscular problems",
+        "start":"Aug 11, 2024",
+        "end":"Aug 25, 2024",
+        "days":"15 days"
+      },
+      {
+        "type":"Knee injury",
+        "start":"Jan 7, 2024",
+        "end":"Mar 10, 2024",
+        "days":"64 days"
+      },
+      {
+        "type":"Knee injury",
+        "start":"Feb 9, 2023",
+        "end":"Mar 20, 2023",
+        "days":"40 days"
+      },
+      {
+        "type":"Back problems",
+        "start":"Aug 9, 2022",
+        "end":"Aug 22, 2022",
+        "days":"14 days"
+      }
+    ]
+  },
+  {
+    "Name":"Julian Ryerson",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"influenza",
+        "start":"Feb 28, 2025",
+        "end":"Mar 3, 2025",
+        "days":"4 days"
+      },
+      {
+        "type":"Circulation problems",
+        "start":"Dec 12, 2024",
+        "end":"Dec 31, 2024",
+        "days":"20 days"
+      },
+      {
+        "type":"Adductor pain",
+        "start":"Oct 26, 2024",
+        "end":"Nov 8, 2024",
+        "days":"14 days"
+      },
+      {
+        "type":"flu",
+        "start":"Oct 14, 2024",
+        "end":"Oct 17, 2024",
+        "days":"4 days"
+      },
+      {
+        "type":"Rest",
+        "start":"May 3, 2024",
+        "end":"May 5, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"inflammation",
+        "start":"Mar 12, 2024",
+        "end":"Mar 22, 2024",
+        "days":"11 days"
+      },
+      {
+        "type":"Inner ligament injury",
+        "start":"Dec 7, 2023",
+        "end":"Feb 4, 2024",
+        "days":"60 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Oct 23, 2023",
+        "end":"Oct 26, 2023",
+        "days":"4 days"
+      },
+      {
+        "type":"Ankle problems",
+        "start":"Aug 21, 2023",
+        "end":"Aug 30, 2023",
+        "days":"10 days"
+      },
+      {
+        "type":"Eye injury",
+        "start":"Feb 24, 2023",
+        "end":"Feb 28, 2023",
+        "days":"5 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Feb 3, 2023",
+        "end":"Feb 6, 2023",
+        "days":"4 days"
+      },
+      {
+        "type":"cold",
+        "start":"Sep 29, 2022",
+        "end":"Oct 3, 2022",
+        "days":"5 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Mar 10, 2022",
+        "end":"Mar 17, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Jan 31, 2022",
+        "end":"Feb 10, 2022",
+        "days":"11 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Oct 25, 2021",
+        "end":"Oct 28, 2021",
+        "days":"4 days"
+      }
+    ]
+  },
+  {
+    "Name":"Marius Wolf",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Ill",
+        "start":"Jan 11, 2025",
+        "end":"Jan 14, 2025",
+        "days":"4 days"
+      },
+      {
+        "type":"Ligament stretching",
+        "start":"Dec 7, 2023",
+        "end":"Dec 10, 2023",
+        "days":"4 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Apr 7, 2023",
+        "end":"Apr 12, 2023",
+        "days":"6 days"
+      },
+      {
+        "type":"Balance disorder",
+        "start":"Nov 3, 2022",
+        "end":"Jan 2, 2023",
+        "days":"61 days"
+      },
+      {
+        "type":"infection",
+        "start":"Oct 13, 2022",
+        "end":"Oct 20, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Circulation problems",
+        "start":"Sep 29, 2022",
+        "end":"Oct 6, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Jan 3, 2022",
+        "end":"Jan 10, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Nov 4, 2021",
+        "end":"Nov 25, 2021",
+        "days":"22 days"
+      },
+      {
+        "type":"Torn ankle ligaments",
+        "start":"Jul 26, 2021",
+        "end":"Aug 12, 2021",
+        "days":"18 days"
+      },
+      {
+        "type":"strain",
+        "start":"May 21, 2020",
+        "end":"Jul 2, 2020",
+        "days":"43 days"
+      },
+      {
+        "type":"Bruise on ankle",
+        "start":"May 14, 2020",
+        "end":"May 18, 2020",
+        "days":"5 days"
+      },
+      {
+        "type":"Quarantine",
+        "start":"Mar 16, 2020",
+        "end":"Apr 16, 2020",
+        "days":"32 days"
+      },
+      {
+        "type":"Torn lateral ankle ligament",
+        "start":"Apr 22, 2019",
+        "end":"Apr 29, 2019",
+        "days":"8 days"
+      },
+      {
+        "type":"Capsular injury",
+        "start":"Nov 26, 2018",
+        "end":"Dec 10, 2018",
+        "days":"15 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Oct 4, 2018",
+        "end":"Oct 25, 2018",
+        "days":"22 days"
+      }
+    ]
+  },
+  {
+    "Name":"Thomas Meunier",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Adductor pain",
+        "start":"Nov 1, 2024",
+        "end":"Nov 11, 2024",
+        "days":"11 days"
+      },
+      {
+        "type":"Partial muscle tear",
+        "start":"Jun 8, 2024",
+        "end":"Jul 2, 2024",
+        "days":"25 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Jul 31, 2023",
+        "end":"Oct 27, 2023",
+        "days":"89 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Apr 16, 2023",
+        "end":"May 29, 2023",
+        "days":"44 days"
+      },
+      {
+        "type":"Back problems",
+        "start":"Mar 29, 2023",
+        "end":"Apr 6, 2023",
+        "days":"9 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Jan 12, 2023",
+        "end":"Feb 9, 2023",
+        "days":"29 days"
+      },
+      {
+        "type":"Broken cheekbone",
+        "start":"Oct 20, 2022",
+        "end":"Nov 17, 2022",
+        "days":"29 days"
+      },
+      {
+        "type":"Groin problems",
+        "start":"Oct 13, 2022",
+        "end":"Oct 13, 2022",
+        "days":"1 days"
+      },
+      {
+        "type":"Tendon rupture",
+        "start":"Feb 24, 2022",
+        "end":"May 12, 2022",
+        "days":"78 days"
+      },
+      {
+        "type":"minor knock",
+        "start":"Feb 10, 2022",
+        "end":"Feb 21, 2022",
+        "days":"12 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Jan 20, 2022",
+        "end":"Jan 31, 2022",
+        "days":"12 days"
+      },
+      {
+        "type":"Knock",
+        "start":"Oct 21, 2021",
+        "end":"Oct 25, 2021",
+        "days":"5 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Sep 2, 2021",
+        "end":"Sep 9, 2021",
+        "days":"8 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Aug 2, 2021",
+        "end":"Aug 19, 2021",
+        "days":"18 days"
+      },
+      {
+        "type":"Inflammation in the knee",
+        "start":"Jan 28, 2021",
+        "end":"Feb 15, 2021",
+        "days":"19 days"
+      }
+    ]
+  },
+  {
+    "Name":"Mateu Morey",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Meniscus irritation",
+        "start":"Aug 23, 2024",
+        "end":"Sep 17, 2024",
+        "days":"26 days"
+      },
+      {
+        "type":"cold",
+        "start":"May 9, 2024",
+        "end":"Jun 2, 2024",
+        "days":"25 days"
+      },
+      {
+        "type":"Knee injury",
+        "start":"Sep 9, 2023",
+        "end":"Nov 24, 2023",
+        "days":"77 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Feb 15, 2023",
+        "end":"May 29, 2023",
+        "days":"104 days"
+      },
+      {
+        "type":"Knee surgery",
+        "start":"Aug 29, 2022",
+        "end":"Feb 15, 2023",
+        "days":"171 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"May 9, 2022",
+        "end":"Aug 11, 2022",
+        "days":"95 days"
+      },
+      {
+        "type":"Cruciate ligament injury",
+        "start":"Apr 29, 2021",
+        "end":"May 9, 2022",
+        "days":"376 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Mar 11, 2021",
+        "end":"Mar 22, 2021",
+        "days":"12 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Dec 3, 2020",
+        "end":"Dec 10, 2020",
+        "days":"8 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Aug 27, 2020",
+        "end":"Oct 1, 2020",
+        "days":"36 days"
+      },
+      {
+        "type":"Shoulder injury",
+        "start":"Jul 29, 2019",
+        "end":"Sep 23, 2019",
+        "days":"57 days"
+      },
+      {
+        "type":"Torn knee ligaments",
+        "start":"Mar 28, 2019",
+        "end":"May 16, 2019",
+        "days":"50 days"
+      },
+      {
+        "type":"Meniscus tear",
+        "start":"Jul 30, 2018",
+        "end":"Mar 21, 2019",
+        "days":"235 days"
+      },
+      {
+        "type":"Ankle injury",
+        "start":"Nov 20, 2017",
+        "end":"Jan 8, 2018",
+        "days":"50 days"
+      }
+    ]
+  },
+  {
+    "Name":"Salih \u00d6zcan",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Fever",
+        "start":"Feb 8, 2024",
+        "end":"Feb 12, 2024",
+        "days":"5 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Dec 1, 2023",
+        "end":"Dec 3, 2023",
+        "days":"3 days"
+      },
+      {
+        "type":"Stomach flu",
+        "start":"Mar 16, 2023",
+        "end":"Mar 20, 2023",
+        "days":"5 days"
+      },
+      {
+        "type":"Bone edema",
+        "start":"Sep 19, 2022",
+        "end":"Sep 29, 2022",
+        "days":"11 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Jul 25, 2022",
+        "end":"Aug 8, 2022",
+        "days":"15 days"
+      },
+      {
+        "type":"Foot injury",
+        "start":"Jul 18, 2022",
+        "end":"Jul 25, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Apr 4, 2022",
+        "end":"Apr 7, 2022",
+        "days":"4 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Feb 7, 2019",
+        "end":"Feb 18, 2019",
+        "days":"12 days"
+      },
+      {
+        "type":"Strain in the thigh and gluteal muscles",
+        "start":"Jan 31, 2019",
+        "end":"Feb 7, 2019",
+        "days":"8 days"
+      },
+      {
+        "type":"infection",
+        "start":"Jul 3, 2017",
+        "end":"Jul 10, 2017",
+        "days":"8 days"
+      }
+    ]
+  },
+  {
+    "Name":"Emre Can",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Ill",
+        "start":"Jan 9, 2025",
+        "end":"Jan 13, 2025",
+        "days":"5 days"
+      },
+      {
+        "type":"Knock",
+        "start":"Jan 19, 2024",
+        "end":"Jan 25, 2024",
+        "days":"7 days"
+      },
+      {
+        "type":"bruise",
+        "start":"Oct 26, 2023",
+        "end":"Nov 23, 2023",
+        "days":"29 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Jan 20, 2023",
+        "end":"Jan 23, 2023",
+        "days":"4 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Jan 17, 2022",
+        "end":"Feb 10, 2022",
+        "days":"25 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Oct 27, 2021",
+        "end":"Nov 17, 2021",
+        "days":"22 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Aug 25, 2021",
+        "end":"Sep 30, 2021",
+        "days":"37 days"
+      },
+      {
+        "type":"Calf problems",
+        "start":"Jul 27, 2021",
+        "end":"Aug 18, 2021",
+        "days":"23 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Nov 30, 2020",
+        "end":"Dec 3, 2020",
+        "days":"4 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Oct 23, 2020",
+        "end":"Nov 6, 2020",
+        "days":"15 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"May 9, 2020",
+        "end":"May 21, 2020",
+        "days":"13 days"
+      },
+      {
+        "type":"influenza",
+        "start":"Jan 25, 2020",
+        "end":"Feb 1, 2020",
+        "days":"8 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"May 3, 2019",
+        "end":"May 9, 2019",
+        "days":"7 days"
+      },
+      {
+        "type":"Ankle sprain",
+        "start":"Apr 7, 2019",
+        "end":"Apr 14, 2019",
+        "days":"8 days"
+      },
+      {
+        "type":"surgery",
+        "start":"Oct 21, 2018",
+        "end":"Dec 5, 2018",
+        "days":"46 days"
+      }
+    ]
+  },
+  {
+    "Name":"Abdoulaye Kamara",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"unknown injury",
+        "start":"Mar 2, 2024",
+        "end":"May 31, 2024",
+        "days":"91 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Dec 17, 2023",
+        "end":"Feb 10, 2024",
+        "days":"56 days"
+      },
+      {
+        "type":"Knee injury",
+        "start":"Sep 28, 2023",
+        "end":"Oct 16, 2023",
+        "days":"19 days"
+      },
+      {
+        "type":"Adductor pain",
+        "start":"Jul 1, 2023",
+        "end":"Aug 27, 2023",
+        "days":"58 days"
+      },
+      {
+        "type":"Adductor pain",
+        "start":"Jun 20, 2023",
+        "end":"Jun 30, 2023",
+        "days":"11 days"
+      },
+      {
+        "type":"Knee injury",
+        "start":"Apr 30, 2023",
+        "end":"Jun 19, 2023",
+        "days":"51 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Jan 24, 2023",
+        "end":"Apr 29, 2023",
+        "days":"96 days"
+      },
+      {
+        "type":"Knee medial ligament tear",
+        "start":"Oct 21, 2022",
+        "end":"Jan 23, 2023",
+        "days":"95 days"
+      },
+      {
+        "type":"minor knock",
+        "start":"Sep 12, 2022",
+        "end":"Sep 26, 2022",
+        "days":"15 days"
+      },
+      {
+        "type":"Ankle injury",
+        "start":"Feb 7, 2022",
+        "end":"Mar 10, 2022",
+        "days":"32 days"
+      }
+    ]
+  },
+  {
+    "Name":"Felix Nmecha",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Ligament injury",
+        "start":"Jan 25, 2025",
+        "end":"",
+        "days":"61 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Feb 28, 2024",
+        "end":"Mar 6, 2024",
+        "days":"8 days"
+      },
+      {
+        "type":"Hip problems",
+        "start":"Nov 13, 2023",
+        "end":"Feb 27, 2024",
+        "days":"107 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Oct 28, 2023",
+        "end":"Oct 30, 2023",
+        "days":"3 days"
+      },
+      {
+        "type":"Ankle problems",
+        "start":"Aug 9, 2023",
+        "end":"Aug 18, 2023",
+        "days":"10 days"
+      },
+      {
+        "type":"Thigh problems",
+        "start":"Jan 23, 2023",
+        "end":"Feb 1, 2023",
+        "days":"10 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Aug 9, 2021",
+        "end":"Aug 19, 2021",
+        "days":"11 days"
+      },
+      {
+        "type":"unknown injury",
+        "start":"Jul 1, 2019",
+        "end":"Oct 31, 2019",
+        "days":"123 days"
+      }
+    ]
+  },
+  {
+    "Name":"Marcel Sabitzer",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Knee injury",
+        "start":"Mar 16, 2025",
+        "end":"",
+        "days":"11 days"
+      },
+      {
+        "type":"Knock",
+        "start":"Dec 21, 2024",
+        "end":"Dec 24, 2024",
+        "days":"4 days"
+      },
+      {
+        "type":"Knock",
+        "start":"Sep 26, 2024",
+        "end":"Sep 29, 2024",
+        "days":"4 days"
+      },
+      {
+        "type":"Rest",
+        "start":"May 10, 2024",
+        "end":"May 12, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"Calf problems",
+        "start":"Dec 7, 2023",
+        "end":"Dec 10, 2023",
+        "days":"4 days"
+      },
+      {
+        "type":"Adductor pain",
+        "start":"Sep 20, 2023",
+        "end":"Oct 12, 2023",
+        "days":"23 days"
+      },
+      {
+        "type":"Meniscus injury",
+        "start":"May 10, 2023",
+        "end":"Jun 15, 2023",
+        "days":"37 days"
+      },
+      {
+        "type":"Groin problems",
+        "start":"Apr 16, 2023",
+        "end":"Apr 19, 2023",
+        "days":"4 days"
+      },
+      {
+        "type":"unknown injury",
+        "start":"Mar 6, 2023",
+        "end":"Mar 14, 2023",
+        "days":"9 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"May 13, 2022",
+        "end":"May 18, 2022",
+        "days":"6 days"
+      },
+      {
+        "type":"Calf injury",
+        "start":"Nov 20, 2021",
+        "end":"Dec 15, 2021",
+        "days":"26 days"
+      },
+      {
+        "type":"Calf problems",
+        "start":"Apr 17, 2021",
+        "end":"Apr 22, 2021",
+        "days":"6 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Sep 24, 2020",
+        "end":"Oct 18, 2020",
+        "days":"25 days"
+      },
+      {
+        "type":"Knee injury",
+        "start":"Jun 22, 2020",
+        "end":"Jun 30, 2020",
+        "days":"9 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Nov 12, 2018",
+        "end":"Dec 1, 2018",
+        "days":"20 days"
+      }
+    ]
+  },
+  {
+    "Name":"Kjell W\u00e4tjen",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Muscle injury",
+        "start":"Nov 1, 2024",
+        "end":"Nov 28, 2024",
+        "days":"28 days"
+      },
+      {
+        "type":"Foot injury",
+        "start":"Nov 26, 2022",
+        "end":"Jan 31, 2023",
+        "days":"67 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Sep 4, 2022",
+        "end":"Oct 3, 2022",
+        "days":"30 days"
+      }
+    ]
+  },
+  {
+    "Name":"Ole Pohlmann",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"unknown injury",
+        "start":"Mar 2, 2024",
+        "end":"Mar 10, 2024",
+        "days":"9 days"
+      },
+      {
+        "type":"infection",
+        "start":"Oct 10, 2023",
+        "end":"Oct 16, 2023",
+        "days":"7 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Oct 2, 2023",
+        "end":"Oct 9, 2023",
+        "days":"8 days"
+      },
+      {
+        "type":"Broken hand",
+        "start":"May 24, 2023",
+        "end":"Jun 30, 2023",
+        "days":"38 days"
+      },
+      {
+        "type":"unknown injury",
+        "start":"Apr 14, 2023",
+        "end":"Apr 26, 2023",
+        "days":"13 days"
+      }
+    ]
+  },
+  {
+    "Name":"Julian Brandt",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"muscle stiffness",
+        "start":"Feb 21, 2025",
+        "end":"Feb 27, 2025",
+        "days":"7 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Nov 28, 2024",
+        "end":"Dec 19, 2024",
+        "days":"22 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Jan 25, 2024",
+        "end":"Feb 4, 2024",
+        "days":"11 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Oct 23, 2023",
+        "end":"Oct 26, 2023",
+        "days":"4 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Mar 8, 2023",
+        "end":"Mar 29, 2023",
+        "days":"22 days"
+      },
+      {
+        "type":"influenza",
+        "start":"Sep 19, 2022",
+        "end":"Sep 27, 2022",
+        "days":"9 days"
+      },
+      {
+        "type":"concussion",
+        "start":"Dec 2, 2021",
+        "end":"Dec 9, 2021",
+        "days":"8 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Sep 16, 2021",
+        "end":"Sep 27, 2021",
+        "days":"12 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Aug 2, 2021",
+        "end":"Aug 19, 2021",
+        "days":"18 days"
+      },
+      {
+        "type":"Torn lateral ankle ligament",
+        "start":"Feb 6, 2020",
+        "end":"Feb 20, 2020",
+        "days":"15 days"
+      },
+      {
+        "type":"Adductor pain",
+        "start":"Jul 29, 2019",
+        "end":"Aug 12, 2019",
+        "days":"15 days"
+      },
+      {
+        "type":"minor knock",
+        "start":"Dec 7, 2017",
+        "end":"Dec 14, 2017",
+        "days":"8 days"
+      },
+      {
+        "type":"Knee problems",
+        "start":"Aug 14, 2017",
+        "end":"Aug 17, 2017",
+        "days":"4 days"
+      },
+      {
+        "type":"minor knock",
+        "start":"May 1, 2017",
+        "end":"May 11, 2017",
+        "days":"11 days"
+      },
+      {
+        "type":"Stomach flu",
+        "start":"Nov 7, 2016",
+        "end":"Nov 14, 2016",
+        "days":"8 days"
+      }
+    ]
+  },
+  {
+    "Name":"Giovanni Reyna",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Groin strain",
+        "start":"Sep 5, 2024",
+        "end":"Nov 20, 2024",
+        "days":"77 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Dec 5, 2023",
+        "end":"Dec 7, 2023",
+        "days":"3 days"
+      },
+      {
+        "type":"Fissure of the fibula",
+        "start":"Jun 20, 2023",
+        "end":"Sep 17, 2023",
+        "days":"90 days"
+      },
+      {
+        "type":"cold",
+        "start":"Mar 29, 2023",
+        "end":"Apr 2, 2023",
+        "days":"5 days"
+      },
+      {
+        "type":"strain",
+        "start":"Sep 29, 2022",
+        "end":"Oct 9, 2022",
+        "days":"11 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Aug 22, 2022",
+        "end":"Aug 29, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Aug 8, 2022",
+        "end":"Aug 15, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Jul 4, 2022",
+        "end":"Aug 1, 2022",
+        "days":"29 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Apr 11, 2022",
+        "end":"Jun 30, 2022",
+        "days":"81 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Feb 21, 2022",
+        "end":"Mar 7, 2022",
+        "days":"15 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Feb 10, 2022",
+        "end":"Feb 17, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Nov 29, 2021",
+        "end":"Jan 24, 2022",
+        "days":"57 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Sep 6, 2021",
+        "end":"Nov 29, 2021",
+        "days":"85 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Mar 4, 2021",
+        "end":"Mar 11, 2021",
+        "days":"8 days"
+      },
+      {
+        "type":"infection",
+        "start":"Jan 14, 2021",
+        "end":"Jan 18, 2021",
+        "days":"5 days"
+      }
+    ]
+  },
+  {
+    "Name":"Marco Reus",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Rest",
+        "start":"Mar 11, 2025",
+        "end":"",
+        "days":"16 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Sep 25, 2024",
+        "end":"Oct 16, 2024",
+        "days":"22 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Jan 26, 2024",
+        "end":"Feb 4, 2024",
+        "days":"10 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Mar 9, 2023",
+        "end":"Mar 13, 2023",
+        "days":"5 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Jan 16, 2023",
+        "end":"Jan 26, 2023",
+        "days":"11 days"
+      },
+      {
+        "type":"Inflammation in the ankle joint",
+        "start":"Nov 7, 2022",
+        "end":"Jan 2, 2023",
+        "days":"57 days"
+      },
+      {
+        "type":"Ankle problems",
+        "start":"Oct 17, 2022",
+        "end":"Nov 3, 2022",
+        "days":"18 days"
+      },
+      {
+        "type":"Torn lateral ankle ligament",
+        "start":"Sep 19, 2022",
+        "end":"Oct 13, 2022",
+        "days":"25 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Jun 6, 2022",
+        "end":"Jun 30, 2022",
+        "days":"25 days"
+      },
+      {
+        "type":"Rest",
+        "start":"May 30, 2022",
+        "end":"Jun 6, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Mar 7, 2022",
+        "end":"Mar 28, 2022",
+        "days":"22 days"
+      },
+      {
+        "type":"minor knock",
+        "start":"Feb 24, 2022",
+        "end":"Mar 7, 2022",
+        "days":"12 days"
+      },
+      {
+        "type":"Knee problems",
+        "start":"Sep 23, 2021",
+        "end":"Sep 27, 2021",
+        "days":"5 days"
+      },
+      {
+        "type":"Knee problems",
+        "start":"Sep 6, 2021",
+        "end":"Sep 9, 2021",
+        "days":"4 days"
+      },
+      {
+        "type":"Bruise on ankle",
+        "start":"Mar 14, 2021",
+        "end":"Apr 1, 2021",
+        "days":"19 days"
+      }
+    ]
+  },
+  {
+    "Name":"Jadon Sancho",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Ill",
+        "start":"Nov 2, 2024",
+        "end":"Nov 11, 2024",
+        "days":"10 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Apr 12, 2024",
+        "end":"Apr 14, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Jan 31, 2024",
+        "end":"Feb 4, 2024",
+        "days":"5 days"
+      },
+      {
+        "type":"depression",
+        "start":"Dec 26, 2022",
+        "end":"Jan 31, 2023",
+        "days":"37 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Nov 1, 2022",
+        "end":"Nov 14, 2022",
+        "days":"14 days"
+      },
+      {
+        "type":"Tonsillitis",
+        "start":"Apr 26, 2022",
+        "end":"May 8, 2022",
+        "days":"13 days"
+      },
+      {
+        "type":"Torn muscle bundle",
+        "start":"Mar 3, 2021",
+        "end":"Apr 19, 2021",
+        "days":"48 days"
+      },
+      {
+        "type":"infection",
+        "start":"Sep 29, 2020",
+        "end":"Oct 4, 2020",
+        "days":"6 days"
+      },
+      {
+        "type":"infection",
+        "start":"Feb 4, 2019",
+        "end":"Feb 6, 2019",
+        "days":"3 days"
+      },
+      {
+        "type":"Ligament injury",
+        "start":"Feb 5, 2018",
+        "end":"Mar 15, 2018",
+        "days":"39 days"
+      },
+      {
+        "type":"Ligament stretching",
+        "start":"Dec 11, 2017",
+        "end":"Jan 4, 2018",
+        "days":"25 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Nov 23, 2017",
+        "end":"Nov 27, 2017",
+        "days":"5 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Aug 7, 2017",
+        "end":"Sep 4, 2017",
+        "days":"29 days"
+      }
+    ]
+  },
+  {
+    "Name":"Jamie Gittens",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Knock",
+        "start":"Nov 14, 2024",
+        "end":"Nov 18, 2024",
+        "days":"5 days"
+      },
+      {
+        "type":"Shoulder injury",
+        "start":"May 7, 2023",
+        "end":"Aug 18, 2023",
+        "days":"104 days"
+      },
+      {
+        "type":"Shoulder injury",
+        "start":"Mar 16, 2023",
+        "end":"Mar 31, 2023",
+        "days":"16 days"
+      },
+      {
+        "type":"Shoulder injury",
+        "start":"Sep 3, 2022",
+        "end":"Nov 28, 2022",
+        "days":"87 days"
+      },
+      {
+        "type":"Shoulder injury",
+        "start":"Feb 14, 2022",
+        "end":"Feb 28, 2022",
+        "days":"15 days"
+      },
+      {
+        "type":"Torn ankle ligaments",
+        "start":"Jul 22, 2021",
+        "end":"Nov 22, 2021",
+        "days":"124 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Sep 24, 2020",
+        "end":"Oct 5, 2020",
+        "days":"12 days"
+      }
+    ]
+  },
+  {
+    "Name":"Julien Duranville",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Hamstring injury",
+        "start":"Oct 2, 2024",
+        "end":"Nov 20, 2024",
+        "days":"50 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Apr 26, 2024",
+        "end":"Jun 30, 2024",
+        "days":"66 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Feb 5, 2024",
+        "end":"Feb 19, 2024",
+        "days":"15 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Sep 24, 2023",
+        "end":"Feb 4, 2024",
+        "days":"134 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Sep 18, 2023",
+        "end":"Sep 23, 2023",
+        "days":"6 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Jul 28, 2023",
+        "end":"Sep 17, 2023",
+        "days":"52 days"
+      },
+      {
+        "type":"Partial muscle tear",
+        "start":"Dec 6, 2022",
+        "end":"May 19, 2023",
+        "days":"165 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Oct 9, 2022",
+        "end":"Oct 21, 2022",
+        "days":"13 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Aug 24, 2022",
+        "end":"Aug 26, 2022",
+        "days":"3 days"
+      }
+    ]
+  },
+  {
+    "Name":"Thorgan Hazard",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Cruciate ligament tear",
+        "start":"Apr 14, 2024",
+        "end":"Dec 24, 2024",
+        "days":"255 days"
+      },
+      {
+        "type":"flu",
+        "start":"Dec 21, 2023",
+        "end":"Dec 25, 2023",
+        "days":"5 days"
+      },
+      {
+        "type":"Knee injury",
+        "start":"Nov 25, 2023",
+        "end":"Dec 20, 2023",
+        "days":"26 days"
+      },
+      {
+        "type":"Ankle injury",
+        "start":"May 3, 2023",
+        "end":"May 10, 2023",
+        "days":"8 days"
+      },
+      {
+        "type":"unknown injury",
+        "start":"Feb 18, 2023",
+        "end":"Mar 15, 2023",
+        "days":"26 days"
+      },
+      {
+        "type":"Thigh problems",
+        "start":"Sep 8, 2022",
+        "end":"Sep 12, 2022",
+        "days":"5 days"
+      },
+      {
+        "type":"Back problems",
+        "start":"Apr 14, 2022",
+        "end":"Jun 2, 2022",
+        "days":"50 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Nov 22, 2021",
+        "end":"Dec 9, 2021",
+        "days":"18 days"
+      },
+      {
+        "type":"Ankle problems",
+        "start":"Oct 7, 2021",
+        "end":"Oct 11, 2021",
+        "days":"5 days"
+      },
+      {
+        "type":"Ankle problems",
+        "start":"Aug 16, 2021",
+        "end":"Sep 13, 2021",
+        "days":"29 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Dec 24, 2020",
+        "end":"Feb 22, 2021",
+        "days":"61 days"
+      },
+      {
+        "type":"Hamstring strain",
+        "start":"Dec 10, 2020",
+        "end":"Dec 21, 2020",
+        "days":"12 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Sep 21, 2020",
+        "end":"Oct 22, 2020",
+        "days":"32 days"
+      },
+      {
+        "type":"Bruised ribs",
+        "start":"Aug 26, 2019",
+        "end":"Sep 12, 2019",
+        "days":"18 days"
+      },
+      {
+        "type":"minor knock",
+        "start":"Jul 29, 2019",
+        "end":"Aug 5, 2019",
+        "days":"8 days"
+      }
+    ]
+  },
+  {
+    "Name":"Donyell Malen",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Ill",
+        "start":"Feb 26, 2025",
+        "end":"Mar 3, 2025",
+        "days":"6 days"
+      },
+      {
+        "type":"Fever",
+        "start":"Sep 29, 2024",
+        "end":"Oct 3, 2024",
+        "days":"5 days"
+      },
+      {
+        "type":"Knee problems",
+        "start":"Apr 14, 2024",
+        "end":"Apr 29, 2024",
+        "days":"16 days"
+      },
+      {
+        "type":"Thigh problems",
+        "start":"Mar 26, 2024",
+        "end":"Apr 11, 2024",
+        "days":"17 days"
+      },
+      {
+        "type":"Ankle problems",
+        "start":"Mar 2, 2023",
+        "end":"Mar 4, 2023",
+        "days":"3 days"
+      },
+      {
+        "type":"cold",
+        "start":"Oct 20, 2022",
+        "end":"Oct 24, 2022",
+        "days":"5 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Aug 18, 2022",
+        "end":"Sep 12, 2022",
+        "days":"26 days"
+      },
+      {
+        "type":"strain",
+        "start":"Apr 7, 2022",
+        "end":"Jul 14, 2022",
+        "days":"99 days"
+      },
+      {
+        "type":"Stomach flu",
+        "start":"Oct 25, 2021",
+        "end":"Oct 28, 2021",
+        "days":"4 days"
+      },
+      {
+        "type":"Knee surgery",
+        "start":"Dec 16, 2019",
+        "end":"Aug 13, 2020",
+        "days":"242 days"
+      },
+      {
+        "type":"Ankle injury",
+        "start":"Oct 24, 2019",
+        "end":"Nov 18, 2019",
+        "days":"26 days"
+      }
+    ]
+  },
+  {
+    "Name":"Karim Adeyemi",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Ill",
+        "start":"Jan 13, 2025",
+        "end":"Jan 15, 2025",
+        "days":"3 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Oct 2, 2024",
+        "end":"Dec 9, 2024",
+        "days":"69 days"
+      },
+      {
+        "type":"Rest",
+        "start":"May 10, 2024",
+        "end":"May 12, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Feb 13, 2024",
+        "end":"Feb 21, 2024",
+        "days":"9 days"
+      },
+      {
+        "type":"Syndesmosis ligament tear",
+        "start":"Dec 14, 2023",
+        "end":"Feb 4, 2024",
+        "days":"53 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Nov 24, 2023",
+        "end":"Nov 26, 2023",
+        "days":"3 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"May 28, 2023",
+        "end":"Jul 16, 2023",
+        "days":"50 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Feb 20, 2023",
+        "end":"Mar 30, 2023",
+        "days":"39 days"
+      },
+      {
+        "type":"Foot injury",
+        "start":"Aug 29, 2022",
+        "end":"Sep 12, 2022",
+        "days":"15 days"
+      },
+      {
+        "type":"Toe injury",
+        "start":"Aug 8, 2022",
+        "end":"Aug 22, 2022",
+        "days":"15 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Mar 24, 2022",
+        "end":"Apr 4, 2022",
+        "days":"12 days"
+      },
+      {
+        "type":"Tonsillitis",
+        "start":"Feb 3, 2022",
+        "end":"Feb 10, 2022",
+        "days":"8 days"
+      },
+      {
+        "type":"Quarantine",
+        "start":"Nov 8, 2021",
+        "end":"Nov 22, 2021",
+        "days":"15 days"
+      },
+      {
+        "type":"Adductor pain",
+        "start":"Oct 14, 2021",
+        "end":"Oct 21, 2021",
+        "days":"8 days"
+      },
+      {
+        "type":"muscular problems",
+        "start":"Sep 10, 2020",
+        "end":"Sep 21, 2020",
+        "days":"12 days"
+      }
+    ]
+  },
+  {
+    "Name":"Samuel Bamba",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Ill",
+        "start":"Oct 3, 2024",
+        "end":"Oct 6, 2024",
+        "days":"4 days"
+      },
+      {
+        "type":"strain",
+        "start":"Feb 23, 2024",
+        "end":"Mar 10, 2024",
+        "days":"17 days"
+      },
+      {
+        "type":"unknown injury",
+        "start":"Jan 1, 2023",
+        "end":"Jan 16, 2023",
+        "days":"16 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"May 30, 2022",
+        "end":"Aug 15, 2022",
+        "days":"78 days"
+      },
+      {
+        "type":"Hamstring injury",
+        "start":"Apr 25, 2022",
+        "end":"May 16, 2022",
+        "days":"22 days"
+      }
+    ]
+  },
+  {
+    "Name":"Youssoufa Moukoko",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Hamstring injury",
+        "start":"Dec 7, 2023",
+        "end":"Dec 31, 2023",
+        "days":"25 days"
+      },
+      {
+        "type":"Hamstring strain",
+        "start":"Oct 15, 2023",
+        "end":"Oct 23, 2023",
+        "days":"9 days"
+      },
+      {
+        "type":"Syndesmosis ligament tear",
+        "start":"Feb 12, 2023",
+        "end":"Mar 30, 2023",
+        "days":"47 days"
+      },
+      {
+        "type":"Compression of the spine",
+        "start":"Sep 26, 2022",
+        "end":"Sep 29, 2022",
+        "days":"4 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Feb 28, 2022",
+        "end":"Mar 31, 2022",
+        "days":"32 days"
+      },
+      {
+        "type":"Torn muscle fiber",
+        "start":"Nov 29, 2021",
+        "end":"Jan 6, 2022",
+        "days":"39 days"
+      },
+      {
+        "type":"inflammation",
+        "start":"Nov 11, 2021",
+        "end":"Nov 25, 2021",
+        "days":"15 days"
+      },
+      {
+        "type":"Muscle injury",
+        "start":"Oct 7, 2021",
+        "end":"Oct 28, 2021",
+        "days":"22 days"
+      },
+      {
+        "type":"Ligament injury",
+        "start":"Apr 1, 2021",
+        "end":"Jun 10, 2021",
+        "days":"71 days"
+      },
+      {
+        "type":"Knee problems",
+        "start":"Dec 21, 2020",
+        "end":"Jan 7, 2021",
+        "days":"18 days"
+      },
+      {
+        "type":"flesh wound",
+        "start":"Aug 13, 2018",
+        "end":"Aug 16, 2018",
+        "days":"4 days"
+      },
+      {
+        "type":"Rest",
+        "start":"May 31, 2018",
+        "end":"Jun 4, 2018",
+        "days":"5 days"
+      }
+    ]
+  },
+  {
+    "Name":"Niclas F\u00fcllkrug",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Hamstring injury",
+        "start":"Jan 11, 2025",
+        "end":"Apr 1, 2025",
+        "days":"81 days"
+      },
+      {
+        "type":"Achilles tendon irritation",
+        "start":"Sep 8, 2024",
+        "end":"Dec 2, 2024",
+        "days":"86 days"
+      },
+      {
+        "type":"Rest",
+        "start":"May 10, 2024",
+        "end":"May 12, 2024",
+        "days":"3 days"
+      },
+      {
+        "type":"Tendon irritation",
+        "start":"Sep 4, 2023",
+        "end":"Sep 15, 2023",
+        "days":"12 days"
+      },
+      {
+        "type":"Calf problems",
+        "start":"Apr 22, 2023",
+        "end":"May 17, 2023",
+        "days":"26 days"
+      },
+      {
+        "type":"Calf problems",
+        "start":"Apr 12, 2023",
+        "end":"Apr 21, 2023",
+        "days":"10 days"
+      },
+      {
+        "type":"Bruised back",
+        "start":"Nov 7, 2022",
+        "end":"Nov 10, 2022",
+        "days":"4 days"
+      },
+      {
+        "type":"bruise",
+        "start":"Aug 8, 2022",
+        "end":"Aug 11, 2022",
+        "days":"4 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Dec 30, 2021",
+        "end":"Jan 13, 2022",
+        "days":"15 days"
+      },
+      {
+        "type":"Broken toe",
+        "start":"Apr 5, 2021",
+        "end":"Apr 19, 2021",
+        "days":"15 days"
+      },
+      {
+        "type":"Ankle problems",
+        "start":"Jan 14, 2021",
+        "end":"Feb 11, 2021",
+        "days":"29 days"
+      },
+      {
+        "type":"Calf injury",
+        "start":"Oct 26, 2020",
+        "end":"Dec 31, 2020",
+        "days":"67 days"
+      },
+      {
+        "type":"Fitness",
+        "start":"Jun 4, 2020",
+        "end":"Jun 11, 2020",
+        "days":"8 days"
+      },
+      {
+        "type":"Cruciate ligament tear",
+        "start":"Sep 19, 2019",
+        "end":"Jun 4, 2020",
+        "days":"260 days"
+      },
+      {
+        "type":"Cartilage damage",
+        "start":"Dec 17, 2018",
+        "end":"May 9, 2019",
+        "days":"144 days"
+      }
+    ]
+  },
+  {
+    "Name":"S\u00e9bastien Haller",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Ankle injury",
+        "start":"May 8, 2024",
+        "end":"May 12, 2024",
+        "days":"5 days"
+      },
+      {
+        "type":"Ankle injury",
+        "start":"May 2, 2024",
+        "end":"May 6, 2024",
+        "days":"5 days"
+      },
+      {
+        "type":"Ankle injury",
+        "start":"Apr 14, 2024",
+        "end":"Apr 29, 2024",
+        "days":"16 days"
+      },
+      {
+        "type":"Ankle injury",
+        "start":"Feb 12, 2024",
+        "end":"Mar 27, 2024",
+        "days":"45 days"
+      },
+      {
+        "type":"Ankle injury",
+        "start":"Dec 20, 2023",
+        "end":"Jan 23, 2024",
+        "days":"35 days"
+      },
+      {
+        "type":"Inner ligament stretch of the knee",
+        "start":"Dec 5, 2023",
+        "end":"Dec 11, 2023",
+        "days":"7 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Nov 24, 2023",
+        "end":"Nov 26, 2023",
+        "days":"3 days"
+      },
+      {
+        "type":"Knee problems",
+        "start":"Apr 2, 2023",
+        "end":"Apr 7, 2023",
+        "days":"6 days"
+      },
+      {
+        "type":"Testicular cancer",
+        "start":"Jul 18, 2022",
+        "end":"Dec 31, 2022",
+        "days":"167 days"
+      },
+      {
+        "type":"Ill",
+        "start":"Nov 27, 2021",
+        "end":"Dec 1, 2021",
+        "days":"5 days"
+      },
+      {
+        "type":"Corona virus",
+        "start":"Mar 20, 2021",
+        "end":"Apr 3, 2021",
+        "days":"15 days"
+      },
+      {
+        "type":"Knock",
+        "start":"Oct 6, 2020",
+        "end":"Oct 22, 2020",
+        "days":"17 days"
+      },
+      {
+        "type":"Groin injury",
+        "start":"Jun 19, 2020",
+        "end":"Jul 7, 2020",
+        "days":"19 days"
+      },
+      {
+        "type":"Knee injury",
+        "start":"Aug 11, 2019",
+        "end":"Aug 23, 2019",
+        "days":"13 days"
+      },
+      {
+        "type":"Abdominal muscle strain",
+        "start":"Apr 1, 2019",
+        "end":"May 6, 2019",
+        "days":"36 days"
+      }
+    ]
+  },
+  {
+    "Name":"Paris Brunner",
+    "Age":"N\/A",
+    "Height":"N\/A",
+    "Weight":"N\/A",
+    "Position":"N\/A",
+    "Injuries":[
+      {
+        "type":"Torn muscle fiber",
+        "start":"Dec 22, 2024",
+        "end":"Feb 18, 2025",
+        "days":"59 days"
+      },
+      {
+        "type":"Foot injury",
+        "start":"Oct 20, 2024",
+        "end":"Nov 6, 2024",
+        "days":"18 days"
+      }
+    ]
+  }
+]
