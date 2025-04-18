@@ -18,5 +18,5 @@ class Node:
     def __eq__(self, other):
         return isinstance(other, Node) and self.state == other.state
     
-    def __gt__(self, other):
+    def __gt__(self, other): # this will be helpful when comparing nodes in the priority queue
         return isinstance(other, Node) and self.f > other.f
