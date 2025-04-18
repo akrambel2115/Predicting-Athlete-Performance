@@ -1,3 +1,5 @@
+import Node
+
 class AthletePerformanceProblem:
     """
     Defines a search problem for athlete performance planning.
@@ -58,13 +60,33 @@ class AthletePerformanceProblem:
     
     def cost(self, state, action):
         w = self.weights
-        fatigue, risk, performance = state
-        fatigue_p, risk_p, performance_p = self.apply_action(state, action)
+        _, fatigue, risk, performance = state
+        _, fatigue_p, risk_p, performance_p = self.apply_action(state, action)
         delta_f, delta_r, delta_p = fatigue_p - fatigue, risk_p - risk, performance_p - performance
 
         # Calculate the cost as a weighted sum of performance deficit, risk, and fatigue
         return (w['w1'] * delta_f + w['w2'] * delta_r - w['w3'] * delta_p + w['w4'] * action[0] * action[1])
+    
+    def expand_node(self, node,use_cost=False, use_heuristic=False):
+        """
+        Expands a node by applying all possible actions and returning the resulting nodes.
+        """
+        children = []
+        for action in self.actions():
+            new_state = self.apply_action(node.state, action)
+            if self.is_valid(new_state):
+                cost = self.cost(node.state, action) if use_cost else 0
+                heuristic = self.heuristic(new_state) if use_heuristic else 0
+                child_node = Node(new_state, parent=node, action=action, cost=cost, f=cost + heuristic)
+                children.append(child_node)
+        return children
 
+    def is_valid(self, state):
+        day, fatigue, risk, performance = state
+        return (
+                0 <= fatigue <= 1.0
+                and 0 <= risk <= 1.0
+                and 0 <= performance <= 100.0)
 
     def is_goal(self, state):
         return (state.day == self.target_day
