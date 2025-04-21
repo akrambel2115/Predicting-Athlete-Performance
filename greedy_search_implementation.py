@@ -139,12 +139,17 @@ class AthletePerformanceProblem:
         
         This penalizes lower performance, higher risk, higher fatigue.
         """
-        _, fatigue, risk, performance = state
+        day, fatigue, risk, performance = state
         
         # TODO: tune weights
         w1, w2, w3 = 0.4, 0.3, 0.3
         
-        return w1 * (1 - performance) + w2 * risk + w3 * fatigue
+        days_remaining = max(0, self.target_day - day)
+        urgency_factor = 1.0
+        if days_remaining > 0:
+            urgency_factor = 1.0 + (1.0 / days_remaining) if days_remaining < 10 else 1.0
+        
+        return urgency_factor * (w1 * (1 - performance) + w2 * risk + w3 * fatigue)
     
     def heuristic(self, state) -> float:
         """
@@ -169,169 +174,97 @@ class AthletePerformanceProblem:
         if days_remaining > 0:
             urgency_factor = 1.0 + (1.0 / days_remaining) if days_remaining < 10 else 1.0
             
-        return urgency_factor * (w1 * perf_gap + w2 * risk + w3 * fatigue)
+        return urgency_factor * (w1 * perf_gap + w2 * (self.max_risk - risk) + w3 * (self.max_fatigue - fatigue))
 
-class GeneralSearch:
+class GreedySearch:
     def __init__(self, problem):
         """
-        Initialize the general search process with a problem instance.
+        Initialize the greedy search process with a problem instance.
 
         Input Parameters:
             - problem: An instance of AthletePerformanceProblem.
-
-        Output:
-            - An instance of GeneralSearch with default flags for cost and heuristic usage.
         """
         self.problem = problem
-        self.use_cost = True
-        self.use_heuristic = False
 
-    def set_frontier(self, search_strategy="best_first"):
+    def search(self, max_depth=float('inf')):
         """
-        Set up the frontier based on the chosen search strategy (only supports  greedy best-first for now).
+        Execute a greedy best-first search based on the heuristic function.
 
         Input Parameters:
-            - search_strategy: A string specifying the strategy.
-
-        Output:
-            - A frontier appropriate for the strategy.
-        """
-
-        if search_strategy == "best_first":
-            frontier = queue.PriorityQueue()
-            self.use_cost = False
-            self.use_heuristic = True
-
-        else:
-            raise ValueError("Unsupported search strategy: " + str(search_strategy))
-
-        return frontier
-
-    def search(self, search_strategy="best-first", max_depth=float('inf')):
-        """
-        Execute a general graph search based on the specified strategy (only supports greedy search for now).
-
-        Input Parameters:
-            - search_strategy: A string indicating which strategy to use.
             - max_depth: An integer indicating the maximum depth to search.
 
         Output:
-            - A Node instance representing the goal if found, otherwise None.
+            - A Node instance representing the goal if found, otherwise best alternative.
         """
-        frontier = self.set_frontier(search_strategy)
+        frontier = queue.PriorityQueue()
         explored = set()
         initial_node = Node(self.problem.initial_state)
         
-        # Set initial cost and heuristic if needed
-        if self.use_cost:
-            initial_node.g = self.problem.cost(initial_node.state)
-        if self.use_heuristic:
-            initial_node.h = self.problem.heuristic(initial_node.state)
-            
-        initial_node.f = initial_node.g + initial_node.h
+        # Set initial heuristic
+        initial_node.h = self.problem.heuristic(initial_node.state)
+        initial_node.f = initial_node.h
         
-        # Add to frontier with appropriate priority if needed
+        # Add to frontier with priority based on heuristic
         frontier.put((initial_node.f, id(initial_node), initial_node))
         
         # Track states in frontier to avoid duplicates
-        frontier_states = {initial_node.state}
+        frontier_states = {self._round_state(initial_node.state)}  # MODIFIED: Rounded state tracking
         
-        # Track best solution at target day
-        target_day_nodes = []
+        # Track best state (even if not goal)
         best_node = initial_node
-        best_score = float('inf')
-        
+        best_score = self.problem.cost(initial_node.state)  # MODIFIED: Use cost for best estimation
+
+        iteration = 0  # MODIFIED: Track iterations
+
         while not frontier.empty():
-            # Get next node from frontier
-            current = frontier.get()
-            _, _, current_node = current
-                
+            iteration += 1
+            if iteration % 100 == 0:
+                print(f"[Search iteration {iteration}] Frontier size: {frontier.qsize()}")
+
+            _, _, current_node = frontier.get()
             current_state = current_node.state
-            if current_state in frontier_states:
-                frontier_states.remove(current_state)
-            
-            # Check if exceeding max depth
-            if current_node.depth > max_depth:
-                continue
-            
-            # Extract day from state
-            day = current_state[0]
-            
-            # For AthletePerformanceProblem, check if exceeding target day
-            if day > self.problem.target_day:
-                continue
-            
-            # Add to explored
-            explored.add(current_state)
-            
-            # Check if goal reached
+            rounded_state = self._round_state(current_state)  # MODIFIED
+
+            frontier_states.discard(rounded_state)
+            explored.add(rounded_state)
+
             if self.problem.is_goal(current_state):
                 print(f"Goal reached: {current_state}")
                 return current_node
-            
-            # For nodes at target day, keep track of them
-            if day == self.problem.target_day:
-                target_day_nodes.append(current_node)
-                
-                # Calculate score (higher performance is better, lower risk and fatigue are better)
-                _, fatigue, risk, performance = current_state
-                score = (-0.6 * performance) + (0.2 * risk) + (0.2 * fatigue)
-                
-                if score < best_score:
-                    best_score = score
-                    best_node = current_node
-            
-            # Only expand nodes that haven't reached the target day yet
-            if day < self.problem.target_day:
-                # Expand node and add children to frontier
-                children = self.problem.expand_node(current_node, self.use_cost, self.use_heuristic)
-                
-                for child in children:
-                    child_state = child.state
-                    
-                    # Only consider states that:
-                    # 1. Don't exceed target day
-                    # 2. Haven't been explored
-                    # 3. Aren't already in frontier
-                    
-                    child_day = child_state[0]
-                    if (child_day <= self.problem.target_day and 
-                        child_state not in explored and
-                        child_state not in frontier_states):
-                        
-                        if search_strategy in ["uniform_cost", "best_first", "A*"]:
-                            frontier.put((child.f, id(child), child))
-                        else:
-                            frontier.put(child)
-                        frontier_states.add(child_state)
-        
-        # When search completes, analyze target day nodes if we have any
-        if target_day_nodes:
-            # Check if any node at target day is a goal
-            goal_nodes = [node for node in target_day_nodes if self.problem.is_goal(node.state)]
-            if goal_nodes:
-                # Find the best goal node based on score
-                best_goal_node = goal_nodes[0]
-                best_goal_score = float('inf')
-                
-                for node in goal_nodes:
-                    _, fatigue, risk, performance = node.state
-                    score = (-0.6 * performance) + (0.2 * risk) + (0.2 * fatigue)
-                    if score < best_goal_score:
-                        best_goal_score = score
-                        best_goal_node = node
-                
-                print(f"Goal reached at target day: {best_goal_node.state}")
-                return best_goal_node
-            
-            # If no goal node, return the best node at target day
-            print(f"No goal reached, returning best alternative at target day: ")
-            return best_node
-        
-        print("Search terminated with no solution found.")
-        return None
 
-    def _reconstruct_path(self, node):
+            # Update best node found so far
+            score = self.problem.cost(current_state)
+            if score < best_score:
+                best_score = score
+                best_node = current_node
+
+            day = current_state[0]
+            if current_node.depth > max_depth or day >= self.problem.target_day:
+                continue
+
+            # Expand children
+            children = self.problem.expand_node(current_node, use_cost=False, use_heuristic=True)
+
+            for child in children:
+                child_state = child.state
+                rounded_child_state = self._round_state(child_state)  # MODIFIED
+                if rounded_child_state not in explored and rounded_child_state not in frontier_states:
+                    frontier.put((child.f, id(child), child))
+                    frontier_states.add(rounded_child_state)
+
+        print("Search ended without exact goal. Returning best node found.")
+        return best_node  # MODIFIED: Always return best node found
+
+    # ADD THIS METHOD TO YOUR CLASS
+    def _round_state(self, state):
+        """
+        Helper to reduce state space size by rounding float values.
+        """
+        day, fatigue, risk, performance = state
+        return (day, round(fatigue, 2), round(risk, 2), round(performance, 2))  # MODIFIED
+
+
+    def reconstruct_path(self, node):
         """
         Reconstruct the path from the initial state to the goal state.
         """
@@ -341,31 +274,31 @@ class GeneralSearch:
             node = node.parent
         return path[::-1]  # reverse to get the correct order
 
-def test_general_search():
+def test_greedy_search():
     """
-    Test the general search algorithm with different strategies.
+    Test the greedy search algorithm.
     """
     
-    print("Testing General Search Algorithm")
+    print("Testing Greedy Search Algorithm")
     print("-----------------------------------------")
     
     problem = AthletePerformanceProblem(
         initial_state=(0, 0.0, 0.0, 0.4),  
-        target_day=10,                     
+        target_day=30,                     
         target_perf=0.9,                   
         max_fatigue=0.6,                   
         max_risk=0.3                      
     )
     
-    searcher = GeneralSearch(problem)
+    searcher = GreedySearch(problem)
     
     print("Running Greedy Best-First Search...")
-    goal_node = searcher.search(search_strategy="best_first")
+    goal_node = searcher.search()
     
     if goal_node is None:
         print("No solution found.")
     else:
-        path = searcher._reconstruct_path(goal_node)
+        path = searcher.reconstruct_path(goal_node)
         
         print("\nTraining Plan:")
         print("Day | Intensity | Duration | Fatigue | Risk | Performance")
@@ -396,4 +329,5 @@ def test_general_search():
 
 # Run the test if this file is executed directly
 if __name__ == "__main__":
-    test_general_search()
+    test_greedy_search()
+#TODO change the logic for the alternative solution to return lst explored node instead
