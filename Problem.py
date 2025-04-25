@@ -1,62 +1,121 @@
-import Node
+import joblib
+import numpy as np
+import pandas as pd
+from calculate_load_per_minute import calculate_load_per_minute
 
 class AthletePerformanceProblem:
     """
-    Defines a search problem for athlete performance planning.
-    State: (day, fatigue, risk, performance)
-    Actions: Train: (intensity_value, duration) or Rest: (0,0)
-    Transition: deterministic model with tunable coefficients
-    Cost: weighted sum of performance deficit, risk, and fatigue
+    Search problem for athlete performance planning using learned ΔF, ΔP, ΔR models.
+    State: (day, fatigue, risk, performance, history)
+    Actions: Train (intensity, duration) or Rest: (0.0, 0.0).
+    Transition: ML regression/classification models via simulate_step logic.
+    Cost: customizable weighted sum (not implemented here).
     """
     def __init__(self,
-                 initial_state: tuple = (0, 0.0, 0.0, 100.0),
-                 alpha: float = 0.8,
-                 beta: float = 0.001,
-                 gamma: float = 0.1,
-                 delta: float = 0.05,
-                 epsilon: float = 0.001,
-                 eta: float = 0.002,
-                 theta: float = 0.1,
+                 initial_state: tuple = (0, 0.0, 0.0, 50.0),
                  w1: float = 1.0,
                  w2: float = 1.0,
-                 w3: float = 1.0,
-                 w4: float = 1.0,
-                 target_day: int = 30,
-                 target_perf: float = 95.0,
-                 max_fatigue: float = 0.5,
-                 max_risk: float = 0.3):
-        self.coeffs = dict(alpha=alpha, beta=beta, gamma=gamma,
-                           delta=delta, epsilon=epsilon,
-                           eta=eta, theta=theta)
-        self.weights = dict(w1=w1, w2=w2, w3=w3)
-        self.target_day = target_day
-        self.target_perf = target_perf
-        self.max_fatigue = max_fatigue
-        self.max_risk = max_risk
-        self.initial_state = initial_state
+                 w3: float = 1.0):
+        # Load models
+        self.delta_f = joblib.load("predictingModels/delta_f_model.pkl")
+        self.delta_p = joblib.load("predictingModels/delta_p_model.pkl")
+        r_loaded = joblib.load("predictingModels/delta_r_classifier.pkl")
+        # Unpack classifier
+        if hasattr(r_loaded, 'predict_proba') and hasattr(r_loaded, 'feature_names_in_'):
+            self.delta_r = r_loaded
+            self.r_feats = list(r_loaded.feature_names_in_)
+        elif isinstance(r_loaded, dict):
+            for v in r_loaded.values():
+                if hasattr(v, 'predict_proba') and hasattr(v, 'feature_names_in_'):
+                    self.delta_r = v
+                if isinstance(v, (list, tuple)):
+                    self.r_feats = list(v)
+        else:
+            raise ValueError("Unable to extract injury classifier and features")
+        # Compute load-per-minute mapping
+        self.LOAD_PER_MIN = calculate_load_per_minute()
+        # Defaults
+        self.SLEEP_DUR = 7.5
+        self.SLEEP_QLT = 3.0
+        self.STRESS    = 2.5
+        self.w1, self.w2, self.w3 = w1, w2, w3
+        self.f_feats = list(self.delta_f.feature_names_in_)
+        self.p_feats = list(self.delta_p.feature_names_in_)
+        # Initialize state history
+        day, f, r, p = initial_state
+        self.initial_state = (day, f, r, p, [
+            {'load': 0.0,
+             'fatigue': f,
+             'injury_count': 0,
+             'days_since_game': 0,
+             'days_since_last_injury': 0}
+        ])
 
     def actions(self):
-        train_actions = [(intensity, duration)
-                        for intensity in (0.3, 0.6, 0.9)
-                        for duration in (30, 60, 90)]
-        return [train_actions, (0, 0)]  # Rest action
+        train_actions = [(i, d) for i in (0.3, 0.6, 0.9) for d in (60, 90, 120)]
+        return train_actions + [(0.0, 0.0)]  # rest
 
-    def apply_action(self, state, action):
-        day, fatigue, risk, performance = state
+    def apply_action(self, state, action, history):
+        # Unpack
+        day, F, R, P = state
         intensity, duration = action
-        coeffs = self.coeffs
+        is_rest = (intensity == 0.0 and duration == 0.0)
+        # Compute load
+        load = 0.0
+        if not is_rest:
+            load = self.LOAD_PER_MIN.get(intensity, 0.0) * duration
+        # Rolling-7 calculations
+        last7 = history[-7:]
+        load7 = np.mean([h['load'] for h in last7] + [load])
+        fat7  = np.mean([h['fatigue'] for h in last7] + [F])
+        prev = history[-1]
+        inj_lag1 = int(prev['injury_count'] > 0)
+        # Assemble features
+        feat = {
+            'load': load,
+            'action_intensity': intensity,
+            'fatigue_post': F,
+            'performance_lag_1': P,
+            'sleep_duration': self.SLEEP_DUR,
+            'sleep_quality':  self.SLEEP_QLT,
+            'stress':         self.STRESS,
+            'is_rest_day':    int(is_rest),
+            'injury_flag_lag_1': inj_lag1,
+            'load_rolling_7':      load7,
+            'fatigue_post_rolling_7': fat7,
+            'sleep_duration_rolling_7': self.SLEEP_DUR,
+            'sleep_quality_rolling_7':  self.SLEEP_QLT,
+            'stress_rolling_7':        self.STRESS,
+            'load_lag_1':      prev['load'],
+            'total_duration':  duration,
+            'injury_count':    prev['injury_count'],
+            'days_since_game': prev['days_since_game'] + 1,
+            'days_since_last_injury': prev['days_since_last_injury'] + 1
+        }
+        X = pd.DataFrame([feat])
+        # Predictions
+        dF = float(self.delta_f.predict(X[self.f_feats])[0])
+        dP = float(self.delta_p.predict(X[self.p_feats])[0])
+        if is_rest:
+            Rn = np.clip(R * 0.8, 0.0, 1.0)
+            F_new = max(F * 0.85, 0.0)
+            P_new = max(P * 0.96, 0.0)
+        else:
+            prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
+            Rn = np.clip(R + prob, 0.0, 1.0)
+            Fn = np.clip(F + dF, 0.0, 5.0)
+            Pn = max(P + dP, 0.0)
 
-        # Calculate new fatigue (F')
-        new_fatigue = coeffs['alpha'] * fatigue + coeffs['beta'] * (intensity * duration) - coeffs['gamma'] * (1 - intensity)
-
-        # Calculate new risk (R')
-        new_risk = risk + coeffs['delta'] * new_fatigue + coeffs['epsilon'] * (intensity * duration)
-
-        # Calculate new performance (P')
-        new_performance = performance + coeffs['eta'] * (intensity * duration) - coeffs['theta'] * new_fatigue
-
-        # Return the updated state
-        return (day + 1, new_fatigue, new_risk, new_performance)
+        # Update history
+        new_rec = {
+            'load': load,
+            'fatigue': Fn,
+            'injury_count': prev['injury_count'],
+            'days_since_game': feat['days_since_game'],
+            'days_since_last_injury': feat['days_since_last_injury']
+        }
+        new_history = history + [new_rec]
+        return (day + 1, Fn, Rn, Pn, new_history)
     
     def cost(self, state, action):
         w = self.weights
