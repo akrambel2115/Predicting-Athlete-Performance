@@ -20,17 +20,17 @@ class Node:
         parent: Reference to the parent Node
         action: The action (intensity, duration) that led to this state
         g: Path cost from start to this node
-        f: Total evaluation function value (g + h)
         h: Heuristic value (estimated cost to goal)
+        f: Total evaluation function value (g + h)
         depth: Depth of this node in the search tree
     """
-    def __init__(self, state, parent=None, action=None, g=0, f=0, h=0):
+    def __init__(self, state, parent=None, action=None, g=0, h=0, f=0):
         self.state = state
         self.parent = parent
         self.action = action
-        self.g = g
-        self.f = f
-        self.h = h
+        self.g = g  # Path cost from start
+        self.h = h  # Heuristic estimate to goal
+        self.f = f  # Total estimated cost (g + h)
 
         if parent is None:
             self.depth = 0
@@ -43,8 +43,9 @@ class Node:
     def __eq__(self, other):
         return isinstance(other, Node) and self.state == other.state
     
-    def __gt__(self, other):
-        return isinstance(other, Node) and self.f > other.f
+    def __lt__(self, other):
+        # For priority queue comparison - lower f value is better
+        return self.f < other.f if isinstance(other, Node) else NotImplemented
 
 class AthletePerformanceProblem:
     """
@@ -514,14 +515,13 @@ class AthletePerformanceProblem:
         self.heuristic_cache[cache_key] = h
         return h
 
-class GreedySearch:
+class AStarSearch:
     """
-    Implementation of a greedy best-first search algorithm for athlete training plans.
+    Implementation of the A* search algorithm for athlete training plans.
     
-    This class performs a greedy best-first search to find an optimal training plan
-    by using a heuristic to guide the search toward promising states. The search
-    expands nodes based on their heuristic values, always exploring the most
-    promising node first.
+    This class performs A* search to find an optimal training plan by using both path cost
+    and a heuristic to guide the search toward promising states. Unlike Greedy Search, A*
+    guarantees finding the optimal solution if the heuristic is admissible.
     
     Attributes:
         problem: The AthletePerformanceProblem instance
@@ -530,7 +530,7 @@ class GreedySearch:
     """
     def __init__(self, problem):
         """
-        Initialize the greedy search algorithm with a problem instance.
+        Initialize the A* search algorithm with a problem instance.
         
         Args:
             problem: An AthletePerformanceProblem instance
@@ -541,12 +541,12 @@ class GreedySearch:
         
     def search(self, max_depth=float('inf')):
         """
-        Perform greedy best-first search to find an optimal training plan.
+        Perform A* search to find an optimal training plan.
         
-        This function implements a greedy best-first search algorithm that uses
-        a priority queue to always explore the most promising node first, based
-        on the heuristic value. The search continues until a goal state is found
-        or the entire search space is explored.
+        This function implements the A* search algorithm that uses a priority queue
+        to explore nodes based on their f-value (f = g + h), where g is the path cost
+        from the start to the current node, and h is the estimated cost from the current
+        node to the goal. A* guarantees finding the optimal path if the heuristic is admissible.
         
         Args:
             max_depth: Maximum search depth (default: infinity)
@@ -556,25 +556,27 @@ class GreedySearch:
         """
         start_node = Node(state=self.problem.initial_state)
         
-        # Use a priority queue to always explore the "best" node first
-        # The item with the lowest priority value (heuristic) comes out first
+        # Use a priority queue to always explore the node with lowest f-value
         frontier = queue.PriorityQueue()
         frontier.put((0, start_node))  # (priority, node)
         
         # Track explored states to avoid cycles and repeated work
         explored = set()
         
+        # Track the best g-value for each state
+        best_g = {self._round_state(start_node.state): 0}
+        
         while not frontier.empty():
-            # Get node with lowest priority value (heuristic)
+            # Get node with lowest f-value (g + h)
             _, current_node = frontier.get()
             
-            # If we've reached the target day, return this node
-            if current_node.state[0] >= self.problem.target_day:
+            # If we've reached the goal, return this node
+            if self.problem.is_goal(current_node.state):
                 return current_node
                 
-            # Skip already explored states (using rounded state values for efficiency)
+            # Skip already explored states with better path costs
             rounded_state = self._round_state(current_node.state)
-            if rounded_state in explored:
+            if rounded_state in explored and best_g.get(rounded_state, float('inf')) <= current_node.g:
                 continue
             
             # Mark this state as explored
@@ -589,17 +591,20 @@ class GreedySearch:
             
             self.expanded_nodes += 1
             
-            # For each child, add to frontier if not exceeding max depth
+            # For each child, add to frontier if not exceeding max depth and has better path
             for child in children:
-                # Check if this child's day exceeds the max depth
+                # Check if this child's depth exceeds the max depth
                 if child.depth > max_depth:
                     continue
-                    
-                # For greedy search, we primarily use the heuristic
-                priority = child.h  # Use only heuristic for greedy best-first
                 
-                # Add to frontier
-                frontier.put((priority, child))
+                # For A*, use f = g + h (path cost + heuristic)
+                child_state_key = self._round_state(child.state)
+                
+                # Only add to frontier if this is a better path to this state
+                if child_state_key not in best_g or child.g < best_g[child_state_key]:
+                    best_g[child_state_key] = child.g
+                    priority = child.f  # f = g + h for A*
+                    frontier.put((priority, child))
                 
             # Track maximum queue size for performance analysis
             self.max_queue_size = max(self.max_queue_size, frontier.qsize())
@@ -674,7 +679,7 @@ def test_greedy_search():
     )
     
     # Create the greedy search algorithm
-    searcher = GreedySearch(problem)
+    searcher = AStarSearch(problem)
 
     # Run the search algorithm
     goal_node = searcher.search()
