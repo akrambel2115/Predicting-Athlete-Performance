@@ -100,8 +100,8 @@ class AthletePerformanceProblem:
         dP = float(self.delta_p.predict(X[self.p_feats])[0])
         if is_rest:
             Rn = np.clip(R * 0.8, 0.0, 1.0)
-            F_new = max(F * 0.85, 0.0)
-            P_new = max(P * 0.96, 0.0)
+            Fn = max(F * 0.85, 0.0)
+            Pn = max(P * 0.96, 0.0)
         else:
             prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
             Rn = np.clip(R + prob, 0.0, 1.0)
@@ -118,15 +118,6 @@ class AthletePerformanceProblem:
         }
         new_history = history + [new_rec]
         return (day + 1, Fn, Rn, Pn, new_history)
-    
-    def cost(self, state, action):
-        w = self.weights
-        _, fatigue, risk, performance = state
-        _, fatigue_p, risk_p, performance_p = self.apply_action(state, action)
-        delta_f, delta_r, delta_p = fatigue_p - fatigue, risk_p - risk, performance_p - performance
-
-        # Calculate the cost as a weighted sum of performance deficit, risk, and fatigue
-        return (w['w1'] * delta_f + w['w2'] * delta_r - w['w3'] * delta_p + w['w4'] * action[0] * action[1])
     
     def expand_node(self, node,use_cost=False, use_heuristic=False):
         """
@@ -155,13 +146,140 @@ class AthletePerformanceProblem:
                 and state.fatigue <= self.max_fatigue
                 and state.risk <= self.max_risk)
     
-    
+    def cost(self, state, action):
+        """
+        Calculate the cost of applying an action to the current state.
+        
+        This function evaluates the immediate cost of applying an action, balancing:
+        - Performance improvement (negative cost/benefit)
+        - Increase in fatigue (cost)
+        - Increase in injury risk (cost)
+        - Training load (cost proportional to intensity×duration)
+        
+        Lower cost values indicate better actions.
+        
+        Args:
+            state: Current state (day, fatigue, risk, performance)
+            action: Action to apply (intensity, duration)
+            
+        Returns:
+            Numerical cost value (lower is better)
+        """
+        day, fatigue, risk, performance, history = state
+        intensity, duration = action
+        is_rest = (intensity == 0.0 and duration == 0.0)
+        
+        # Apply action to get new state
+        new_state = self.apply_action(state, action, history)
+        _, new_fatigue, new_risk, new_perf, _ = new_state
+        
+        # Calculate deltas (changes in state)
+        delta_fatigue = new_fatigue - fatigue
+        delta_risk = new_risk - risk
+        delta_perf = new_perf - performance
+        
+        if is_rest:
+            # For rest days, prioritize recovery (fatigue reduction)
+            recovery_efficiency = max(0, fatigue - new_fatigue)
+            cost = 2.0 - (3.0 * recovery_efficiency)
+            # Small penalty if performance drops significantly during rest
+            if delta_perf < -1.0:
+                cost += 1.0
+        else:
+            # For training days, calculate efficiency metrics
+            # Higher cost if no performance improvement
+            if delta_perf <= 0:
+                perf_factor = 5.0
+            else:
+                # Performance efficiency: lower cost for more performance gain relative to fatigue/risk
+                # Add small constant to avoid division by zero
+                fatigue_risk_sum = max(0.01, delta_fatigue + (delta_risk * 4.0))
+                perf_factor = 2.0 - min(2.0, delta_perf / fatigue_risk_sum)
+            
+            # Risk penalty increases exponentially as we approach maximum risk
+            risk_proximity = new_risk
+            risk_penalty = 2.0 * (risk_proximity ** 2)
+            
+            # Fatigue penalty increases as we approach maximum fatigue (assumed to be 5.0)
+            fatigue_proximity = new_fatigue / 5.0
+            fatigue_penalty = 1.5 * (fatigue_proximity ** 2)
+            
+            # Combined cost (lower is better)
+            cost = perf_factor + risk_penalty + fatigue_penalty
+            
+            # Add penalty for excessive training load
+            training_load = intensity * duration
+            if training_load > 80:
+                cost += 0.5 * (training_load - 80) / 20
+        
+        return cost
+
     def heuristic(self, state) -> float:
-        max_I, max_D = 0.9, 90
-        eta = self.coeffs['eta']
-        remaining = max(0.0, self.target_perf - state.performance)
-        best_gain_per_day = eta * max_I * max_D
-        return remaining / best_gain_per_day if best_gain_per_day > 0 else 0.0
+        """
+        Estimate how close the current state is to the goal state.
+        
+        This function provides a heuristic that considers:
+        1. Performance deficit from target
+        2. Days remaining to reach target
+        3. Current fatigue and risk levels
+        4. Potential for improvement over remaining days
+        
+        Lower heuristic values indicate more promising states.
+        
+        Args:
+            state: Current state (day, fatigue, risk, performance, history)
+            
+        Returns:
+            Numerical heuristic value (lower is better)
+        """
+        day, fatigue, risk, performance, _ = state
+        
+        # Calculate remaining days until target
+        remaining_days = max(0, self.target_day - day)
+        
+        # Calculate performance deficit from target
+        perf_deficit = max(0, self.target_perf - performance)
+        
+        # If already at the target day, evaluate based on goal conditions
+        if remaining_days == 0:
+            # If performance goal met and constraints satisfied, heuristic is 0
+            if (performance >= self.target_perf and 
+                fatigue <= self.max_fatigue and 
+                risk <= self.max_risk):
+                return 0.0
+            
+            # Otherwise, return a value based on how far we are from satisfying all conditions
+            return (
+                3.0 * perf_deficit + 
+                2.0 * max(0, fatigue - self.max_fatigue) +
+                2.0 * max(0, risk - self.max_risk)
+            )
+        
+        # For states before the target day, estimate based on trajectory
+        
+        # Estimate max potential performance improvement per day, simplified and should be studied from the transition model
+        max_improvement_per_day = 0.3
+        
+        # Estimate if we can reach the performance target in time
+        potential_improvement = max_improvement_per_day * remaining_days
+        if potential_improvement < perf_deficit:
+            # Cannot reach target with max improvement rate, so increase heuristic
+            reachability_penalty = 2.0 * (perf_deficit - potential_improvement)
+        else:
+            reachability_penalty = 0.0
+        
+        # Risk and fatigue penalties increase as we get closer to max allowed values
+        risk_proximity = risk / self.max_risk if hasattr(self, 'max_risk') else risk
+        fatigue_proximity = fatigue / self.max_fatigue if hasattr(self, 'max_fatigue') else fatigue / 5.0
+        
+        risk_penalty = 1.5 * risk_proximity**2
+        fatigue_penalty = 1.0 * fatigue_proximity**2
+        
+        # Days factor - prioritize states that have made more progress toward goal
+        days_factor = 0.8 * (1.0 - day / self.target_day) if hasattr(self, 'target_day') else 0
+        
+        # Combined heuristic - lower values are better
+        return perf_deficit + reachability_penalty + risk_penalty + fatigue_penalty + days_factor
 
     def random_individual(self):
 
@@ -174,9 +292,6 @@ class AthletePerformanceProblem:
                 duration = 0
             schedule.append((intensity, duration))
         return tuple(schedule)
-    
-
 
     def evaluate_individual(self, individual):
         pass
-    
