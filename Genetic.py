@@ -1,3 +1,4 @@
+import Node
 import Problem
 import random
 
@@ -16,17 +17,6 @@ class GeneticAlgorithm:
             population.append(individual)
         return population
     
-    """
-    def evaluate_population(self, population):
-        fitness_indiv = []
-        for individual in population:
-            fitness_value = self.problem.evaluate(individual)
-            if fitness_value is not None: 
-                fitness_indiv.append((individual, fitness_value))
-            else:
-                fitness_indiv.append((individual, 0.0))
-        return fitness_indiv
-    """
 
     def evaluate_individual(self, individual):
         # Evaluate the individual using the problem's evaluate method
@@ -36,42 +26,50 @@ class GeneticAlgorithm:
         else:
             return 0.0
     
-    
-    
-    
+
     def select_parents(self, population):
         if not population:
             return []
-            
-        fitness_sum_avg = sum(fitness for _, fitness in fitness_indiv) / len(fitness_indiv)
-        if fitness_sum_avg == 0:
-
+        
+        # Evaluate all individuals in the population
+        fitness_indiv = [(ind, self.evaluate_individual(ind)) for ind in population]
+        
+        # Check if all fitness values are zero
+        fitness_sum = sum(fitness for _, fitness in fitness_indiv)
+        if fitness_sum == 0:
+            # If all fitness is zero, take a few top individuals 
             return [ind for ind, _ in fitness_indiv[:min(6, len(fitness_indiv))]]
-            
-        initial_count = [round(fitness / fitness_sum_avg) for _, fitness in fitness_indiv]
         
-        # sort by fitness in descending order
-        sorted_fitness = sorted([(ind, count, fitness) for (ind, fitness), count in zip(fitness_indiv, initial_count)], 
-                            key=lambda x: x[2], reverse=True)
+        # Calculate proportional selection count based on fitness
+        fitness_avg = fitness_sum / len(fitness_indiv)
+        initial_count = [max(1, round(fitness / fitness_avg)) for _, fitness in fitness_indiv]
         
+        # Sort by fitness in descending order with their counts
+        sorted_fitness = sorted(
+            [(ind, count, fitness) for (ind, fitness), count in zip(fitness_indiv, initial_count)], 
+            key=lambda x: x[2], reverse=True
+        )
+        
+        # Cap the number of copies of each individual to 2
         individuals_counts = [(ind, min(count, 2)) for ind, count, _ in sorted_fitness]
         
+        # Ensure we have at least 3 different individuals if possible
         valid_individuals = [ind for ind, count in individuals_counts if count > 0]
-        
         if len(valid_individuals) < 3:
             for i in range(min(3, len(individuals_counts))):
                 if individuals_counts[i][1] == 0:
                     individuals_counts[i] = (individuals_counts[i][0], 1)
         
+        # Create the final parent pool
         parents = []
         for individual, count in individuals_counts:
             if count > 0:
                 parents.extend([individual] * count)
         
-        # even number of parents
+        # Ensure even number of parents for pairing
         if len(parents) % 2 != 0 and len(parents) > 0:
             parents.pop()
-            
+        
         return parents
 
 
@@ -102,4 +100,3 @@ class GeneticAlgorithm:
                     offspring.append(self.crossover_parents(parent1, parent2))
         
         return offspring
-    
