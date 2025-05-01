@@ -9,7 +9,7 @@ class Node:
     A node in the search tree representing a state in the search space.
     
     Each node contains a state (day, fatigue, risk, performance, history),
-    a reference to its parent node, the action that led to this state,k
+    a reference to its parent node, the action that led to this state,
     and the depth in the search tree.
     """
     def __init__(self, state, parent=None, action=None):
@@ -23,77 +23,6 @@ class Node:
 
     def __eq__(self, other):
         return isinstance(other, Node) and self.state[:4] == other.state[:4]
-
-# Fix the variable naming issue in Problem.py by monkey patching 
-# the apply_action method to handle the naming inconsistency
-original_apply_action = AthletePerformanceProblem.apply_action
-
-def fixed_apply_action(self, state, action, history):
-    """Fixed version of apply_action that handles variable naming properly"""
-    # Unpack
-    day, F, R, P = state
-    intensity, duration = action
-    is_rest = (intensity == 0.0 and duration == 0.0)
-    # Compute load
-    load = 0.0
-    if not is_rest:
-        load = self.LOAD_PER_MIN.get(intensity, 0.0) * duration
-    # Rolling-7 calculations
-    last7 = history[-7:]
-    load7 = np.mean([h['load'] for h in last7] + [load])
-    fat7  = np.mean([h['fatigue'] for h in last7] + [F])
-    prev = history[-1]
-    inj_lag1 = int(prev['injury_count'] > 0)
-    # Assemble features
-    feat = {
-        'load': load,
-        'action_intensity': intensity,
-        'fatigue_post': F,
-        'performance_lag_1': P,
-        'sleep_duration': self.SLEEP_DUR,
-        'sleep_quality':  self.SLEEP_QLT,
-        'stress':         self.STRESS,
-        'is_rest_day':    int(is_rest),
-        'injury_flag_lag_1': inj_lag1,
-        'load_rolling_7':      load7,
-        'fatigue_post_rolling_7': fat7,
-        'sleep_duration_rolling_7': self.SLEEP_DUR,
-        'sleep_quality_rolling_7':  self.SLEEP_QLT,
-        'stress_rolling_7':        self.STRESS,
-        'load_lag_1':      prev['load'],
-        'total_duration':  duration,
-        'injury_count':    prev['injury_count'],
-        'days_since_game': prev['days_since_game'] + 1,
-        'days_since_last_injury': prev['days_since_last_injury'] + 1
-    }
-    X = pd.DataFrame([feat])
-    # Predictions
-    dF = float(self.delta_f.predict(X[self.f_feats])[0])
-    dP = float(self.delta_p.predict(X[self.p_feats])[0])
-    if is_rest:
-        Rn = np.clip(R * 0.8, 0.0, 1.0)
-        # Fix variable names for rest case
-        Fn = max(F * 0.85, 0.0)  # Changed from F_new to Fn
-        Pn = max(P * 0.96, 0.0)  # Changed from P_new to Pn
-    else:
-        prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
-        Rn = np.clip(R + prob, 0.0, 1.0)
-        Fn = np.clip(F + dF, 0.0, 5.0)
-        Pn = max(P + dP, 0.0)
-
-    # Update history
-    new_rec = {
-        'load': load,
-        'fatigue': Fn,
-        'injury_count': prev['injury_count'],
-        'days_since_game': feat['days_since_game'],
-        'days_since_last_injury': feat['days_since_last_injury']
-    }
-    new_history = history + [new_rec]
-    return (day + 1, Fn, Rn, Pn, new_history)
-
-# Replace the original method with our fixed version
-AthletePerformanceProblem.apply_action = fixed_apply_action
 
 class DFSSearch:
     """
@@ -114,10 +43,10 @@ class DFSSearch:
         self.max_stack_size = 0
         
         # Set target day and performance (needed for is_goal)
-        self.problem.target_day = 30
-        self.problem.target_perf = 8
-        self.problem.max_fatigue = 2
-        self.problem.max_risk = 0.2
+        self.problem.target_day = 10
+        self.problem.target_perf = 6.5
+        self.problem.max_fatigue = 4.0
+        self.problem.max_risk = 0.4
         
     def search(self, max_depth=float('inf')):
         """
