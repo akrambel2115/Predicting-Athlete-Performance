@@ -99,14 +99,14 @@ class AthletePerformanceProblem:
         dF = float(self.delta_f.predict(X[self.f_feats])[0])
         dP = float(self.delta_p.predict(X[self.p_feats])[0])
         if is_rest:
-            Rn = np.clip(R * 0.8, 0.0, 1.0)
+            Rn = np.clip(R * 0.85, 0.0, 1.0)
             Fn = max(F * 0.85, 0.0)
-            Pn = max(P * 0.96, 0.0)
+            Pn = max(P * 0.92, 0.0)
         else:
             prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
             Rn = np.clip(R + prob, 0.0, 1.0)
             Fn = np.clip(F + dF, 0.0, 5.0)
-            Pn = max(P + dP, 0.0)
+            Pn = np.clip(P + dP, 0.0 , 10)
 
         # Update history
         new_rec = {
@@ -136,9 +136,9 @@ class AthletePerformanceProblem:
     def is_valid(self, state):
         day, fatigue, risk, performance = state
         return (
-                0 <= fatigue <= 1.0
+                0 <= fatigue <= 5.0
                 and 0 <= risk <= 1.0
-                and 0 <= performance <= 100.0)
+                and 0 <= performance <= 10.0)
 
     def is_goal(self, state):
         return (state.day == self.target_day
