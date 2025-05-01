@@ -232,9 +232,9 @@ class AthletePerformanceProblem:
         # Handle rest days with simplified calculation (no ML prediction needed)
         if is_rest:
             # Rest day effect: reduce risk by 20%, fatigue by 15%, performance by 4%
-            Rn = np.clip(R * 0.8, 0.0, 1.0)  # Risk decreases on rest days
+            Rn = np.clip(R * 0.85, 0.0, 1.0)  # Risk decreases on rest days
             Fn = max(F * 0.85, 0.0)          # Fatigue decreases on rest days
-            Pn = max(P * 0.96, 0.0)          # Performance slightly decreases with no training
+            Pn = max(P * 0.92, 0.0)          # Performance slightly decreases with no training
         else:
             # For training days, use ML models to predict state changes
             # Assemble feature vector for ML models
@@ -274,7 +274,7 @@ class AthletePerformanceProblem:
             # Update state values with predicted changes
             Rn = np.clip(R + prob, 0.0, 1.0)       # New risk
             Fn = np.clip(F + dF, 0.0, 5.0)         # New fatigue
-            Pn = max(P + dP, 0.0)                  # New performance
+            Pn = np.clip(P + dP, 0. , 10)                  # New performance
 
         # Create new history record
         new_rec = {
