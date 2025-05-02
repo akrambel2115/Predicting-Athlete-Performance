@@ -14,7 +14,11 @@ class AthletePerformanceProblem:
     Cost: customizable weighted sum (not implemented here).
     """
     def __init__(self,
-                 initial_state: tuple = (0, 1.0, 0.1, 5.0)):
+                 initial_state: tuple = (0, 0.0, 0.0, 50.0),
+                 w1: float = 1.0,
+                 w2: float = 1.0,
+                 w3: float = 1.0,
+                 target_day: int = 20):
         # Load models
         self.delta_f = joblib.load("predictingModels/delta_f_model.pkl")
         self.delta_p = joblib.load("predictingModels/delta_p_model.pkl")
@@ -48,6 +52,8 @@ class AthletePerformanceProblem:
              'days_since_game': 0,
              'days_since_last_injury': 0}
         ])
+
+        self.target_day = target_day
 
     def actions(self):
         train_actions = [(i, d) for i in (0.3, 0.6, 0.9) for d in (60, 90, 120)]
@@ -92,13 +98,14 @@ class AthletePerformanceProblem:
         }
         X = pd.DataFrame([feat])
         # Predictions
-        dF = float(self.delta_f.predict(X[self.f_feats])[0])
-        dP = float(self.delta_p.predict(X[self.p_feats])[0])
+        
         if is_rest:
-            Rn = np.clip(R * 0.8, 0.0, 1.0)
+            Rn = np.clip(R * 0.86, 0.0, 1.0)
             Fn = max(F * 0.85, 0.0)
-            Pn = max(P * 0.96, 0.0)
+            Pn = max(P * 0.91, 0.0)
         else:
+            dF = float(self.delta_f.predict(X[self.f_feats])[0])
+            dP = float(self.delta_p.predict(X[self.p_feats])[0])
             prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
             Rn = np.clip(R + prob, 0.0, 1.0)
             Fn = np.clip(F + dF, 0.0, 5.0)
@@ -298,5 +305,9 @@ class AthletePerformanceProblem:
             # If it's a rest day, duration is 0
             duration = 0 if intensity == 0.0 else random.choice(durations[1:])
             schedule.append((intensity, duration))
-        
         return tuple(schedule)
+
+    def evaluate_individual(self, individual):
+        pass
+
+

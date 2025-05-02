@@ -46,7 +46,7 @@ class BFSSearch:
         # Set target day and performance (needed for is_goal)
         self.problem.target_day = 10
         self.problem.target_perf = 6.5
-        self.problem.max_fatigue = 4.0
+        self.problem.max_fatigue = 2.65
         self.problem.max_risk = 0.4
         
     def search(self, max_depth=float('inf')):
