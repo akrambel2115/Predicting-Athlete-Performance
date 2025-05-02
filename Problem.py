@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from calculate_load_per_minute import calculate_load_per_minute
 import Node
-from random import random
+import random
 
 class AthletePerformanceProblem:
     """
@@ -53,6 +53,8 @@ class AthletePerformanceProblem:
              'days_since_game': 0,
              'days_since_last_injury': 0}
         ])
+
+        self.target_day = target_day
 
     def actions(self):
         train_actions = [(i, d) for i in (0.3, 0.6, 0.9) for d in (60, 90, 120)]
