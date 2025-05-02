@@ -17,6 +17,17 @@ class GeneticAlgorithm:
             population.append(individual)
         return population
     
+    """
+    def evaluate_population(self, population):
+        fitness_indiv = []
+        for individual in population:
+            fitness_value = self.problem.evaluate(individual)
+            if fitness_value is not None: 
+                fitness_indiv.append((individual, fitness_value))
+            else:
+                fitness_indiv.append((individual, 0.0))
+        return fitness_indiv
+    """
 
     def evaluate_individual(self, individual):
         # Evaluate the individual using the problem's evaluate method
