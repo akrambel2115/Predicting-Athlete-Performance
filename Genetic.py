@@ -331,11 +331,11 @@ print("Without replacement:", sample_without_replacement)
         return offspring
     
 
+if __name__ == "__main__":
+    problem = AthletePerformanceProblem()
 
-problem = AthletePerformanceProblem()
-
-print(problem.random_individual())
-
-g = GeneticAlgorithm(problem)
-
-print(g.run())
+    ri = problem.random_individual()
+    print(ri)
+    last_state = problem.evaluate_individual(ri)
+    print(last_state)
+    

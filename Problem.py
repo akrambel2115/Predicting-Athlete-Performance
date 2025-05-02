@@ -59,9 +59,9 @@ class AthletePerformanceProblem:
         train_actions = [(i, d) for i in (0.3, 0.6, 0.9) for d in (60, 90, 120)]
         return train_actions + [(0.0, 0.0)]  # rest
 
-    def apply_action(self, state, action, history):
+    def apply_action(self, state, action):
         # Unpack
-        day, F, R, P = state
+        day, F, R, P, history = state
         intensity, duration = action
         is_rest = (intensity == 0.0 and duration == 0.0)
         # Compute load
@@ -305,9 +305,17 @@ class AthletePerformanceProblem:
             # If it's a rest day, duration is 0
             duration = 0 if intensity == 0.0 else random.choice(durations[1:])
             schedule.append((intensity, duration))
-        return tuple(schedule)
+        return list(schedule)
 
     def evaluate_individual(self, individual):
-        pass
+        
+        current_state = self.initial_state
+        while individual:
+            indiv_action = individual.pop(0)
+            current_state = self.apply_action(current_state, indiv_action) 
+
+
+
+        return current_state[:-1]
 
 
