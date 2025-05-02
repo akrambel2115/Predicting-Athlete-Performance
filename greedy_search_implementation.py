@@ -26,8 +26,8 @@ class GreedySearch:
         # Set target day and performance
         self.problem.target_day = 30
         self.problem.target_perf = 7.5
-        self.problem.max_fatigue = 3.5
-        self.problem.max_risk = 0.3
+        self.problem.max_fatigue = 2.65
+        self.problem.max_risk = 0.4
         
     def search(self, max_depth=float('inf')):
         """
