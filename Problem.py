@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from calculate_load_per_minute import calculate_load_per_minute
 import Node
-from random import random
+import random
 
 class AthletePerformanceProblem:
     """
@@ -17,7 +17,8 @@ class AthletePerformanceProblem:
                  initial_state: tuple = (0, 0.0, 0.0, 50.0),
                  w1: float = 1.0,
                  w2: float = 1.0,
-                 w3: float = 1.0):
+                 w3: float = 1.0,
+                 target_day: int = 20):
         # Load models
         self.delta_f = joblib.load("predictingModels/delta_f_model.pkl")
         self.delta_p = joblib.load("predictingModels/delta_p_model.pkl")
@@ -40,7 +41,6 @@ class AthletePerformanceProblem:
         self.SLEEP_DUR = 7.5
         self.SLEEP_QLT = 3.0
         self.STRESS    = 2.5
-        self.w1, self.w2, self.w3 = w1, w2, w3
         self.f_feats = list(self.delta_f.feature_names_in_)
         self.p_feats = list(self.delta_p.feature_names_in_)
         # Initialize state history
@@ -53,13 +53,15 @@ class AthletePerformanceProblem:
              'days_since_last_injury': 0}
         ])
 
+        self.target_day = target_day
+
     def actions(self):
         train_actions = [(i, d) for i in (0.3, 0.6, 0.9) for d in (60, 90, 120)]
         return train_actions + [(0.0, 0.0)]  # rest
 
-    def apply_action(self, state, action, history):
+    def apply_action(self, state, action):
         # Unpack
-        day, F, R, P = state
+        day, F, R, P, history = state
         intensity, duration = action
         is_rest = (intensity == 0.0 and duration == 0.0)
         # Compute load
@@ -96,17 +98,18 @@ class AthletePerformanceProblem:
         }
         X = pd.DataFrame([feat])
         # Predictions
-        dF = float(self.delta_f.predict(X[self.f_feats])[0])
-        dP = float(self.delta_p.predict(X[self.p_feats])[0])
+        
         if is_rest:
-            Rn = np.clip(R * 0.85, 0.0, 1.0)
+            Rn = np.clip(R * 0.86, 0.0, 1.0)
             Fn = max(F * 0.85, 0.0)
-            Pn = max(P * 0.92, 0.0)
+            Pn = max(P * 0.91, 0.0)
         else:
+            dF = float(self.delta_f.predict(X[self.f_feats])[0])
+            dP = float(self.delta_p.predict(X[self.p_feats])[0])
             prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
             Rn = np.clip(R + prob, 0.0, 1.0)
             Fn = np.clip(F + dF, 0.0, 5.0)
-            Pn = np.clip(P + dP, 0.0 , 10)
+            Pn = np.clip((P + dP, 0.0, 10)
 
         # Update history
         new_rec = {
@@ -138,7 +141,7 @@ class AthletePerformanceProblem:
         return (
                 0 <= fatigue <= 5.0
                 and 0 <= risk <= 1.0
-                and 0 <= performance <= 10.0)
+                and 0 <= performance <= 10.0) # mata5rbouch fjadhoum
 
     def is_goal(self, state):
         return (state.day == self.target_day
@@ -282,16 +285,35 @@ class AthletePerformanceProblem:
         return perf_deficit + reachability_penalty + risk_penalty + fatigue_penalty + days_factor
 
     def random_individual(self):
-
+        """
+        Create a random training schedule for the target number of days.
+        
+        Returns:
+            A tuple of (intensity, duration) pairs representing a training schedule
+        """
+        # Default to 14 days if target_day is not set
+        days = getattr(self, 'target_day', 14)
+        
+        # Possible intensities and durations
+        intensities = [0.0, 0.3, 0.6, 0.9]  # Including rest days (0.0)
+        durations = [0, 30, 60, 90, 120]    # 0 for rest days
+        
+        # Generate random schedule
         schedule = []
-        for _ in range(self.target_day):
-            intensity = random.choice([0.3, 0.6, 0.9]) 
-            duration = random.choice([30, 60, 90])
-            if random.random() < 0.2: # 20% proba of rest day
-                intensity = 0
-                duration = 0
+        for _ in range(days):
+            intensity = random.choice(intensities)
+            # If it's a rest day, duration is 0
+            duration = 0 if intensity == 0.0 else random.choice(durations[1:])
             schedule.append((intensity, duration))
-        return tuple(schedule)
+        return list(schedule)
 
     def evaluate_individual(self, individual):
-        pass
+        
+        current_state = self.initial_state
+        while individual:
+            indiv_action = individual.pop(0)
+            current_state = self.apply_action(current_state, indiv_action) 
+
+
+
+        return current_state[:-1]
