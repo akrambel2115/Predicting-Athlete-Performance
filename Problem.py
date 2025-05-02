@@ -96,13 +96,14 @@ class AthletePerformanceProblem:
         }
         X = pd.DataFrame([feat])
         # Predictions
-        dF = float(self.delta_f.predict(X[self.f_feats])[0])
-        dP = float(self.delta_p.predict(X[self.p_feats])[0])
+        
         if is_rest:
             Rn = np.clip(R * 0.85, 0.0, 1.0)
             Fn = max(F * 0.85, 0.0)
             Pn = max(P * 0.92, 0.0)
         else:
+            dF = float(self.delta_f.predict(X[self.f_feats])[0])
+            dP = float(self.delta_p.predict(X[self.p_feats])[0])
             prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
             Rn = np.clip(R + prob, 0.0, 1.0)
             Fn = np.clip(F + dF, 0.0, 5.0)
