@@ -93,10 +93,10 @@ class AthleteTrainingCSP:
                 
         day, fatigue, risk, performance, history = state
         
-        basic_state = (day, fatigue, risk, performance) # tuple of only four elements !!!
+        basic_state = (day, fatigue, risk, performance, history) # tuple of only four elements !!!
         
         # apply the transition
-        new_state = self.athlete_problem.apply_action(basic_state, action, history)
+        new_state = self.athlete_problem.apply_action(basic_state, action)
         
         self.transition_cache[cache_key] = new_state    # cache the answer
         return new_state
@@ -240,36 +240,25 @@ class AthleteTrainingCSP:
         ########################
         
         
-        # Extract individual components from the state tuple
-        # The state is a 5-tuple with day, fatigue level, risk level, performance level, and history
         day, fatigue, risk, performance, _ = state
         
-                # Get all possible actions (domains) for this problem
-        # This calls another method to retrieve the complete set of available actions
         actions = self.get_domains()
         
-        # Dictionary to store the calculated value/priority of each action
-        # This will map each action to a numeric score that determines its priority
+        # store the calculated action:priority 
         action_values = {}
         
-        # Evaluate each possible action - loop through all available actions
         for action in actions:
-            # Unpack the action components
-            # Each action is a tuple of (intensity, duration)
             intensity, duration = action
             
-            # Apply the action to see what the resulting state would be
-            # This simulates taking the action to evaluate its effects
             future_state = self.apply_action(state, action)
             
             _, future_fatigue, future_risk, future_performance, _ = future_state
             
-            # Calculate how much this action improves performance
-            # The direct performance delta from current to future state
+            # we will use this to assign each action a priority
             perf_improvement = future_performance - performance
             risk_added = future_risk - risk
             fatigue_added= future_fatigue - fatigue 
-
+            # long_term_potential = intensity * (duration / 60) * 0.05  # estimated future gains
 
             if future_fatigue >= self.max_fatigue or future_risk >= self.max_risk:
                 # very negative value to actions that violate constraints
@@ -303,10 +292,10 @@ def test_backtracking_csp_max_performance():
     
     # CSP problem with specific parameters
     problem = AthleteTrainingCSP(
-        initial_state=(0, 1.5, 0.15, 6.0),  # initial state
+        initial_state=(0, 1.5, 0.1, 6.0),  # initial state
         target_day=30,                    
-        max_fatigue=3,                 
-        max_risk=0.2                      
+        max_fatigue=2,                 
+        max_risk=0.13                      
     )
     
     print("Finding solution to maximize performance...")
