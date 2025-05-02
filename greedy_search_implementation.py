@@ -25,15 +25,15 @@ class GreedySearch:
         
         # Set target day and performance
         self.problem.target_day = 30
-        self.problem.target_perf = 7.5
-        self.problem.max_fatigue = 3.5
-        self.problem.max_risk = 0.3
+        self.problem.target_perf = 9
+        self.problem.max_fatigue = 2.7
+        self.problem.max_risk = 0.2
         
     def search(self, max_depth=float('inf')):
         """
         Performs a greedy best-first search to find an optimal training plan.
         
-        This method uses the expand_node function to generate successor nodes
+        This method uses generates successor nodes
         and explores them based on their heuristic values (greedy best-first search).
         
         Args:
@@ -54,6 +54,10 @@ class GreedySearch:
         # Track explored states to avoid cycles
         explored = set()
         
+        # Track best solution that meets performance target
+        best_solution = None
+        best_solution_day = float('inf')
+        
         while not frontier.empty():
             # Get next node to explore (with lowest priority/heuristic value)
             _, current_node = frontier.get()
@@ -61,10 +65,11 @@ class GreedySearch:
             day, _, _, performance, _ = current_node.state
             
             # Check if goal state
-            if day >= self.problem.target_day and performance >= self.problem.target_perf:
+            if day == self.problem.target_day and performance >= self.problem.target_perf:
+                # Exact day match with performance target - ideal solution
                 self.execution_time = time.time() - start_time
                 return current_node
-                
+                            
             # Skip already explored states
             rounded_state = self._round_state(current_node.state)
             if rounded_state in explored:
@@ -73,8 +78,8 @@ class GreedySearch:
             # Mark this state as explored
             explored.add(rounded_state)
             
-            # Skip if exceeds maximum depth
-            if current_node.depth >= max_depth:
+            # Skip if exceeds maximum depth or target day
+            if current_node.depth >= max_depth or day >= self.problem.target_day:
                 continue
                 
             # Get the valid actions from the current state
@@ -104,7 +109,7 @@ class GreedySearch:
                 print(f"Explored {self.expanded_nodes} nodes, queue size: {frontier.qsize()}")
         
         self.execution_time = time.time() - start_time
-        # If we've examined all nodes and haven't found a solution, return None
+                # If we've examined all nodes and haven't found a solution, return None
         return None
     
     def _get_priority(self, node):
