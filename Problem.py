@@ -17,7 +17,8 @@ class AthletePerformanceProblem:
                  initial_state: tuple = (0, 0.0, 0.0, 50.0),
                  w1: float = 1.0,
                  w2: float = 1.0,
-                 w3: float = 1.0):
+                 w3: float = 1.0,
+                 target_day: int = 20):
         # Load models
         self.delta_f = joblib.load("predictingModels/delta_f_model.pkl")
         self.delta_p = joblib.load("predictingModels/delta_p_model.pkl")
@@ -296,3 +297,5 @@ class AthletePerformanceProblem:
 
     def evaluate_individual(self, individual):
         pass
+
+

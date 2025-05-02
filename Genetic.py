@@ -1,4 +1,4 @@
-import Problem
+from Problem import AthletePerformanceProblem
 import random
 import numpy as np
 
@@ -343,4 +343,6 @@ print("Without replacement:", sample_without_replacement)
     
 
 
-    
+problem = AthletePerformanceProblem()
+
+print(problem.random_individual())
