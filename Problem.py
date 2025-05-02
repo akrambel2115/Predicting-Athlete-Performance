@@ -109,7 +109,7 @@ class AthletePerformanceProblem:
             prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
             Rn = np.clip(R + prob, 0.0, 1.0)
             Fn = np.clip(F + dF, 0.0, 5.0)
-            Pn = max(P + dP, 0.0)
+            Pn = np.clip((P + dP, 0.0, 10)
 
         # Update history
         new_rec = {
