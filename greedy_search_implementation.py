@@ -24,10 +24,10 @@ class GreedySearch:
         self.execution_time = 0
         
         # Set target day and performance
-        self.problem.target_day = 30
-        self.problem.target_perf = 9
+        self.problem.target_day = 15
+        self.problem.target_perf = 7
         self.problem.max_fatigue = 2.7
-        self.problem.max_risk = 0.2
+        self.problem.max_risk = 0.3
         
     def search(self, max_depth=float('inf')):
         """
@@ -53,10 +53,6 @@ class GreedySearch:
         
         # Track explored states to avoid cycles
         explored = set()
-        
-        # Track best solution that meets performance target
-        best_solution = None
-        best_solution_day = float('inf')
         
         while not frontier.empty():
             # Get next node to explore (with lowest priority/heuristic value)
@@ -85,9 +81,8 @@ class GreedySearch:
             # Get the valid actions from the current state
             for action in self.problem.actions():
                 # Apply action to get a new state
-                state_tuple = current_node.state[:4]  # Extract (day, fatigue, risk, performance)
-                history = current_node.state[4]       # Extract history
-                new_state = self.problem.apply_action(state_tuple, action, history)
+                # Pass the complete state to apply_action
+                new_state = self.problem.apply_action(current_node.state, action)
                 
                 # Skip invalid states
                 if not self.is_valid(new_state):
@@ -199,11 +194,10 @@ def test_greedy_search():
         # Display each day in the training plan
         current_state = state
         for action in path:
-            day, fatigue, risk, performance, history = current_state
             # Apply action to get the new state
-            current_state = problem.apply_action((day, fatigue, risk, performance), action, history)
+            current_state = problem.apply_action(current_state, action)
             # Unpack the new state for display
-            day, fatigue, risk, performance, history = current_state
+            day, fatigue, risk, performance, _ = current_state
             intensity, duration = action
             print(f"{day:3d} | {intensity:9.1f} | {duration:8.1f} |  {fatigue:.2f}   | {risk:.2f} | {performance:.2f}")
         
