@@ -45,9 +45,9 @@ class BFSSearch:
         
         # Set target day and performance (needed for is_goal)
         self.problem.target_day = 10
-        self.problem.target_perf = 6.5
-        self.problem.max_fatigue = 2.65
-        self.problem.max_risk = 0.4
+        self.problem.target_perf = 8
+        self.problem.max_fatigue = 2.7
+        self.problem.max_risk = 0.3
         
     def search(self, max_depth=float('inf')):
         """
@@ -81,9 +81,9 @@ class BFSSearch:
             # Get the valid actions from the current state
             for action in self.problem.actions():
                 # Apply the action to get a new state
-                state_tuple = current_node.state[:4]  # Extract (day, fatigue, risk, performance)
-                history = current_node.state[4]       # Extract history
-                new_state = self.problem.apply_action(state_tuple, action, history)
+                # Create a state that includes history, as expected by the updated apply_action method
+                current_state = current_node.state  # Full state with history
+                new_state = self.problem.apply_action(current_state, action)
                 
                 # Skip invalid states
                 if not self.is_valid(new_state):
@@ -178,9 +178,8 @@ def test_bfs_search():
         
         # Display each day in the training plan
         for action in path:
-            state_tuple = state[:4]  # Extract (day, fatigue, risk, performance)
-            history = state[4]       # Extract history
-            state = problem.apply_action(state_tuple, action, history)
+            # Apply the action using the updated method signature
+            state = problem.apply_action(state, action)
             day += 1
             intensity, duration = action
             print(f"{day:3d} | {intensity:9.1f} | {duration:8.1f} |  {state[1]:.2f}   | {state[2]:.2f} | {state[3]:.2f}")
@@ -201,4 +200,15 @@ def test_bfs_search():
 
 # Run the test if this file is executed directly
 if __name__ == "__main__":
+    import time
+    
+    # Start timer
+    start_time = time.time()
+    
+    # Run the BFS search
     test_bfs_search()
+    
+    # Calculate and display execution time
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"\nExecution time: {execution_time:.2f} seconds ({execution_time/60:.2f} minutes)")

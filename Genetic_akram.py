@@ -35,50 +35,43 @@ class GeneticAlgorithm:
         if not individual:
             return (0.0, 1.0, 5.0)  # Worst case values
         
+        # Make a copy to avoid modifying the original individual
+        individual_copy = list(individual.copy())
+        
         # Check if we've already evaluated this exact schedule
-        individual_key = tuple(individual)
+        individual_key = tuple(individual_copy)
         if individual_key in self.state_cache:
             return self.state_cache[individual_key]
         
         # If we have a cached state to start from
         if cached_state and start_index > 0:
-            day, fatigue, risk, performance, history = cached_state
+            # Use cached state directly
+            state = cached_state
         else:
             # Start from initial state
-            day, fatigue, risk, performance, history = self.problem.initial_state
-        
-        state = (day, fatigue, risk, performance)
+            state = self.problem.initial_state
         
         # Apply each training action in sequence
-        for i, action in enumerate(individual[start_index:], start=start_index):
+        for i, action in enumerate(individual_copy[start_index:], start=start_index):
             if i >= self.problem.target_day:
                 break
                 
-            # Apply the action and get the next state
-            next_state = self.problem.apply_action(state, action, history)
-            day, fatigue, risk, performance, history = next_state
-            state = (day, fatigue, risk, performance)
+            # Apply the action and get the next state - history is now part of state
+            next_state = self.problem.apply_action(state, action)
+            state = next_state
             
-            # Early termination if invalid state
+            # Early termination if invalid state (using first 4 elements)
             if not self.problem.is_valid(state):
+                day, fatigue, risk, performance, _ = state
                 return (max(0.1, performance * 0.5), min(1.0, risk * 1.2), min(5.0, fatigue * 1.2))
-            
-            # Cache intermediate states for potential reuse
-            if i % 5 == 0:  # Cache every 5 days to balance memory usage
-                intermediate_key = (tuple(individual[:i+1]), i+1)
-                self.state_cache[intermediate_key] = (day, fatigue, risk, performance, history)
+        
+        # Extract final state values (day, fatigue, risk, performance, _)
+        day, fatigue, risk, performance, _ = state
         
         # Cache the final result
         fitness = (performance, risk, fatigue)
         self.state_cache[individual_key] = fitness
         
-        # Limit cache size to prevent memory issues
-        if len(self.state_cache) > 10000:
-            # Remove random entries to keep cache size manageable
-            keys_to_remove = random.sample(list(self.state_cache.keys()), 2000)
-            for key in keys_to_remove:
-                del self.state_cache[key]
-            
         return fitness
     
     def find_closest_cached_state(self, individual):
@@ -164,6 +157,10 @@ class GeneticAlgorithm:
         Perform crossover between two parents by swapping a subset of days.
         This version treats each day's (intensity, duration) as an atomic unit.
         """
+        # Convert parents to lists to ensure consistent types
+        parent1 = list(parent1)
+        parent2 = list(parent2)
+        
         if len(parent1) != len(parent2):
             raise ValueError("Parents must have the same length")
         
@@ -184,7 +181,9 @@ class GeneticAlgorithm:
         Apply random mutations to an individual based on the mutation rate.
         This version treats each day's (intensity, duration) as an atomic unit.
         """
+        # Make sure we're working with a list
         mutated = list(individual)
+        
         for i in range(len(mutated)):
             # Apply mutation with probability = mutation_rate
             if random.random() < self.mutation_rate:
@@ -226,7 +225,8 @@ class GeneticAlgorithm:
                 
                 mutated[i] = (new_intensity, new_duration)
         
-        return tuple(mutated)
+        # Return as a list, not a tuple
+        return mutated
     
     def evaluate_population(self, population):
         """
@@ -265,6 +265,11 @@ class GeneticAlgorithm:
         # Clear cache before starting
         self.state_cache = {}
         
+        # Track progress over generations
+        performance_history = []
+        risk_history = []
+        fatigue_history = []
+        
         # Track progress
         for generation in range(self.num_generations):
             start_time = time.time()
@@ -279,29 +284,29 @@ class GeneticAlgorithm:
             current_best_individual = sorted_population[0][0]
             current_best_fitness = sorted_population[0][1]
             
+            # Record current generation's best values
+            performance, risk, fatigue = current_best_fitness
+            performance_history.append(performance)
+            risk_history.append(risk)
+            fatigue_history.append(fatigue)
+            
             # Update overall best if better
             if best_individual is None or self.fitness_comparison(current_best_fitness, best_fitness):
                 best_individual = current_best_individual
                 best_fitness = current_best_fitness
+                generation_found = generation
+                print(f"New best solution found in generation {generation}!")
+                print(f"Performance: {best_fitness[0]:.2f}, Risk: {best_fitness[1]:.2f}, Fatigue: {best_fitness[2]:.2f}")
             
             # Print progress every 10 generations with timing info
             if generation % 10 == 0:
-                performance, risk, fatigue = current_best_fitness
                 gen_time = time.time() - start_time
                 print(f"Generation {generation}: Perf={performance:.2f}, Risk={risk:.2f}, Fat={fatigue:.2f}, Time={gen_time:.2f}s")
             
-            # Break if perfect solution found or reached max generations
+            # Don't stop early, run all generations
             if generation == self.num_generations - 1:
                 break
                 
-            # Check if we've found a solution that meets all constraints
-            performance, risk, fatigue = current_best_fitness
-            if (performance >= getattr(self.problem, 'target_perf', 7.0) and
-                risk <= getattr(self.problem, 'max_risk', 0.5) and
-                fatigue <= getattr(self.problem, 'max_fatigue', 3.5)):
-                print(f"Found optimal solution at generation {generation}!")
-                break
-            
             # Select parents based on fitness
             parents = self.select_parents(population)
             
@@ -348,6 +353,24 @@ class GeneticAlgorithm:
             # Replace old population with new population
             population = new_population
         
+        # Print final statistics about the run
+        print("\nGenetic Algorithm Run Complete")
+        print(f"Best solution found in generation {generation_found} out of {self.num_generations}")
+        print(f"Best Performance: {best_fitness[0]:.2f}")
+        print(f"Best Risk: {best_fitness[1]:.2f}")
+        print(f"Best Fatigue: {best_fitness[2]:.2f}")
+        
+        # Calculate improvement from first to last generation
+        if performance_history:
+            first_perf, last_perf = performance_history[0], performance_history[-1]
+            first_risk, last_risk = risk_history[0], risk_history[-1]
+            first_fat, last_fat = fatigue_history[0], fatigue_history[-1]
+            
+            print("\nImprovement Summary:")
+            print(f"Performance: {first_perf:.2f} → {last_perf:.2f} ({(last_perf-first_perf):.2f} change)")
+            print(f"Risk: {first_risk:.2f} → {last_risk:.2f} ({(last_risk-first_risk):.2f} change)")
+            print(f"Fatigue: {first_fat:.2f} → {last_fat:.2f} ({(last_fat-first_fat):.2f} change)")
+        
         # Return the best individual found
         return best_individual, best_fitness
 
@@ -379,12 +402,13 @@ def test_genetic_algorithm(days=14, pop_size=50, generations=30, mutation_rate=0
     # Set up the problem with target day and constraints
     problem = AthletePerformanceProblem(
         initial_state=(0, 1.0, 0.1, 5.0),  # day, fatigue, risk, performance
+        genetic=True
     )
     # Set the target parameters
     problem.target_day = days
     problem.target_perf = 9.0
-    problem.max_fatigue = 3.5
-    problem.max_risk = 0.5
+    problem.max_fatigue = 3
+    problem.max_risk = 0.2
     
     # Create and run the genetic algorithm
     ga = GeneticAlgorithm(
