@@ -332,10 +332,11 @@ print("Without replacement:", sample_without_replacement)
     
 
 if __name__ == "__main__":
-    problem = AthletePerformanceProblem()
-
-    ri = problem.random_individual()
-    print(ri)
-    last_state = problem.evaluate_individual(ri)
-    print(last_state)
+    problem = AthletePerformanceProblem(genetic = True)
+    for i in range(100):
+        print(i, "-------------------------")
+        ri = problem.random_individual()
+        print(ri)
+        last_state = problem.evaluate_individual(ri)
+        print(last_state)
     

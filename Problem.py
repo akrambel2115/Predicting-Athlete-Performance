@@ -15,11 +15,18 @@ class AthletePerformanceProblem:
     """
     def __init__(self,
                  initial_state: tuple = (0, 1.0, 0.1, 5.0),
-                 target_day: int = 10):
+                 target_day: int = 10,
+                 genetic: bool = False):
         # Load models
-        self.delta_f = joblib.load("predictingModels/delta_f_model.pkl")
-        self.delta_p = joblib.load("predictingModels/delta_p_model.pkl")
-        r_loaded = joblib.load("predictingModels/delta_r_classifier.pkl")
+        if genetic:
+            self.delta_f = joblib.load("genetic_model/delta_f_model.pkl")
+            self.delta_p = joblib.load("genetic_model/delta_p_model.pkl")
+            r_loaded = joblib.load("predictingModels/delta_r_classifier.pkl")
+        else:
+            self.delta_f = joblib.load("predictingModels/delta_f_model.pkl")
+            self.delta_p = joblib.load("predictingModels/delta_p_model.pkl")
+            r_loaded = joblib.load("predictingModels/delta_r_classifier.pkl")
+
         # Unpack classifier
         if hasattr(r_loaded, 'predict_proba') and hasattr(r_loaded, 'feature_names_in_'):
             self.delta_r = r_loaded
@@ -104,6 +111,10 @@ class AthletePerformanceProblem:
             dF = float(self.delta_f.predict(X[self.f_feats])[0])
             dP = float(self.delta_p.predict(X[self.p_feats])[0])
             prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
+            print("------------- ", action, " -------------")
+            print("dF:::::::   ", dF)
+            print("dP:::::::   ", dP)
+            print("prob:::::::   ", prob)
             Rn = np.clip(R + prob, 0.0, 1.0)
             Fn = np.clip(F + dF, 0.0, 5.0)
             Pn = np.clip(P + dP, 0.0, 10.0)
