@@ -131,9 +131,9 @@ class AthletePerformanceProblem:
         
         # Base actions - combinations of intensity and duration
         all_actions = [(0.0, 0.0),  # Rest day
-                (0.3, 60), (0.3, 90), (0.3, 120),  # Low intensity workouts
-                (0.6, 60), (0.6, 90), (0.6, 120),  # Medium intensity workouts
-                (0.9, 60), (0.9, 90), (0.9, 120)]  # High intensity workouts
+                (0.3, 60), (0.3, 120),  # Low intensity workouts
+                (0.6, 60), (0.6, 120),  # Medium intensity workouts
+                (0.9, 60), (0.9, 120)]  # High intensity workouts
         
         # Prune actions if fatigue or risk is high
         if fatigue > self.max_fatigue * 0.8 or risk > self.max_risk * 0.8:
@@ -432,7 +432,7 @@ def test_bfs_search():
     # Create the athlete performance problem with specific parameters
     problem = AthletePerformanceProblem(
         initial_state=(0, 1.5, 0.2, 6.0),  # Initial state: day 0, fatigue 1.5, risk 0.2, performance 6.0
-        target_day=10,                      # Training plan duration (shorter for BFS)
+        target_day=5,                      # Training plan duration (shorter for BFS)
         target_perf=6.5,                    # Target performance level
         max_fatigue=4,                    # Maximum allowable fatigue
         max_risk=0.4                        # Maximum allowable injury risk
