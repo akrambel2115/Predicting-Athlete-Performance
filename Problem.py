@@ -14,15 +14,19 @@ class AthletePerformanceProblem:
     Cost: customizable weighted sum (not implemented here).
     """
     def __init__(self,
-                 initial_state: tuple = (0, 0.0, 0.0, 50.0),
-                 w1: float = 1.0,
-                 w2: float = 1.0,
-                 w3: float = 1.0,
-                 target_day: int = 20):
+                 initial_state: tuple = (0, 1.0, 0.1, 5.0),
+                 target_day: int = 10,
+                 genetic: bool = False):
         # Load models
-        self.delta_f = joblib.load("predictingModels/delta_f_model.pkl")
-        self.delta_p = joblib.load("predictingModels/delta_p_model.pkl")
-        r_loaded = joblib.load("predictingModels/delta_r_classifier.pkl")
+        if genetic:
+            self.delta_f = joblib.load("genetic_model/delta_f_model.pkl")
+            self.delta_p = joblib.load("genetic_model/delta_p_model.pkl")
+            r_loaded = joblib.load("predictingModels/delta_r_classifier.pkl")
+        else:
+            self.delta_f = joblib.load("predictingModels/delta_f_model.pkl")
+            self.delta_p = joblib.load("predictingModels/delta_p_model.pkl")
+            r_loaded = joblib.load("predictingModels/delta_r_classifier.pkl")
+
         # Unpack classifier
         if hasattr(r_loaded, 'predict_proba') and hasattr(r_loaded, 'feature_names_in_'):
             self.delta_r = r_loaded
@@ -56,7 +60,7 @@ class AthletePerformanceProblem:
         self.target_day = target_day
 
     def actions(self):
-        train_actions = [(i, d) for i in (0.3, 0.6, 0.9) for d in (60, 90, 120)]
+        train_actions = [(i, d) for i in (0.3, 0.6, 0.9) for d in (60, 120)]
         return train_actions + [(0.0, 0.0)]  # rest
 
     def apply_action(self, state, action):
@@ -109,7 +113,7 @@ class AthletePerformanceProblem:
             prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
             Rn = np.clip(R + prob, 0.0, 1.0)
             Fn = np.clip(F + dF, 0.0, 5.0)
-            Pn = np.clip(P + dP, 0.0, 10)
+            Pn = np.clip(P + dP, 0.0, 10.0)
 
         # Update history
         new_rec = {
@@ -137,17 +141,18 @@ class AthletePerformanceProblem:
         return children
 
     def is_valid(self, state):
-        day, fatigue, risk, performance = state
+        day, fatigue, risk, performance, _ = state
         return (
                 0 <= fatigue <= 5.0
                 and 0 <= risk <= 1.0
                 and 0 <= performance <= 10.0) # mata5rbouch fjadhoum
 
     def is_goal(self, state):
-        return (state.day == self.target_day
-                and state.performance >= self.target_perf
-                and state.fatigue <= self.max_fatigue
-                and state.risk <= self.max_risk)
+        day, fatigue, risk, performance, _ = state
+        return (day == self.target_day
+                and performance >= self.target_perf
+                and fatigue <= self.max_fatigue
+                and risk <= self.max_risk)
     
     def cost(self, state, action):
         """
@@ -162,18 +167,18 @@ class AthletePerformanceProblem:
         Lower cost values indicate better actions.
         
         Args:
-            state: Current state (day, fatigue, risk, performance)
+            state: Current state (day, fatigue, risk, performance, history)
             action: Action to apply (intensity, duration)
             
         Returns:
             Numerical cost value (lower is better)
         """
-        day, fatigue, risk, performance, history = state
+        day, fatigue, risk, performance, _ = state
         intensity, duration = action
         is_rest = (intensity == 0.0 and duration == 0.0)
         
         # Apply action to get new state
-        new_state = self.apply_action(state, action, history)
+        new_state = self.apply_action(state, action)
         _, new_fatigue, new_risk, new_perf, _ = new_state
         
         # Calculate deltas (changes in state)
@@ -242,7 +247,7 @@ class AthletePerformanceProblem:
         
         # Calculate performance deficit from target
         perf_deficit = max(0, self.target_perf - performance)
-        
+                
         # If already at the target day, evaluate based on goal conditions
         if remaining_days == 0:
             # If performance goal met and constraints satisfied, heuristic is 0
@@ -279,7 +284,7 @@ class AthletePerformanceProblem:
         fatigue_penalty = 1.0 * fatigue_proximity**2
         
         # Days factor - prioritize states that have made more progress toward goal
-        days_factor = 0.8 * (1.0 - day / self.target_day) if hasattr(self, 'target_day') else 0
+        days_factor = 0.8 * (1.0 - day / self.target_day)
         
         # Combined heuristic - lower values are better
         return perf_deficit + reachability_penalty + risk_penalty + fatigue_penalty + days_factor
@@ -313,7 +318,5 @@ class AthletePerformanceProblem:
         while individual:
             indiv_action = individual.pop(0)
             current_state = self.apply_action(current_state, indiv_action) 
-
-
 
         return current_state[:-1]

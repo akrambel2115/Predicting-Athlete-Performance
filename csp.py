@@ -152,72 +152,87 @@ class AthleteTrainingCSP:
 
     def backtracking_search(self, time_limit=120):
         """
-        Optimized backtracking search algorithm to find the maximum performance solution.
+        Backtracking search algorithm that stops after finding the first valid solution.
         
         Args:
             time_limit: Maximum time in seconds to run the backtracking search
             
         Returns:
-            The best solution found within the time limit
+            The first solution found that reaches the target day
         """
-        # Reset statistics
+        # reset our tracking stats for this search run
         self.backtrack_stats = {
             'iterations': 0,
             'max_depth': 0,
             'pruning_count': 0
         }
         
-        best_solution = None
-        best_performance = 0.0
+        solution_found = False 
+        solution = []   
         
-        # backtracking (nested function)
+        # nested backtracking function that does the recursive search
         def _backtrack(assignment, current_state, depth=0):
             """
-            Recursive backtracking function to find the solution with maximum performance.
+            Recursive backtracking function that stops after finding the first valid solution.
             """
-            nonlocal best_solution, best_performance
+            nonlocal solution_found, solution
+            if solution_found:
+                return True
             
-            # Update stats
+            # track how many iterations we've done and how deep we've gone
             self.backtrack_stats['iterations'] += 1
             self.backtrack_stats['max_depth'] = max(self.backtrack_stats['max_depth'], depth)
             
-            # check time (if it took more than the limit we set)
+            # make sure we haven't exceeded our time limit
             if time.time() - start_time > time_limit:
-                return
+                return False
             
             day, fatigue, risk, performance, _ = current_state
-            
-            # Check if we've reached the target day
+
+            # check if we've reached our goal - the target day
             if day >= self.target_day:
-                # If this solution has better performance than our current best, update it
-                if performance > best_performance:
-                    best_performance = performance
-                    best_solution = assignment.copy()
-                return
+                # done
+                solution_found = True
+                solution = assignment.copy()
+                return True
             
-            # Get possible actions for this day, ordered by most promising
+            # get possible actions for this day, ordered from most promising to least
             actions = self._get_ordered_domain_values(current_state)
             
             for action in actions:
-                # Try this action
+                # try this action and see where it leads
                 new_state = self.apply_action(current_state, action)
                 
-                # Check if constraints are satisfied
+                # make sure this action doesn't break any constraints
                 if self.check_constraints(new_state):
-                    # Add action to assignment
                     assignment.append(action)
                     
-                    # Recursively continue with updated state
-                    _backtrack(assignment, new_state, depth + 1)
+                    # recursively continue down this path
+                    if _backtrack(assignment, new_state, depth + 1):
+                        return True  
                     
-                    # Backtrack - remove the action
+                    # remove the last added assignment and redo the backtracking
                     assignment.pop()
+                    
+                    # if somehow a solution was found after backtracking, we can stop
+                    if solution_found:
+                        return True
+            
+            return False  # no solution found in this branch
         
         start_time = time.time()        
         _backtrack([], self.initial_state)
+        end_time = time.time()
         
-        print(f"Best performance found: {best_performance:.2f}")
-        return best_solution
+        if solution_found:
+            print(f"First valid solution found in {end_time - start_time:.2f} seconds")
+            # calculate how good this solution is
+            evaluation = self.evaluate_solution(solution)
+            print(f"Performance: {evaluation['final_performance']:.2f}")
+        else:
+            print(f"No solution found within time limit of {time_limit} seconds")
+        
+        return solution
     
     def _get_ordered_domain_values(self, state):
         """
@@ -233,10 +248,9 @@ class AthleteTrainingCSP:
         # WEIGHTS TO define the priorities
         #########################
         PERFORMANCE_WEIGHT= 100
-        POTENTIAL_WEIGHT= 15
         LOW_FATIGUE_WEIGHT= -5
         LOW_RISK_WEIGHT= -5
-        TRAINING_EFFICIENCY= 5
+        TRAINING_EFFICIENCY= 20
         ########################
         
         
@@ -276,9 +290,7 @@ class AthleteTrainingCSP:
                     risk_added * LOW_RISK_WEIGHT +       # weights of risk and fatigue are negative
                     fatigue_added * LOW_FATIGUE_WEIGHT
                 )
-                
-                # we can add some other bonuses for some things ..
-                # TODO
+
                 
                 
         # Sort actions by their calculated values in descending order
@@ -293,14 +305,14 @@ def test_backtracking_csp_max_performance():
     # CSP problem with specific parameters
     problem = AthleteTrainingCSP(
         initial_state=(0, 1.5, 0.1, 6.0),  # initial state
-        target_day=30,                    
+        target_day=14,                    
         max_fatigue=3,                 
         max_risk=0.22                      
     )
     
     print("Finding solution to maximize performance...")
     start_time = time.time()
-    solution = problem.backtracking_search(time_limit=120)  # 2 minute time limit
+    solution = problem.backtracking_search(time_limit=120) 
     end_time = time.time()
     
     print(f"Search completed in {end_time - start_time:.2f} seconds")

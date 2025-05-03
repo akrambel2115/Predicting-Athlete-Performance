@@ -24,16 +24,16 @@ class GreedySearch:
         self.execution_time = 0
         
         # Set target day and performance
-        self.problem.target_day = 30
-        self.problem.target_perf = 7.5
-        self.problem.max_fatigue = 2.65
-        self.problem.max_risk = 0.4
+        self.problem.target_day = 15
+        self.problem.target_perf = 7
+        self.problem.max_fatigue = 2.7
+        self.problem.max_risk = 0.3
         
     def search(self, max_depth=float('inf')):
         """
         Performs a greedy best-first search to find an optimal training plan.
         
-        This method uses the expand_node function to generate successor nodes
+        This method uses generates successor nodes
         and explores them based on their heuristic values (greedy best-first search).
         
         Args:
@@ -61,10 +61,11 @@ class GreedySearch:
             day, _, _, performance, _ = current_node.state
             
             # Check if goal state
-            if day >= self.problem.target_day and performance >= self.problem.target_perf:
+            if day == self.problem.target_day and performance >= self.problem.target_perf:
+                # Exact day match with performance target - ideal solution
                 self.execution_time = time.time() - start_time
                 return current_node
-                
+                            
             # Skip already explored states
             rounded_state = self._round_state(current_node.state)
             if rounded_state in explored:
@@ -73,16 +74,15 @@ class GreedySearch:
             # Mark this state as explored
             explored.add(rounded_state)
             
-            # Skip if exceeds maximum depth
-            if current_node.depth >= max_depth:
+            # Skip if exceeds maximum depth or target day
+            if current_node.depth >= max_depth or day >= self.problem.target_day:
                 continue
                 
             # Get the valid actions from the current state
             for action in self.problem.actions():
                 # Apply action to get a new state
-                state_tuple = current_node.state[:4]  # Extract (day, fatigue, risk, performance)
-                history = current_node.state[4]       # Extract history
-                new_state = self.problem.apply_action(state_tuple, action, history)
+                # Pass the complete state to apply_action
+                new_state = self.problem.apply_action(current_node.state, action)
                 
                 # Skip invalid states
                 if not self.is_valid(new_state):
@@ -104,7 +104,7 @@ class GreedySearch:
                 print(f"Explored {self.expanded_nodes} nodes, queue size: {frontier.qsize()}")
         
         self.execution_time = time.time() - start_time
-        # If we've examined all nodes and haven't found a solution, return None
+                # If we've examined all nodes and haven't found a solution, return None
         return None
     
     def _get_priority(self, node):
@@ -194,11 +194,10 @@ def test_greedy_search():
         # Display each day in the training plan
         current_state = state
         for action in path:
-            day, fatigue, risk, performance, history = current_state
             # Apply action to get the new state
-            current_state = problem.apply_action((day, fatigue, risk, performance), action, history)
+            current_state = problem.apply_action(current_state, action)
             # Unpack the new state for display
-            day, fatigue, risk, performance, history = current_state
+            day, fatigue, risk, performance, _ = current_state
             intensity, duration = action
             print(f"{day:3d} | {intensity:9.1f} | {duration:8.1f} |  {fatigue:.2f}   | {risk:.2f} | {performance:.2f}")
         
