@@ -232,10 +232,10 @@ class AthleteTrainingCSP:
         """
         # WEIGHTS TO define the priorities
         #########################
-        PERFORMANCE_WEIGHT= 50
+        PERFORMANCE_WEIGHT= 100
         POTENTIAL_WEIGHT= 15
-        LOW_FATIGUE_WEIGHT= -10
-        LOW_RISK_WEIGHT= -10
+        LOW_FATIGUE_WEIGHT= -5
+        LOW_RISK_WEIGHT= -5
         TRAINING_EFFICIENCY= 5
         ########################
         
@@ -294,8 +294,8 @@ def test_backtracking_csp_max_performance():
     problem = AthleteTrainingCSP(
         initial_state=(0, 1.5, 0.1, 6.0),  # initial state
         target_day=30,                    
-        max_fatigue=2,                 
-        max_risk=0.13                      
+        max_fatigue=3,                 
+        max_risk=0.22                      
     )
     
     print("Finding solution to maximize performance...")
