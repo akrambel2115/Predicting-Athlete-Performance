@@ -14,11 +14,8 @@ class AthletePerformanceProblem:
     Cost: customizable weighted sum (not implemented here).
     """
     def __init__(self,
-                 initial_state: tuple = (0, 0.0, 0.0, 50.0),
-                 w1: float = 1.0,
-                 w2: float = 1.0,
-                 w3: float = 1.0,
-                 target_day: int = 20):
+                 initial_state: tuple = (0, 1.0, 0.1, 5.0),
+                 target_day: int = 10):
         # Load models
         self.delta_f = joblib.load("predictingModels/delta_f_model.pkl")
         self.delta_p = joblib.load("predictingModels/delta_p_model.pkl")
@@ -56,7 +53,7 @@ class AthletePerformanceProblem:
         self.target_day = target_day
 
     def actions(self):
-        train_actions = [(i, d) for i in (0.3, 0.6, 0.9) for d in (60, 90, 120)]
+        train_actions = [(i, d) for i in (0.3, 0.6, 0.9) for d in (60, 120)]
         return train_actions + [(0.0, 0.0)]  # rest
 
     def apply_action(self, state, action):
