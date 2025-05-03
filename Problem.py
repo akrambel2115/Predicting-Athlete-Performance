@@ -312,9 +312,10 @@ class AthletePerformanceProblem:
             schedule.append((intensity, duration))
         return list(schedule)
 
-    def evaluate_individual(self, individual):
+    def evaluate_individual(self, indiv):
         
         current_state = self.initial_state
+        individual = indiv[:]
         while individual:
             indiv_action = individual.pop(0)
             current_state = self.apply_action(current_state, indiv_action) 

@@ -1,10 +1,11 @@
 from Problem import AthletePerformanceProblem
 import random
 import numpy as np
+import time
 
 class GeneticAlgorithm:
 
-    def __init__(self, problem, population_size=100, num_generations=100, mutation_rate=0.01):
+    def __init__(self, problem, population_size=100, num_generations=30, mutation_rate=0.01):
         self.problem = problem
         self.population_size = population_size
         self.num_generations = num_generations
@@ -20,7 +21,7 @@ class GeneticAlgorithm:
 
     def evaluate_individual(self, individual):
         # Evaluate the individual using the problem's evaluate method
-        fitness_value = self.problem.evaluate(individual)
+        fitness_value = self.problem.evaluate_individual(individual)
         if fitness_value is not None: 
             return fitness_value
         else:
@@ -30,8 +31,9 @@ class GeneticAlgorithm:
         """Evaluates the entire population and returns list of (individual, fitness) tuples"""
         fitness_indiv = []
         for individual in population:
-            fitness_value = self.evaluate_individual(individual)
-            fitness_indiv.append((individual, fitness_value))
+            ft = self.evaluate_individual(individual)
+            fitness_value = 0.5*ft[1] - 0.3 * ft[2] - 0.2 * ft[3]
+            fitness_indiv.append([individual, fitness_value, ft])
         return fitness_indiv
 
     # SELECTION ALGORITHMS
@@ -122,7 +124,7 @@ class GeneticAlgorithm:
         selection_probs = [r/total_rank for r in ranks]
         
         # Extract individuals from sorted population
-        individuals = [individual for individual, _ in sorted_population]
+        individuals = [individual for individual, _, _ in sorted_population]
         
         # Select parents based on rank probabilities
         mating_pool = random.choices(individuals, weights=selection_probs, k=num_parents)
@@ -179,10 +181,10 @@ class GeneticAlgorithm:
         Individuals with different fitness are paired together
         """
         
-        fitness_dict = {individual: fitness for individual, fitness in evaluated_population}
+        fitness_dict = {tuple(individual): fitness for individual, fitness, ind in evaluated_population}
         
         # Sort mating pool by fitness
-        sorted_pool = sorted(mating_pool, key=lambda ind: fitness_dict[ind])
+        sorted_pool = sorted(mating_pool, key=lambda ind: fitness_dict[tuple(ind)])
         
         
         pairs = []
@@ -251,24 +253,24 @@ class GeneticAlgorithm:
         for generation in range(self.num_generations):
             # Evaluate population
             evaluated_pop = self.evaluate_population(population)
-            
+
             # Find and store the best individual
-            best_individual, best_fitness = max(evaluated_pop, key=lambda x: x[1])
+            best_individual, best_fitness, best_indi = max(evaluated_pop, key=lambda x: x[1])
             
-            print(f"Generation {generation}: Best fitness = {best_fitness}")
-            
+            print(f"Generation {generation}: Best fitness = {best_fitness} === best individual = {best_indi}")
+            newgen_start = time.perf_counter()
             # Create mating pool using selection
-            mating_pool = self.tournament_selection(evaluated_pop, self.population_size)
-            
+            mating_pool = self.rank_selection(evaluated_pop, self.population_size)
             # Create parent pairs
-            parent_pairs = self.random_pairing(mating_pool)
-            
+            parent_pairs = self.random_pairing( mating_pool)
+
             # Create new population through crossover and mutation
             new_population = []
             
             for parent1, parent2 in parent_pairs:
                 # Crossover
                 offspring1, offspring2 = self.two_point_crossover(parent1, parent2)
+                
                 
                 # Mutation (to be implemented)
                 # offspring1 = self.mutate(offspring1)
@@ -278,10 +280,12 @@ class GeneticAlgorithm:
             
             # Limit new population to original size
             population = new_population[:self.population_size]
+            newgen_end = time.perf_counter()
+            print(f"Time for Creating Generation {generation}: {newgen_end - newgen_start} second")
         
         # Evaluate final population
         final_evaluated_pop = self.evaluate_population(population)
-        best_individual, best_fitness = max(final_evaluated_pop, key=lambda x: x[1])
+        best_individual, best_fitness, best_indi = max(final_evaluated_pop, key=lambda x: x[1])
         
         return best_individual, best_fitness
     
@@ -332,11 +336,11 @@ print("Without replacement:", sample_without_replacement)
     
 
 if __name__ == "__main__":
+    start = time.perf_counter()
     problem = AthletePerformanceProblem(genetic = True)
-    for i in range(100):
-        print(i, "-------------------------")
-        ri = problem.random_individual()
-        print(ri)
-        last_state = problem.evaluate_individual(ri)
-        print(last_state)
+    g = GeneticAlgorithm(problem)
+    g.run()
+    end = time.perf_counter()
+
+    print(f"Running Time: {end - start:.6f} seconds")
     
