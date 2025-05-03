@@ -1,10 +1,5 @@
-import joblib
-import numpy as np
-import pandas as pd
 import time
 from Problem import AthletePerformanceProblem
-from collections import defaultdict
-import math
 
 class AthleteTrainingCSP:
     """
