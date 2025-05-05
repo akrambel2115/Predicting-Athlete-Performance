@@ -19,10 +19,10 @@ class Node:
         self.depth = 0 if parent is None else parent.depth + 1
 
     def __hash__(self):
-        return hash(self.state[:4])  # Only hash the numeric part of state
+        return hash(self.state)  # Only hash the numeric part of state
 
     def __eq__(self, other):
-        return isinstance(other, Node) and self.state[:4] == other.state[:4]
+        return isinstance(other, Node) and self.state == other.state
 
 class BFSSearch:
     """
@@ -45,7 +45,7 @@ class BFSSearch:
         
         # Set target day and performance (needed for is_goal)
         self.problem.target_day = 10
-        self.problem.target_perf = 8
+        self.problem.target_perf = 6.5
         self.problem.max_fatigue = 2.7
         self.problem.max_risk = 0.3
         
