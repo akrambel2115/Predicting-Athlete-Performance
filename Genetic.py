@@ -1,8 +1,9 @@
+import math
 from Problem import AthletePerformanceProblem
+import Problem
 import random
 import numpy as np
 import time
-
 class GeneticAlgorithm:
 
     def __init__(self, problem, population_size=100, num_generations=30, mutation_rate=0.01):
@@ -32,7 +33,7 @@ class GeneticAlgorithm:
         fitness_indiv = []
         for individual in population:
             ft = self.evaluate_individual(individual)
-            fitness_value = 0.5*ft[1] - 0.3 * ft[2] - 0.2 * ft[3]
+            fitness_value = 0.5*ft[3] - 0.3 * ft[2] - 0.2 * ft[1]
             fitness_indiv.append([individual, fitness_value, ft])
         return fitness_indiv
 
@@ -258,6 +259,14 @@ class GeneticAlgorithm:
             best_individual, best_fitness, best_indi = max(evaluated_pop, key=lambda x: x[1])
             
             print(f"Generation {generation}: Best fitness = {best_fitness} === best individual = {best_indi}")
+            mean = sum(Problem.global_dp[(0.9, 120)])
+            mean = mean / len(Problem.global_dp[(0.9, 120)])
+            sigma = sum([ (i - mean)**2 for i in Problem.global_dp[(0.9, 120)]])
+            sigma *= 1/len(Problem.global_dp[(0.9, 120)])
+            sigma = math.sqrt(sigma)
+            
+            print(f"mean: {mean}")
+            print(f"sigma: {sigma}")
             newgen_start = time.perf_counter()
             # Create mating pool using selection
             mating_pool = self.rank_selection(evaluated_pop, self.population_size)
@@ -336,9 +345,12 @@ print("Without replacement:", sample_without_replacement)
     
 
 if __name__ == "__main__":
+    test = [(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120)]
+
     start = time.perf_counter()
-    problem = AthletePerformanceProblem(genetic = True)
-    g = GeneticAlgorithm(problem)
+    problem = AthletePerformanceProblem(genetic = True,target_day = 14)
+    print(problem.evaluate_individual(test))
+    g = GeneticAlgorithm(problem, num_generations=30, population_size=50)
     g.run()
     end = time.perf_counter()
 
