@@ -24,10 +24,10 @@ class GreedySearch:
         self.execution_time = 0
         
         # Set target day and performance
-        self.problem.target_day = 15
-        self.problem.target_perf = 7
-        self.problem.max_fatigue = 2.7
-        self.problem.max_risk = 0.3
+        self.problem.target_day = 14
+        self.problem.target_perf = 9
+        self.problem.max_fatigue = 3.5
+        self.problem.max_risk = 0.5
         
     def search(self, max_depth=float('inf')):
         """
@@ -211,7 +211,7 @@ def test_greedy_search():
         # Display final state summary
         print("\nFinal State:")
         print(f"Day: {final_day}")
-        print(f"Fatigue: {final_fatigue:.2f}/5.00")
+        print(f"Fatigue: {final_fatigue:.2f}/4.00")
         print(f"Risk: {final_risk:.2f}/1.00")
         print(f"Performance: {final_perf:.2f}/10.00")
         print(f"Execution Time: {searcher.execution_time:.2f} seconds")

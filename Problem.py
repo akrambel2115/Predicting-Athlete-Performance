@@ -4,7 +4,10 @@ import pandas as pd
 from calculate_load_per_minute import calculate_load_per_minute
 import Node
 import random
-
+from collections import defaultdict
+global_df = defaultdict(list)
+global_dp = defaultdict(list)
+global_prob = defaultdict(list)
 class AthletePerformanceProblem:
     """
     Search problem for athlete performance planning using learned ΔF, ΔP, ΔR models.
@@ -111,6 +114,9 @@ class AthletePerformanceProblem:
             dF = float(self.delta_f.predict(X[self.f_feats])[0])
             dP = float(self.delta_p.predict(X[self.p_feats])[0])
             prob = self.delta_r.predict_proba(X[self.r_feats])[0, 1]
+            global_df[tuple(action)].append(dF)
+            global_dp[tuple(action)].append(dP)
+            global_prob[tuple(action)].append(prob)
             Rn = np.clip(R + prob, 0.0, 1.0)
             Fn = np.clip(F + dF, 0.0, 5.0)
             Pn = np.clip(P + dP, 0.0, 10.0)
@@ -312,9 +318,10 @@ class AthletePerformanceProblem:
             schedule.append((intensity, duration))
         return list(schedule)
 
-    def evaluate_individual(self, individual):
+    def evaluate_individual(self, indiv):
         
         current_state = self.initial_state
+        individual = indiv[:]
         while individual:
             indiv_action = individual.pop(0)
             current_state = self.apply_action(current_state, indiv_action) 
