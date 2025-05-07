@@ -57,7 +57,7 @@ ul {
 }
 
 .sidebar-nav li {
-    padding: 12px 20px;
+    padding: 0px;
     margin-bottom: 5px;
     cursor: pointer;
     display: flex;
@@ -91,6 +91,7 @@ ul {
 }
 
 .sidebar-nav li a {
+    padding: 12px 20px;
     display: flex;
     align-items: center;
     width: 100%;
