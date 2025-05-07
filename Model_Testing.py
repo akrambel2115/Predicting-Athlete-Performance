@@ -68,7 +68,7 @@ test_plans = {
         )
     },
     "many_low_intensity": {
-        "plan": [(0.3, 60)] * 14,
+        "plan": [(0.3, 30)] * 14,
         "description": (
             "Low-intensity high-frequency; total_volume=252, "
             "expect insufficient-overload warning"
@@ -79,13 +79,25 @@ test_plans = {
 
 if __name__ == "__main__":
     from Problem import AthletePerformanceProblem
+
+    
     
     problem = AthletePerformanceProblem(genetic=True)
     for label, info in test_plans.items():
         plan = info["plan"]
         description = info["description"]
-        print(f"\n=== Test Plan: {label} ===")
+        print(f"\n=== Test Plan: {label} ======================================================")
         print(f"Description: {description}")
+        print (f"{plan}")
         result = problem.evaluate_individual(plan)
         print(f"Result: \n\t Days of Training: {result[0]} \n\t Fatigue at Last Day: {result[1]} \n\t Risk of Injury: {result[2]} \n\t Performance: {result[3]}")
+
+        print("====== Detailed lists =========== ")
+        detailed_problem = AthletePerformanceProblem(genetic=True)
+        current_state = detailed_problem.initial_state
+        print(f"Initial State: {current_state}")
+        while plan:
+            indiv_action = plan.pop(0)
+            current_state = detailed_problem.apply_action(current_state, indiv_action)
+            print(f"Metrics: \n\t Days of Training: {current_state[0]} \n\t Fatigue: {current_state[1]} \n\t Risk of Injury: {current_state[2]} \n\t Performance: {current_state[3]}")
 
