@@ -19,9 +19,10 @@ class AthletePerformanceProblem:
     def __init__(self,
                  initial_state: tuple = (0, 1.0, 0.1, 5.0),
                  target_day: int = 10,
-                 genetic: bool = False):
+                 genetic: bool = False,
+                 hgb: bool = False):
         # Load models
-        if genetic:
+        if genetic or hgb:
             self.delta_f = joblib.load("genetic_model/delta_f_model.pkl")
             self.delta_p = joblib.load("genetic_model/delta_p_model.pkl")
             r_loaded = joblib.load("predictingModels/delta_r_classifier.pkl")
