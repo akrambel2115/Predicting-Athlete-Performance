@@ -345,7 +345,7 @@ print("Without replacement:", sample_without_replacement)
     
 
 if __name__ == "__main__":
-    test = [(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120)]
+    test = [(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120),(0.9, 120)]
 
     start = time.perf_counter()
     problem = AthletePerformanceProblem(genetic = True,target_day = 14)
