@@ -193,6 +193,63 @@ section h3 {
     margin-bottom: 15px;
 }
 
+/* Chart styling */
+.chart-container {
+    padding: 15px;
+}
+
+.chart-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+.chart-column {
+    flex: 1;
+    min-width: 280px;
+    max-width: 100%;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chart-column h5 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+canvas {
+    max-height: 220px !important;
+    width: 100% !important;
+}
+
+#algorithmRadarChart, #trainingHeatmapChart {
+    max-height: 280px !important;
+}
+
+@media (max-width: 768px) {
+    .chart-row {
+        flex-direction: column;
+    }
+    
+    .chart-column {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    canvas {
+        max-height: 180px !important;
+    }
+    
+    #algorithmRadarChart, #trainingHeatmapChart {
+        max-height: 250px !important;
+    }
+}
+
 /* Recommendation Section Styles */
 .recommendation-grid {
     display: grid;

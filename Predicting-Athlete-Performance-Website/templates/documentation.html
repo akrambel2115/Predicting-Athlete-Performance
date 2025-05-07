@@ -277,16 +277,112 @@
 
         <section class="visualization">
             <h2>Performance Visualization</h2>
+            
+            <!-- Execution Time, Memory Usage, Nodes Expanded Charts -->
             <div class="chart-card">
                 <div class="chart-header">
-                    <h4>Algorithm Performance Comparison</h4>
+                    <h4>Computational Efficiency Comparison</h4>
                 </div>
                 <div class="chart-container">
-                    <!-- Placeholder for visualization chart -->
-                    <div style="background-color: #f5f8f5; height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
-                        <i class="fas fa-chart-bar" style="font-size: 40px; color: #4F7942; margin-right: 15px;"></i>
-                        <span style="color: #666; font-size: 16px;">Algorithm Performance Comparison Charts</span>
+                    <div class="chart-row">
+                        <div class="chart-column">
+                            <h5>Execution Time (s)</h5>
+                            <canvas id="executionTimeChart"></canvas>
+                        </div>
+                        <div class="chart-column">
+                            <h5>Memory Usage (MB)</h5>
+                            <canvas id="memoryUsageChart"></canvas>
+                        </div>
+                        <div class="chart-column">
+                            <h5>Nodes Expanded (log)</h5>
+                            <canvas id="nodesExpandedChart"></canvas>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Performance, Fatigue and Risk Progression Charts -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>Algorithm Progression Metrics</h4>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-row">
+                        <div class="chart-column">
+                            <h5>Performance Progression</h5>
+                            <canvas id="performanceProgressionChart"></canvas>
+                        </div>
+                        <div class="chart-column">
+                            <h5>Fatigue Progression</h5>
+                            <canvas id="fatigueProgressionChart"></canvas>
+                        </div>
+                        <div class="chart-column">
+                            <h5>Risk Progression</h5>
+                            <canvas id="riskProgressionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rest Days, High Intensity Days and Total Workload Charts -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>Schedule Balance Metrics</h4>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-row">
+                        <div class="chart-column">
+                            <h5>Rest Days</h5>
+                            <canvas id="restDaysChart"></canvas>
+                        </div>
+                        <div class="chart-column">
+                            <h5>High Intensity Days</h5>
+                            <canvas id="highIntensityDaysChart"></canvas>
+                        </div>
+                        <div class="chart-column">
+                            <h5>Total Workload</h5>
+                            <canvas id="totalWorkloadChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Intensity and Duration Charts -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>Training Schedule Characteristics</h4>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-row">
+                        <div class="chart-column">
+                            <h5>Training Intensity by Day</h5>
+                            <canvas id="trainingIntensityChart"></canvas>
+                        </div>
+                        <div class="chart-column">
+                            <h5>Training Duration by Day</h5>
+                            <canvas id="trainingDurationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Schedule Heatmap -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>Training Intensity Heatmap</h4>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trainingHeatmapChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Radar Chart for Overall Comparison -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>Algorithm Performance Radar</h4>
+                </div>
+                <div class="chart-container">
+                    <canvas id="algorithmRadarChart"></canvas>
                 </div>
             </div>
         </section>
@@ -336,7 +432,11 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.2.0/dist/chartjs-chart-matrix.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/algorithm_charts.js') }}"></script>
 </body>
 </html>
 
