@@ -25,9 +25,9 @@ class GreedySearch:
         
         # Set target day and performance
         self.problem.target_day = 14
-        self.problem.target_perf = 9
-        self.problem.max_fatigue = 3.5
-        self.problem.max_risk = 0.5
+        self.problem.target_perf = 8
+        self.problem.max_fatigue = 2.7
+        self.problem.max_risk = 0.2
         
     def search(self, max_depth=float('inf')):
         """
@@ -167,7 +167,7 @@ def test_greedy_search():
     
     # Create the athlete performance problem with specific parameters
     problem = AthletePerformanceProblem(
-        initial_state=(0, 1.5, 0.2, 6)  # Initial state (day, fatigue, risk, performance)
+        initial_state=(0, 1.5, 0.05, 6)  # Initial state (day, fatigue, risk, performance)
     )
     
     # Create the searcher
@@ -199,7 +199,17 @@ def test_greedy_search():
             # Unpack the new state for display
             day, fatigue, risk, performance, _ = current_state
             intensity, duration = action
-            print(f"{day:3d} | {intensity:9.1f} | {duration:8.1f} |  {fatigue:.2f}   | {risk:.2f} | {performance:.2f}")
+            
+            # Categorize rest days based on fatigue levels
+            if intensity == 0.0 and duration == 0.0:
+                # Determine rest type based on fatigue level
+                if fatigue > 2.0:
+                    rest_type = "Passive Rest"
+                else:
+                    rest_type = "Active Rest"
+                print(f"{day:3d} | {rest_type:9} | {'-':8} |  {fatigue:.2f}   | {risk:.2f} | {performance:.2f}")
+            else:
+                print(f"{day:3d} | {intensity:9.1f} | {duration:8.1f} |  {fatigue:.2f}   | {risk:.2f} | {performance:.2f}")
         
         # Report whether goal was achieved
         final_day, final_fatigue, final_risk, final_perf, _ = current_state
