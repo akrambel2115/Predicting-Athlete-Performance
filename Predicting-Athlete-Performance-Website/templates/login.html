@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Signup - PerfoMax</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body class="login-body">
+    <div class="auth-container">
+        <div class="forms-container">
+            <div class="login-signup login-container">
+                <div class="login-box">
+                    <div class="logo">
+                        <h2>PerfoMax</h2>
+                    </div>
+                    <h3>Sign In</h3>
+                    <form action="{{ url_for('login') }}" method="post" id="loginForm" novalidate>
+                        <div class="form-success" id="loginSuccess">Login successful! Redirecting...</div>
+                        <div class="form-group" id="loginEmailGroup">
+                            <label for="loginEmail"><i class="fas fa-envelope"></i></label>
+                            <input type="email" id="loginEmail" name="username" placeholder="Email">
+                            <div class="form-error-message" id="loginEmailError"></div>
+                        </div>
+                        <div class="form-group" id="loginPasswordGroup">
+                            <label for="loginPassword"><i class="fas fa-lock"></i></label>
+                            <input type="password" id="loginPassword" name="password" placeholder="Password">
+                            <div class="form-error-message" id="loginPasswordError"></div>
+                        </div>
+                        <p class="forgot-password"><a href="#">Forgot password?</a></p>
+                        <button type="submit" class="login-btn" id="loginButton">
+                            Sign In
+                            <div class="btn-loading"><div class="spinner"></div></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="login-signup signup-container">
+                <div class="signup-box">
+                    <div class="logo">
+                        <h2>PerfoMax</h2>
+                    </div>
+                    <h3>Create Account</h3>
+                    <form action="{{ url_for('signup') }}" method="post" id="signupForm" novalidate>
+                        <div class="form-success" id="signupSuccess">Account created successfully! Redirecting...</div>
+                        <div class="form-group" id="signupNameGroup">
+                            <label for="signupName"><i class="fas fa-user"></i></label>
+                            <input type="text" id="signupName" name="name" placeholder="Name">
+                            <div class="form-error-message" id="signupNameError"></div>
+                        </div>
+                        <div class="form-group" id="signupEmailGroup">
+                            <label for="signupEmail"><i class="fas fa-envelope"></i></label>
+                            <input type="email" id="signupEmail" name="email" placeholder="Email">
+                            <div class="form-error-message" id="signupEmailError"></div>
+                        </div>
+                        <div class="form-group" id="signupPasswordGroup">
+                            <label for="signupPassword"><i class="fas fa-lock"></i></label>
+                            <input type="password" id="signupPassword" name="password" placeholder="Password">
+                            <div class="form-error-message" id="signupPasswordError"></div>
+                        </div>
+                        <button type="submit" class="login-btn" id="signupButton">
+                            Sign Up
+                            <div class="btn-loading"><div class="spinner"></div></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us please login with your personal info</p>
+                    <button class="ghost-btn" id="login">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Athlete!</h1>
+                    <p>Enter your personal details and start your journey with us</p>
+                    <button class="ghost-btn" id="signup">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

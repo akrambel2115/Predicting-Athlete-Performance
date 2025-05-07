@@ -1,0 +1,804 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+    {% if active_page == 'overview' %}
+        Overview
+    {% elif active_page == 'schedule' %}
+        Schedule Details
+    {% elif active_page == 'predictions' %}
+        Predicted Risk & Injury
+    {% elif active_page == 'history' %}
+        History/Logs
+    {% elif active_page == 'settings' %}
+        Settings
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% if active_page == 'overview' %}
+        <div class="overview-container">
+            <div class="overview-header">
+                <h3>Athlete Performance Dashboard</h3>
+                <div class="date-filter">
+                    <span>Date Range:</span>
+                    <select id="timeRangeSelector">
+                        <option value="7">Last 7 Days</option>
+                        <option value="14">Last 14 Days</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 3 Months</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Training Intensity vs Performance Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>Training Intensity vs Performance</h4>
+                    <div class="chart-actions">
+                        <button class="chart-action-btn" id="downloadIntensityChart">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="chart-action-btn" id="refreshIntensityChart">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="intensityVsPerformanceChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Predictions Section Title -->
+            <div class="section-title">
+                <h4>Today's Predicted Metrics</h4>
+                <span class="date-subtitle">{{ current_date }}</span>
+            </div>
+            
+            <!-- Predictions Grid -->
+            <div class="predictions-grid">
+                <!-- Injury Risk Prediction -->
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <h4>Injury Risk</h4>
+                        <span class="metric-badge low">Low</span>
+                    </div>
+                    <div class="chart-container donut-container">
+                        <canvas id="injuryRiskChart"></canvas>
+                    </div>
+                    <div class="prediction-footer">
+                        <div class="prediction-metric">
+                            <span class="metric-value" id="injuryRiskValue">24%</span>
+                            <span class="metric-label">Current Risk</span>
+                        </div>
+                        <div class="prediction-change">
+                            <span class="change-label decrease">↓ 3%</span>
+                            <span class="change-period">from yesterday</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Performance Prediction -->
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <h4>Performance</h4>
+                        <span class="metric-badge high">High</span>
+                    </div>
+                    <div class="chart-container donut-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                    <div class="prediction-footer">
+                        <div class="prediction-metric">
+                            <span class="metric-value" id="performanceValue">83%</span>
+                            <span class="metric-label">Optimal Level</span>
+                        </div>
+                        <div class="prediction-change">
+                            <span class="change-label increase">↑ 2%</span>
+                            <span class="change-period">from yesterday</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fatigue Prediction -->
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <h4>Fatigue</h4>
+                        <span class="metric-badge medium">Medium</span>
+                    </div>
+                    <div class="chart-container donut-container">
+                        <canvas id="fatigueChart"></canvas>
+                    </div>
+                    <div class="prediction-footer">
+                        <div class="prediction-metric">
+                            <span class="metric-value" id="fatigueValue">41%</span>
+                            <span class="metric-label">Current Level</span>
+                        </div>
+                        <div class="prediction-change">
+                            <span class="change-label decrease">↓ 5%</span>
+                            <span class="change-period">from yesterday</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activities -->
+            <div class="recent-activities-card">
+                <h4>Recent Activities</h4>
+                <ul class="activities-list">
+                    <li class="activity-item">
+                        <div class="activity-icon training">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">High Intensity Training</div>
+                            <div class="activity-time">3 hours ago</div>
+                        </div>
+                        <div class="activity-details">
+                            <span class="activity-duration">45 min</span>
+                            <span class="activity-intensity">High</span>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon recovery">
+                            <i class="fas fa-hot-tub"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Recovery Session</div>
+                            <div class="activity-time">Yesterday</div>
+                        </div>
+                        <div class="activity-details">
+                            <span class="activity-duration">30 min</span>
+                            <span class="activity-intensity">Low</span>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon match">
+                            <i class="fas fa-futbol"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Match Performance</div>
+                            <div class="activity-time">2 days ago</div>
+                        </div>
+                        <div class="activity-details">
+                            <span class="activity-duration">90 min</span>
+                            <span class="activity-score">8.2/10</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    {% elif active_page == 'schedule' %}
+        <div class="schedule-container">
+            <div class="schedule-header">
+                <h3>Training Schedule & Analytics</h3>
+                <div class="date-filter">
+                    <span>Date Range:</span>
+                    <select id="scheduleTimeRangeSelector">
+                        <option value="7">Last 7 Days</option>
+                        <option value="14">Last 14 Days</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 3 Months</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Multi-line Performance Metrics Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>Combined Performance Metrics</h4>
+                    <div class="chart-actions">
+                        <button class="chart-action-btn" id="downloadScheduleChart">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="chart-action-btn" id="refreshScheduleChart">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="combinedMetricsChart"></canvas>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #4F7942;"></span>
+                        <span class="legend-label">Training Intensity</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #2196F3;"></span>
+                        <span class="legend-label">Performance Level</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #F44336;"></span>
+                        <span class="legend-label">Injury Risk</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #FFC107;"></span>
+                        <span class="legend-label">Fatigue</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Training Intensity Heat Map -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>Training Intensity Heat Map</h4>
+                    <div class="chart-info">
+                        <span class="info-icon" data-tooltip="Shows training intensity patterns across days">
+                            <i class="fas fa-info-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="heatmap-container" id="trainingHeatmap">
+                    <!-- Heatmap will be rendered here by JavaScript -->
+                </div>
+                <div class="heatmap-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(79, 121, 66, 0.1);"></div>
+                        <span>Low</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(79, 121, 66, 0.4);"></div>
+                        <span>Medium</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(79, 121, 66, 0.7);"></div>
+                        <span>High</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(79, 121, 66, 1);"></div>
+                        <span>Very High</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Detailed Metrics Table -->
+            <div class="chart-card table-card">
+                <div class="chart-header">
+                    <h4>Detailed Daily Metrics</h4>
+                    <div class="table-actions">
+                        <button class="chart-action-btn" id="exportTableData">
+                            <i class="fas fa-file-export"></i>
+                            <span class="tooltip-text">Export Data</span>
+                        </button>
+                        <button class="chart-action-btn" id="refreshTableData">
+                            <i class="fas fa-sync-alt"></i>
+                            <span class="tooltip-text">Refresh Data</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="metricsTable" class="metrics-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Training Intensity (%)</th>
+                                <th>Performance (%)</th>
+                                <th>Injury Risk (%)</th>
+                                <th>Fatigue (%)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-controls">
+                    <button id="prevPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                    <span id="pageIndicator">Page 1 of 1</span>
+                    <button id="nextPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    {% elif active_page == 'predictions' %}
+        <div class="predictions-container">
+            <div class="predictions-header">
+                <h3>Injury Risk & Fatigue Prediction Analysis</h3>
+                <div class="date-filter">
+                    <span>Time Horizon:</span>
+                    <select id="predictionTimeSelector">
+                        <option value="7">Next 7 Days</option>
+                        <option value="14">Next 14 Days</option>
+                        <option value="30">Next 30 Days</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Prediction Time Series Charts -->
+            <div class="predictions-grid">
+                <!-- Injury Risk Prediction Chart -->
+                <div class="chart-card prediction-chart-card">
+                    <div class="chart-header">
+                        <h4>Predicted Injury Risk</h4>
+                        <div class="risk-level high">High Risk Period</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="injuryRiskPredictionChart"></canvas>
+                    </div>
+                    <div class="chart-footer">
+                        <div class="risk-summary">
+                            <div class="risk-metric">
+                                <span class="risk-value" id="currentRiskValue">32%</span>
+                                <span class="risk-label">Current Risk</span>
+                            </div>
+                            <div class="risk-metric">
+                                <span class="risk-value" id="peakRiskValue">48%</span>
+                                <span class="risk-label">Peak Risk</span>
+                            </div>
+                            <div class="risk-metric">
+                                <span class="risk-value" id="avgRiskValue">27%</span>
+                                <span class="risk-label">Average Risk</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fatigue Prediction Chart -->
+                <div class="chart-card prediction-chart-card">
+                    <div class="chart-header">
+                        <h4>Predicted Fatigue Level</h4>
+                        <div class="fatigue-level medium">Moderate Fatigue</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="fatiguePredictionChart"></canvas>
+                    </div>
+                    <div class="chart-footer">
+                        <div class="fatigue-summary">
+                            <div class="fatigue-metric">
+                                <span class="fatigue-value" id="currentFatigueValue">45%</span>
+                                <span class="fatigue-label">Current Level</span>
+                            </div>
+                            <div class="fatigue-metric">
+                                <span class="fatigue-value" id="peakFatigueValue">67%</span>
+                                <span class="fatigue-label">Peak Level</span>
+                            </div>
+                            <div class="fatigue-metric">
+                                <span class="fatigue-value" id="avgFatigueValue">38%</span>
+                                <span class="fatigue-label">Average Level</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Relationship Analysis Section -->
+            <div class="section-title">
+                <h4>Training Impact Analysis</h4>
+                <span class="section-subtitle">Understanding relationships between training and risk factors</span>
+            </div>
+            
+            <div class="relationship-grid">
+                <!-- Training Intensity vs Injury Risk -->
+                <div class="chart-card relationship-card">
+                    <div class="chart-header">
+                        <h4>Training Intensity vs Injury Risk</h4>
+                        <div class="chart-info">
+                            <span class="info-icon" data-tooltip="Shows how training intensity correlates with injury risk">
+                                <i class="fas fa-info-circle"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="intensityVsRiskChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <div class="insight-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="insight-text">
+                            <strong>Key Insight:</strong> <span id="riskInsight">Risk increases significantly when intensity exceeds 75% for 3+ consecutive days.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Training Intensity vs Fatigue -->
+                <div class="chart-card relationship-card">
+                    <div class="chart-header">
+                        <h4>Training Intensity vs Fatigue</h4>
+                        <div class="chart-info">
+                            <span class="info-icon" data-tooltip="Shows how training intensity affects fatigue levels">
+                                <i class="fas fa-info-circle"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="intensityVsFatigueChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <div class="insight-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="insight-text">
+                            <strong>Key Insight:</strong> <span id="fatigueInsight">Fatigue accumulates most rapidly with high intensity workouts on consecutive days with limited recovery.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Optimal Training Zone Recommendation -->
+            <div class="chart-card optimal-zone-card">
+                <div class="chart-header">
+                    <h4>Optimal Training Zone Analysis</h4>
+                    <div class="chart-actions">
+                        <button class="chart-action-btn" id="downloadZoneChart">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="chart-action-btn" id="refreshZoneChart">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="optimalTrainingZoneChart"></canvas>
+                </div>
+                <div class="optimal-zone-summary">
+                    <div class="recommendation-box">
+                        <div class="recommendation-header">
+                            <h5>Recommended Training Intensity</h5>
+                            <div class="recommendation-badge optimal">Optimal</div>
+                        </div>
+                        <div class="recommendation-body">
+                            <div class="recommendation-value" id="optimalIntensityValue">65-75%</div>
+                            <p class="recommendation-text">
+                                This is your personalized optimal training zone based on your historical data and current condition.
+                                Stay within this range to maximize performance while minimizing injury risk.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% elif active_page == 'history' %}
+        <div class="history-container">
+            <div class="history-header">
+                <h3>Activity History & Algorithm Logs</h3>
+                <div class="date-filter">
+                    <span>View Mode:</span>
+                    <select id="historyViewSelector">
+                        <option value="grid">Grid View</option>
+                        <option value="list">List View</option>
+                        <option value="timeline">Timeline View</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Grid View of History -->
+            <div class="history-grid-view">
+                <div class="grid-controls">
+                    <button class="grid-nav-btn" id="prevGridList"><i class="fas fa-chevron-left"></i></button>
+                    <h4 id="currentGridDisplay">List 1</h4>
+                    <button class="grid-nav-btn" id="nextGridList"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                
+                <div class="log-grid">
+                    <!-- Grid logs (static examples, would be populated dynamically in a real app) -->
+                    <div class="grid-item has-activity" data-log-id="25050701">
+                        <div class="log-id">2505-0701</div>
+                        <div class="activity-dot astar" title="A* Algorithm"></div>
+                    </div>
+                    
+                    <div class="grid-item has-activity" data-log-id="25050608">
+                        <div class="log-id">2505-0608</div>
+                        <div class="activity-dot bfs" title="BFS Algorithm"></div>
+                    </div>
+                    
+                    <div class="grid-item has-activity" data-log-id="25050512">
+                        <div class="log-id">2505-0512</div>
+                        <div class="activity-dot genetic" title="Genetic Algorithm"></div>
+                    </div>
+                    
+                    <div class="grid-item has-activity current-item" data-log-id="25050705">
+                        <div class="log-id">2505-0705</div>
+                        <div class="activity-dot dfs" title="DFS Algorithm"></div>
+                    </div>
+                    
+                    <div class="grid-item has-activity" data-log-id="25050613">
+                        <div class="log-id">2505-0613</div>
+                        <div class="activity-dot csp" title="CSP Algorithm"></div>
+                    </div>
+                    
+                    <div class="grid-item has-activity" data-log-id="25050602">
+                        <div class="log-id">2505-0602</div>
+                        <div class="activity-dot astar" title="A* Algorithm"></div>
+                    </div>
+
+                    <div class="grid-item has-activity" data-log-id="25050514">
+                        <div class="log-id">2505-0514</div>
+                        <div class="activity-dot bfs" title="BFS Algorithm"></div>
+                    </div>
+                    
+                    <div class="grid-item has-activity" data-log-id="25050415">
+                        <div class="log-id">2505-0415</div>
+                        <div class="activity-dot dfs" title="DFS Algorithm"></div>
+                    </div>
+                    
+                    <div class="grid-item has-activity" data-log-id="25050323">
+                        <div class="log-id">2505-0323</div>
+                        <div class="activity-dot genetic" title="Genetic Algorithm"></div>
+                    </div>
+                    
+                    <div class="grid-item" data-log-id="">
+                        <div class="log-id"></div>
+                    </div>
+                    
+                    <div class="grid-item" data-log-id="">
+                        <div class="log-id"></div>
+                    </div>
+                    
+                    <div class="grid-item" data-log-id="">
+                        <div class="log-id"></div>
+                    </div>
+                </div>
+                
+                <div class="grid-legend">
+                    <div class="legend-title">Algorithm Types:</div>
+                    <div class="legend-item">
+                        <div class="legend-dot astar"></div>
+                        <span>A* Search</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot bfs"></div>
+                        <span>BFS Search</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot dfs"></div>
+                        <span>DFS Search</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot genetic"></div>
+                        <span>Genetic Algorithm</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot csp"></div>
+                        <span>CSP Solver</span>
+                    </div>
+                </div>
+                
+                <div class="grid-pagination">
+                    <button id="prevGridPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                    <span id="gridPageIndicator">Page 1 of 3</span>
+                    <button id="nextGridPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            
+            <!-- Recent Activities List View (initially hidden, toggled by viewSelector) -->
+            <div class="history-list-view" style="display: none;">
+                <div class="history-list-header">
+                    <div class="filter-controls">
+                        <div class="filter-group">
+                            <label>Algorithm Type:</label>
+                            <select id="algorithmTypeFilter">
+                                <option value="all">All Types</option>
+                                <option value="astar">A* Search</option>
+                                <option value="bfs">BFS Search</option>
+                                <option value="dfs">DFS Search</option>
+                                <option value="genetic">Genetic Algorithm</option>
+                                <option value="csp">CSP Solver</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Date Range:</label>
+                            <select id="dateRangeFilter">
+                                <option value="7">Last 7 days</option>
+                                <option value="30">Last 30 days</option>
+                                <option value="90">Last 3 months</option>
+                                <option value="all">All time</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="history-list">
+                    <div class="history-item" data-log-id="25050701">
+                        <div class="history-item-date">
+                            <div class="date-day">07</div>
+                            <div class="date-month">May</div>
+                        </div>
+                        <div class="history-item-content">
+                            <div class="item-title">A* Search Algorithm</div>
+                            <div class="item-details">Calculated optimal training intensity</div>
+                            <div class="item-metrics">
+                                <span class="metric">
+                                    <i class="fas fa-clock"></i> 14:35
+                                </span>
+                                <span class="metric">
+                                    <i class="fas fa-bolt"></i> Runtime: 0.45s
+                                </span>
+                            </div>
+                        </div>
+                        <div class="history-item-actions">
+                            <button class="view-log-btn" data-log-id="25050701">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="history-item" data-log-id="25050705">
+                        <div class="history-item-date">
+                            <div class="date-day">07</div>
+                            <div class="date-month">May</div>
+                        </div>
+                        <div class="history-item-content">
+                            <div class="item-title">DFS Search Algorithm</div>
+                            <div class="item-details">Optimized recovery schedule</div>
+                            <div class="item-metrics">
+                                <span class="metric">
+                                    <i class="fas fa-clock"></i> 10:22
+                                </span>
+                                <span class="metric">
+                                    <i class="fas fa-bolt"></i> Runtime: 0.32s
+                                </span>
+                            </div>
+                        </div>
+                        <div class="history-item-actions">
+                            <button class="view-log-btn" data-log-id="25050705">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="history-item" data-log-id="25050613">
+                        <div class="history-item-date">
+                            <div class="date-day">06</div>
+                            <div class="date-month">May</div>
+                        </div>
+                        <div class="history-item-content">
+                            <div class="item-title">CSP Solver Algorithm</div>
+                            <div class="item-details">Generated weekly training constraints</div>
+                            <div class="item-metrics">
+                                <span class="metric">
+                                    <i class="fas fa-clock"></i> 16:48
+                                </span>
+                                <span class="metric">
+                                    <i class="fas fa-bolt"></i> Runtime: 0.67s
+                                </span>
+                            </div>
+                        </div>
+                        <div class="history-item-actions">
+                            <button class="view-log-btn" data-log-id="25050613">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- More history items would be listed here -->
+                </div>
+                
+                <div class="pagination-controls">
+                    <button id="prevLogPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                    <span id="logPageIndicator">Page 1 of 3</span>
+                    <button id="nextLogPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Log Details Modal/Popup -->
+        <div class="modal" id="logDetailsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="modalTitle">Algorithm Log Details</h4>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="log-summary">
+                        <div class="log-info-grid">
+                            <div class="log-info-item">
+                                <div class="info-label">Algorithm</div>
+                                <div class="info-value" id="logAlgorithm">A* Search</div>
+                            </div>
+                            <div class="log-info-item">
+                                <div class="info-label">Date & Time</div>
+                                <div class="info-value" id="logDateTime">May 7, 2025 - 14:35</div>
+                            </div>
+                            <div class="log-info-item">
+                                <div class="info-label">Runtime</div>
+                                <div class="info-value" id="logRuntime">0.45 seconds</div>
+                            </div>
+                            <div class="log-info-item">
+                                <div class="info-label">Status</div>
+                                <div class="info-value success" id="logStatus">Successful</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="log-details-section">
+                        <h5>Algorithm Parameters</h5>
+                        <div class="table-container">
+                            <table class="metrics-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Value</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Heuristic</td>
+                                        <td>Euclidean Distance</td>
+                                        <td>Distance calculation method</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Max Iterations</td>
+                                        <td>1000</td>
+                                        <td>Maximum search iterations allowed</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pruning</td>
+                                        <td>Enabled</td>
+                                        <td>Search space reduction technique</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="log-details-section">
+                        <h5>Results</h5>
+                        <div class="table-container">
+                            <table class="metrics-table">
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>Value</th>
+                                        <th>Change</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Optimal Training Intensity</td>
+                                        <td>72%</td>
+                                        <td class="positive-change">+4%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Risk Reduction</td>
+                                        <td>18%</td>
+                                        <td class="positive-change">+6%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Performance Improvement</td>
+                                        <td>8%</td>
+                                        <td class="positive-change">+2%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="log-details-section">
+                        <h5>Runtime Performance</h5>
+                        <div class="performance-metrics">
+                            <div class="perf-metric">
+                                <div class="perf-label">Nodes Explored</div>
+                                <div class="perf-value">532</div>
+                            </div>
+                            <div class="perf-metric">
+                                <div class="perf-label">Memory Usage</div>
+                                <div class="perf-value">24.5 MB</div>
+                            </div>
+                            <div class="perf-metric">
+                                <div class="perf-label">Convergence</div>
+                                <div class="perf-value">85%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="exportLogBtn" class="btn-primary">
+                        <i class="fas fa-file-export"></i> Export Log
+                    </button>
+                    <button id="rerunAlgorithmBtn" class="btn-secondary">
+                        <i class="fas fa-redo"></i> Re-run
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% elif active_page == 'settings' %}
+        <div class="settings-container">
+            <h3>User Settings</h3>
+            <div class="settings-form">
+                <!-- Settings form placeholder -->
+                <p>Settings options will be displayed here</p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

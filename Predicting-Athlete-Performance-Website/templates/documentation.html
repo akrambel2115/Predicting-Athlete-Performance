@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Documentation - PerfoMax</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/documentation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="{{ url_for('index') }}">
+                        <h1>PerfoMax</h1>
+                    </a>
+                </div>
+                
+                <nav class="main-nav">
+                    <ul class="nav-links">
+                        <li><a href="{{ url_for('index') }}">Home</a></li>
+                        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                        <li><a href="{{ url_for('index') }}#about">About</a></li>
+                        <li><a href="{{ url_for('documentation') }}" class="active">Documentation</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Page Title Section -->
+    <section class="page-title-section">
+        <div class="container">
+            <div class="page-title">
+                <h1>Algorithm Comparative Evaluation</h1>
+                <p>In-depth analysis of performance prediction algorithms for athlete training optimization</p>
+            </div>
+        </div>
+    </section>
+    
+    <main>
+        <section class="introduction">
+            <h2>Introduction</h2>
+            <p>This documentation provides a detailed comparison of the algorithms used in our athlete performance prediction system. We evaluate each algorithm based on execution time, memory usage, solution quality, and training schedule properties to help you understand their strengths and limitations.</p>
+        </section>
+
+        <section class="algorithm-comparison">
+            <h2>Comparative Evaluation</h2>
+            
+            <h3>Time Complexity</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Average Execution Time</th>
+                        <th>Worst-case Time Complexity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CSP (Constraint Satisfaction Problem)</td>
+                        <td>Medium (2-5s)</td>
+                        <td>O(d^n)</td>
+                    </tr>
+                    <tr>
+                        <td>Greedy-best-first</td>
+                        <td>Fast (0.5-2s)</td>
+                        <td>O(b^m)</td>
+                    </tr>
+                    <tr>
+                        <td>A*</td>
+                        <td>Medium (1-3s)</td>
+                        <td>O(b^d)</td>
+                    </tr>
+                    <tr>
+                        <td>Genetic</td>
+                        <td>Medium (2-5s)</td>
+                        <td>O(n²)</td>
+                    </tr>
+                    <tr>
+                        <td>BFS (Breadth-First Search)</td>
+                        <td>Slow (3-7s)</td>
+                        <td>O(b^d)</td>
+                    </tr>
+                    <tr>
+                        <td>DFS (Depth-First Search)</td>
+                        <td>Very Fast (0.1-0.5s)</td>
+                        <td>O(b^m)</td>
+                    </tr>
+                    <tr>
+                        <td>UCS (Uniform Cost Search)</td>
+                        <td>Medium (2-4s)</td>
+                        <td>O(b^(C/ε))</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="algorithm-details">
+                <p>The execution time metrics are crucial when real-time feedback is needed during training sessions. DFS offers the fastest processing time, making it ideal for on-the-spot training adjustments, while BFS requires more computation time but provides more thorough exploration of training possibilities in non-time-critical scenarios.</p>
+            </div>
+
+            <h3>Space Complexity</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Memory Usage</th>
+                        <th>Maximum Frontier Size</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CSP (Constraint Satisfaction Problem)</td>
+                        <td>High (1-2GB)</td>
+                        <td>Medium (thousands of constraints)</td>
+                    </tr>
+                    <tr>
+                        <td>Greedy-best-first</td>
+                        <td>Medium (500MB-1GB)</td>
+                        <td>Medium (thousands of states)</td>
+                    </tr>
+                    <tr>
+                        <td>A*</td>
+                        <td>High (1-2GB)</td>
+                        <td>Large (tens of thousands of states)</td>
+                    </tr>
+                    <tr>
+                        <td>Genetic</td>
+                        <td>Medium (500MB-1GB)</td>
+                        <td>Large (thousands of states)</td>
+                    </tr>
+                    <tr>
+                        <td>BFS (Breadth-First Search)</td>
+                        <td>Very High (2GB+)</td>
+                        <td>Very Large (exponential growth)</td>
+                    </tr>
+                    <tr>
+                        <td>DFS (Depth-First Search)</td>
+                        <td>Low (100-500MB)</td>
+                        <td>Small (linear with depth)</td>
+                    </tr>
+                    <tr>
+                        <td>UCS (Uniform Cost Search)</td>
+                        <td>High (1-2GB)</td>
+                        <td>Large (proportional to search space)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="algorithm-details">
+                <p>Space complexity impacts the scalability of our system. While BFS consumes significant memory resources due to its exponential growth in frontier size, DFS offers a much lighter memory footprint suitable for mobile applications and edge computing. CSP and A* algorithms require substantial memory for constraint storage and heuristic calculations.</p>
+            </div>
+
+            <h3>Solution Quality</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Performance Level Optimization</th>
+                        <th>Fatigue Management</th>
+                        <th>Injury Risk Assessment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CSP (Constraint Satisfaction Problem)</td>
+                        <td>High</td>
+                        <td>High</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Greedy-best-first</td>
+                        <td>Medium</td>
+                        <td>Low</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>A*</td>
+                        <td>Very High</td>
+                        <td>High</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>Genetic</td>
+                        <td>High</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>BFS (Breadth-First Search)</td>
+                        <td>Medium</td>
+                        <td>Low</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>DFS (Depth-First Search)</td>
+                        <td>Low</td>
+                        <td>Very Low</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>UCS (Uniform Cost Search)</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="algorithm-details">
+                <p>Solution quality is perhaps the most critical metric for athlete training. A* algorithm excels in both performance optimization and athlete wellbeing factors, although it comes at the cost of higher computational demands. CSP provides an excellent balance for managing constraints like injury prevention, while Genetic algorithms offer strong adaptability for complex training scenarios.</p>
+            </div>
+
+            <h3>Training Schedule Properties</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Rest/Training Balance</th>
+                        <th>Workout Intensity Distribution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CSP (Constraint Satisfaction Problem)</td>
+                        <td>Good</td>
+                        <td>Well-constrained</td>
+                    </tr>
+                    <tr>
+                        <td>Greedy-best-first</td>
+                        <td>Fair</td>
+                        <td>Sometimes unbalanced</td>
+                    </tr>
+                    <tr>
+                        <td>A*</td>
+                        <td>Very Good</td>
+                        <td>Balanced peaks</td>
+                    </tr>
+                    <tr>
+                        <td>Genetic</td>
+                        <td>Good</td>
+                        <td>Well-distributed</td>
+                    </tr>
+                    <tr>
+                        <td>BFS (Breadth-First Search)</td>
+                        <td>Poor</td>
+                        <td>Highly unbalanced</td>
+                    </tr>
+                    <tr>
+                        <td>DFS (Depth-First Search)</td>
+                        <td>Poor</td>
+                        <td>Highly unbalanced</td>
+                    </tr>
+                    <tr>
+                        <td>UCS (Uniform Cost Search)</td>
+                        <td>Fair</td>
+                        <td>Cost-optimized</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="algorithm-details">
+                <p>The training schedule properties determine how effectively athletes progress over time. A* algorithm's ability to find optimal paths makes it superior for balanced training plans, while CSP excels at maintaining constraints for injury prevention. Genetic algorithms provide good adaptability for varying athlete conditions, while DFS and BFS typically produce less balanced training schedules.</p>
+            </div>
+        </section>
+
+        <section class="visualization">
+            <h2>Performance Visualization</h2>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>Algorithm Performance Comparison</h4>
+                </div>
+                <div class="chart-container">
+                    <!-- Placeholder for visualization chart -->
+                    <div style="background-color: #f5f8f5; height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                        <i class="fas fa-chart-bar" style="font-size: 40px; color: #4F7942; margin-right: 15px;"></i>
+                        <span style="color: #666; font-size: 16px;">Algorithm Performance Comparison Charts</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="recommendation">
+            <h2>Recommendations</h2>
+            <div class="recommendation-grid">
+                <div class="recommendation-card">
+                    <div class="recommendation-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <h4>For Elite Athletes</h4>
+                    <p>The A* algorithm provides the most sophisticated training plans that excel in long-term adaptation and injury prevention, despite its higher computational requirements.</p>
+                </div>
+                
+                <div class="recommendation-card">
+                    <div class="recommendation-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <h4>For Amateur Athletes</h4>
+                    <p>CSP offers an excellent balance between solution quality and computational efficiency.</p>
+                </div>
+                
+                <div class="recommendation-card">
+                    <div class="recommendation-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>For Mobile Applications</h4>
+                    <p>DFS provides instant feedback with minimal resource usage, making it ideal for on-the-go training guidance.</p>
+                </div>
+                
+                <div class="recommendation-card">
+                    <div class="recommendation-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>For Team Sports</h4>
+                    <p>Genetic Algorithms can efficiently process multiple athlete profiles simultaneously while maintaining good solution quality.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>Last updated: May 7, 2025 | PerfoMax Athlete Performance Prediction System</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
+

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athlete Performance Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h2>PerfoMax</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="{% if active_page == 'overview' %}active{% endif %}">
+                        <a href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-th-large"></i>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li class="{% if active_page == 'schedule' %}active{% endif %}">
+                        <a href="{{ url_for('schedule') }}">
+                            <i class="fas fa-list"></i>
+                            <span>Schedule Details</span>
+                        </a>
+                    </li>
+                    <li class="{% if active_page == 'predictions' %}active{% endif %}">
+                        <a href="{{ url_for('predictions') }}">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Predictions</span>
+                        </a>
+                    </li>
+                    <li class="{% if active_page == 'history' %}active{% endif %}">
+                        <a href="{{ url_for('history') }}">
+                            <i class="fas fa-clipboard"></i>
+                            <span>History/Logs</span>
+                        </a>
+                    </li>
+                    <li class="{% if active_page == 'settings' %}active{% endif %}">
+                        <a href="{{ url_for('settings') }}">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="{% if active_page == 'new_search' %}active{% endif %} new-search-tab">
+                        <a href="{{ url_for('search') }}" class="new-search-link">
+                            <i class="fas fa-search"></i>
+                            <span>New Search</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="page-title">
+                    {% block page_title %}{% endblock %}
+                </div>
+                <div class="user-actions">
+                    <a href="{{ url_for('logout') }}" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Chart.js plugin for animations -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <!-- Load our custom charts JavaScript -->
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+</body>
+</html>

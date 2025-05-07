@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Plan Search - PerfoMax</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="{{ url_for('index') }}">
+                        <h1>PerfoMax</h1>
+                    </a>
+                </div>
+                
+                <nav class="main-nav">
+                    <ul class="nav-links">
+                        <li><a href="{{ url_for('index') }}">Home</a></li>
+                        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                        <li><a href="{{ url_for('index') }}#about">About</a></li>
+                        <li><a href="{{ url_for('documentation') }}">Documentation</a></li>
+                        <li><a href="{{ url_for('search') }}" class="active">Search</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Page Title Section -->
+    <section class="page-title-section">
+        <div class="container">
+            <div class="page-title">
+                <h1>Training Plan Search</h1>
+                <p>Find your optimal training schedule using AI-powered search algorithms</p>
+            </div>
+        </div>
+    </section>
+    
+    <main>
+        <div class="container">
+            <section class="search-section">
+                <div class="search-wizard">
+                    <!-- Progress Bar -->
+                    <div class="progress-container">
+                        <div class="progress-bar" id="search-progress-bar"></div>
+                        <div class="progress-steps">
+                            <div class="step active" data-step="1">
+                                <div class="step-icon"><i class="fas fa-running"></i></div>
+                                <div class="step-label">Current State</div>
+                            </div>
+                            <div class="step" data-step="2">
+                                <div class="step-icon"><i class="fas fa-trophy"></i></div>
+                                <div class="step-label">Goal State</div>
+                            </div>
+                            <div class="step" data-step="3">
+                                <div class="step-icon"><i class="fas fa-brain"></i></div>
+                                <div class="step-label">Algorithm</div>
+                            </div>
+                            <div class="step" data-step="4">
+                                <div class="step-icon"><i class="fas fa-search"></i></div>
+                                <div class="step-label">Results</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Search Form Container -->
+                    <div class="search-form-container">
+                        <!-- Step 1: Current State -->
+                        <div class="search-step" id="step-1" data-step="1">
+                            <div class="step-header">
+                                <h2>How are you feeling today?</h2>
+                                <p>Let's start by understanding your current condition</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="initial-performance">Current Performance Level</label>
+                                <p class="field-description">How well are you performing compared to your potential?</p>
+                                <div class="range-slider-container">
+                                    <input type="range" id="initial-performance" name="initial-performance" min="1" max="10" step="0.1" value="5.0">
+                                    <div class="range-labels">
+                                        <span>Low (1)</span>
+                                        <span class="value-display" id="initial-performance-display">5.0</span>
+                                        <span>High (10)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="initial-fatigue">Current Fatigue Level</label>
+                                <p class="field-description">How tired or exhausted do you feel?</p>
+                                <div class="range-slider-container">
+                                    <input type="range" id="initial-fatigue" name="initial-fatigue" min="0" max="5" step="0.1" value="1.0">
+                                    <div class="range-labels">
+                                        <span>Rested (0)</span>
+                                        <span class="value-display" id="initial-fatigue-display">1.0</span>
+                                        <span>Exhausted (5)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="initial-risk">Current Injury Risk</label>
+                                <p class="field-description">How susceptible to injury do you feel?</p>
+                                <div class="range-slider-container">
+                                    <input type="range" id="initial-risk" name="initial-risk" min="0" max="1" step="0.01" value="0.1">
+                                    <div class="range-labels">
+                                        <span>Low Risk (0)</span>
+                                        <span class="value-display" id="initial-risk-display">0.1</span>
+                                        <span>High Risk (1)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-primary btn-next" data-next="2">Next: Set Your Goals</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 2: Goal State -->
+                        <div class="search-step" id="step-2" data-step="2" style="display: none;">
+                            <div class="step-header">
+                                <h2>What do you want to achieve?</h2>
+                                <p>Let's define your training goals</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="target-performance">Target Performance Level</label>
+                                <p class="field-description">What performance level are you aiming for?</p>
+                                <div class="range-slider-container">
+                                    <input type="range" id="target-performance" name="target-performance" min="1" max="10" step="0.1" value="8.0">
+                                    <div class="range-labels">
+                                        <span>Low (1)</span>
+                                        <span class="value-display" id="target-performance-display">8.0</span>
+                                        <span>High (10)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="max-fatigue">Maximum Acceptable Fatigue</label>
+                                <p class="field-description">What's the highest fatigue level you're willing to tolerate?</p>
+                                <div class="range-slider-container">
+                                    <input type="range" id="max-fatigue" name="max-fatigue" min="0" max="5" step="0.1" value="3.5">
+                                    <div class="range-labels">
+                                        <span>Low (0)</span>
+                                        <span class="value-display" id="max-fatigue-display">3.5</span>
+                                        <span>High (5)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="max-risk">Maximum Acceptable Risk</label>
+                                <p class="field-description">What's the highest injury risk you're willing to tolerate?</p>
+                                <div class="range-slider-container">
+                                    <input type="range" id="max-risk" name="max-risk" min="0" max="1" step="0.01" value="0.2">
+                                    <div class="range-labels">
+                                        <span>Low Risk (0)</span>
+                                        <span class="value-display" id="max-risk-display">0.2</span>
+                                        <span>High Risk (1)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="training-days">Training Period (Days)</label>
+                                <p class="field-description">How many days do you want your training plan to cover?</p>
+                                <div class="range-slider-container">
+                                    <input type="range" id="training-days" name="training-days" min="5" max="15" step="1" value="10">
+                                    <div class="range-labels">
+                                        <span>5 Days</span>
+                                        <span class="value-display" id="training-days-display">10</span>
+                                        <span>15 Days</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary btn-previous" data-previous="1">Previous</button>
+                                <button type="button" class="btn btn-primary btn-next" data-next="3">Next: Choose Algorithm</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 3: Algorithm Selection -->
+                        <div class="search-step" id="step-3" data-step="3" style="display: none;">
+                            <div class="step-header">
+                                <h2>Choose Your Search Strategy</h2>
+                                <p>Select the algorithm that will find your optimal training plan</p>
+                                <a href="{{ url_for('documentation') }}" target="_blank" class="docs-link">
+                                    <i class="fas fa-info-circle"></i> Learn more about these algorithms
+                                </a>
+                            </div>
+                            
+                            <div class="algorithm-selection">
+                                <div class="algorithm-options">
+                                    <div class="algorithm-option">
+                                        <input type="radio" name="algorithm" id="algorithm-astar" value="astar" checked>
+                                        <label for="algorithm-astar">
+                                            <span class="option-icon"><i class="fas fa-star"></i></span>
+                                            <div class="option-content">
+                                                <h4>A* Search</h4>
+                                                <p>Optimal balance between performance and athlete wellbeing</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="algorithm-option">
+                                        <input type="radio" name="algorithm" id="algorithm-greedy" value="greedy">
+                                        <label for="algorithm-greedy">
+                                            <span class="option-icon"><i class="fas fa-bolt"></i></span>
+                                            <div class="option-content">
+                                                <h4>Greedy Search</h4>
+                                                <p>Fast results prioritizing immediate improvements</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="algorithm-option">
+                                        <input type="radio" name="algorithm" id="algorithm-bfs" value="bfs">
+                                        <label for="algorithm-bfs">
+                                            <span class="option-icon"><i class="fas fa-th"></i></span>
+                                            <div class="option-content">
+                                                <h4>BFS Search</h4>
+                                                <p>Thorough exploration of training possibilities</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="algorithm-option">
+                                        <input type="radio" name="algorithm" id="algorithm-dfs" value="dfs">
+                                        <label for="algorithm-dfs">
+                                            <span class="option-icon"><i class="fas fa-level-down-alt"></i></span>
+                                            <div class="option-content">
+                                                <h4>DFS Search</h4>
+                                                <p>Quick path finding with minimal resource usage</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="algorithm-option">
+                                        <input type="radio" name="algorithm" id="algorithm-ucs" value="ucs">
+                                        <label for="algorithm-ucs">
+                                            <span class="option-icon"><i class="fas fa-balance-scale"></i></span>
+                                            <div class="option-content">
+                                                <h4>UCS Search</h4>
+                                                <p>Focuses on minimizing training costs and fatigue</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="algorithm-option">
+                                        <input type="radio" name="algorithm" id="algorithm-genetic" value="genetic">
+                                        <label for="algorithm-genetic">
+                                            <span class="option-icon"><i class="fas fa-dna"></i></span>
+                                            <div class="option-content">
+                                                <h4>Genetic Algorithm</h4>
+                                                <p>Evolves creative solutions for complex training scenarios</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Advanced Parameters Section (initially hidden) -->
+                            <div class="advanced-parameters">
+                                <div class="advanced-toggle">
+                                    <button type="button" id="advanced-toggle-btn" class="btn btn-text">
+                                        <i class="fas fa-cog"></i> Advanced Parameters <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                                
+                                <div id="advanced-options" style="display: none;">
+                                    <!-- A* Parameters -->
+                                    <div class="algorithm-params" id="astar-params">
+                                        <div class="form-group">
+                                            <label for="astar-max-iterations">Maximum Iterations</label>
+                                            <input type="number" id="astar-max-iterations" name="astar-max-iterations" min="1000" max="100000" step="1000" value="10000">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="astar-time-limit">Time Limit (seconds)</label>
+                                            <input type="number" id="astar-time-limit" name="astar-time-limit" min="10" max="300" step="10" value="60">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Genetic Parameters -->
+                                    <div class="algorithm-params" id="genetic-params" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="genetic-population-size">Population Size</label>
+                                            <input type="number" id="genetic-population-size" name="genetic-population-size" min="20" max="500" step="10" value="100">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="genetic-generations">Number of Generations</label>
+                                            <input type="number" id="genetic-generations" name="genetic-generations" min="10" max="1000" step="10" value="50">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="genetic-mutation-rate">Mutation Rate</label>
+                                            <input type="number" id="genetic-mutation-rate" name="genetic-mutation-rate" min="0.01" max="0.5" step="0.01" value="0.1">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- BFS Parameters -->
+                                    <div class="algorithm-params" id="bfs-params" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="bfs-max-depth">Maximum Depth</label>
+                                            <input type="number" id="bfs-max-depth" name="bfs-max-depth" min="5" max="30" step="1" value="15">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- DFS Parameters -->
+                                    <div class="algorithm-params" id="dfs-params" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="dfs-max-depth">Maximum Depth</label>
+                                            <input type="number" id="dfs-max-depth" name="dfs-max-depth" min="5" max="30" step="1" value="15">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- UCS Parameters -->
+                                    <div class="algorithm-params" id="ucs-params" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="ucs-max-iterations">Maximum Iterations</label>
+                                            <input type="number" id="ucs-max-iterations" name="ucs-max-iterations" min="1000" max="100000" step="1000" value="10000">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ucs-time-limit">Time Limit (seconds)</label>
+                                            <input type="number" id="ucs-time-limit" name="ucs-time-limit" min="10" max="300" step="10" value="60">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Greedy Parameters -->
+                                    <div class="algorithm-params" id="greedy-params" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="greedy-max-iterations">Maximum Iterations</label>
+                                            <input type="number" id="greedy-max-iterations" name="greedy-max-iterations" min="1000" max="100000" step="1000" value="10000">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="greedy-time-limit">Time Limit (seconds)</label>
+                                            <input type="number" id="greedy-time-limit" name="greedy-time-limit" min="10" max="300" step="10" value="60">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary btn-previous" data-previous="2">Previous</button>
+                                <button type="button" id="run-search-btn" class="btn btn-primary">Find Optimal Plan</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 4: Results -->
+                        <div class="search-step" id="step-4" data-step="4" style="display: none;">
+                            <div class="step-header">
+                                <h2>Your Optimal Training Plan</h2>
+                                <p id="search-status">Search in progress...</p>
+                            </div>
+                            
+                            <!-- Search Progress -->
+                            <div class="search-progress" id="search-progress">
+                                <div class="progress-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Nodes Explored</div>
+                                        <div class="stat-value" id="nodes-explored">0</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-label">Current Queue Size</div>
+                                        <div class="stat-value" id="queue-size">0</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-label">Elapsed Time</div>
+                                        <div class="stat-value" id="elapsed-time">0s</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="search-loading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Success Results (initially hidden) -->
+                            <div class="search-results" id="search-results-success" style="display: none;">
+                                <!-- Results Summary -->
+                                <div class="results-summary">
+                                    <div class="summary-item">
+                                        <div class="summary-icon"><i class="fas fa-trophy"></i></div>
+                                        <div class="summary-label">Final Performance</div>
+                                        <div class="summary-value" id="final-performance">8.5</div>
+                                    </div>
+                                    <div class="summary-item">
+                                        <div class="summary-icon"><i class="fas fa-battery-half"></i></div>
+                                        <div class="summary-label">Final Fatigue</div>
+                                        <div class="summary-value" id="final-fatigue">2.3</div>
+                                    </div>
+                                    <div class="summary-item">
+                                        <div class="summary-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <div class="summary-label">Final Risk</div>
+                                        <div class="summary-value" id="final-risk">0.15</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Performance Chart -->
+                                <div class="results-chart">
+                                    <h3>Performance Progression</h3>
+                                    <canvas id="performance-chart"></canvas>
+                                </div>
+                                
+                                <!-- Training Schedule Table -->
+                                <div class="training-schedule">
+                                    <h3>Training Schedule</h3>
+                                    <div class="table-container">
+                                        <table id="schedule-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Day</th>
+                                                    <th>Intensity</th>
+                                                    <th>Duration</th>
+                                                    <th>Description</th>
+                                                    <th>Performance</th>
+                                                    <th>Fatigue</th>
+                                                    <th>Risk</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="schedule-body">
+                                                <!-- Will be filled by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <!-- Algorithm Statistics -->
+                                <div class="algorithm-stats">
+                                    <h3>Search Algorithm Statistics</h3>
+                                    <div class="stats-container">
+                                        <div class="stat-card">
+                                            <div class="stat-title">Nodes Explored</div>
+                                            <div class="stat-value" id="stat-nodes-explored">1,245</div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-title">Max Queue Size</div>
+                                            <div class="stat-value" id="stat-max-queue">324</div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-title">Execution Time</div>
+                                            <div class="stat-value" id="stat-execution-time">2.4s</div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-title">Cache Hits</div>
+                                            <div class="stat-value" id="stat-cache-hits">458</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Failure Results (initially hidden) -->
+                            <div class="search-results" id="search-results-failure" style="display: none;">
+                                <div class="failure-message">
+                                    <div class="failure-icon">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </div>
+                                    <h3>No Solution Found</h3>
+                                    <p>The search algorithm couldn't find a solution that meets all your constraints. Consider adjusting your parameters:</p>
+                                    <ul>
+                                        <li>Lower your target performance</li>
+                                        <li>Increase your maximum acceptable fatigue or risk</li>
+                                        <li>Increase the training period length</li>
+                                        <li>Try a different search algorithm</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="algorithm-stats">
+                                    <h3>Search Algorithm Statistics</h3>
+                                    <div class="stats-container">
+                                        <div class="stat-card">
+                                            <div class="stat-title">Nodes Explored</div>
+                                            <div class="stat-value" id="fail-nodes-explored">3,245</div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-title">Max Queue Size</div>
+                                            <div class="stat-value" id="fail-max-queue">824</div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-title">Execution Time</div>
+                                            <div class="stat-value" id="fail-execution-time">45.2s</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary btn-previous" data-previous="3">Back to Algorithm</button>
+                                <button type="button" id="start-over-btn" class="btn btn-primary">Start New Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>Last updated: {{ current_date }} | PerfoMax Athlete Performance Prediction System</p>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+</body>
+</html>
