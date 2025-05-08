@@ -24,8 +24,8 @@ class GreedySearch:
         self.execution_time = 0
         
         # Set target day and performance
-        self.problem.target_day = 14
-        self.problem.target_perf = 8
+        self.problem.target_day = 30
+        self.problem.target_perf = 9
         self.problem.max_fatigue = 2.7
         self.problem.max_risk = 0.2
         
