@@ -1,65 +1,88 @@
 from collections import deque
 from Problem import AthletePerformanceProblem
-
-class Node:
-    def __init__(self, state, parent=None, action=None):
-        self.state = state
-        self.parent = parent
-        self.action = action
-        self.depth = 0 if parent is None else parent.depth + 1
-
-    def __hash__(self):
-        return hash(self.state)
-
-    def __eq__(self, other):
-        return isinstance(other, Node) and self.state == other.state
+from Node import Node
 
 class DFSSearch:
+    """
+    Implementation of Depth-First Search algorithm for athlete training plans.
+    
+    This class performs a depth-first search to find a training plan
+    by exploring as far as possible along each branch before backtracking.
+    DFS can find solutions quickly in some cases but does not guarantee optimality.
+    """
     def __init__(self, problem):
+        """
+        Initialize the DFS search algorithm with a problem instance.
+        
+        Args:
+            problem: An AthletePerformanceProblem instance
+        """
         self.problem = problem
         self.expanded_nodes = 0
         self.max_stack_size = 0
 
         # Set target day and performance (needed for is_goal)
         self.problem.target_day = 10
-        self.problem.target_perf = 6.5
+        self.problem.target_perf = 7
         self.problem.max_fatigue = 4
-        self.problem.max_risk = 0.5
+        self.problem.max_risk = 0.3
 
     def search(self, max_depth=10):
-        start_node = Node(state=self.problem.initial_state)
+        """
+        Perform depth-first search to find a training plan.
+        
+        Args:
+            max_depth: Maximum depth to explore in the search tree
+        
+        Returns:
+            The goal node if a solution is found, None otherwise
+        """
+        start_node = Node(state=self.problem.initial_state, costless=True)
+        # Use stack (LIFO) for DFS
         stack = deque([start_node])
+        # Track explored states to avoid cycles
         explored = set()
 
         while stack:
+            # Get next node to explore (LIFO for DFS)
             current_node = stack.pop()
 
             day, fatigue, risk, performance, _ = current_node.state
+            # Check if goal state (using custom goal check)
             if day >= self.problem.target_day and performance >= self.problem.target_perf:
                 print(f"Goal found! Day: {day}, Performance: {performance:.2f}, Fatigue: {fatigue:.2f}, Risk: {risk:.2f}")
                 return current_node
 
+            # Skip already explored states
             rounded_state = self._round_state(current_node.state)
             if rounded_state in explored:
                 continue
 
+            # Mark this state as explored
             explored.add(rounded_state)
 
+            # Get the valid actions from the current state
             for action in self.problem.actions():
+                # Apply the action to get a new state
                 current_state = current_node.state
                 new_state = self.problem.apply_action(current_state, action)
 
+                # Skip invalid states
                 if not self.is_valid(new_state):
                     continue
 
-                child_node = Node(new_state, parent=current_node, action=action)
+                # Create a new node for this state
+                child_node = Node(new_state, parent=current_node, action=action, costless=True)
 
+                # Skip if exceeds maximum depth
                 if child_node.depth > max_depth:
                     continue
 
+                # Add to stack for further exploration
                 stack.append(child_node)
 
             self.expanded_nodes += 1
+            # Track maximum stack size
             self.max_stack_size = max(self.max_stack_size, len(stack))
             
             # Progress indicator
@@ -67,27 +90,55 @@ class DFSSearch:
                 print(f"Explored {self.expanded_nodes} nodes, stack size: {len(stack)}, " 
                       f"Current state: Day {day}, F={fatigue:.2f}, R={risk:.2f}, P={performance:.2f}, Depth={current_node.depth}")
 
+        # If we've examined all nodes and haven't found a solution, return None
         return None
 
     def is_valid(self, state):
+        """
+        Check if a state is valid based on constraints.
+        
+        Args:
+            state: The state to check
+            
+        Returns:
+            True if the state is valid, False otherwise
+        """
         _, fatigue, risk, _, _ = state
         return fatigue <= self.problem.max_fatigue and risk <= self.problem.max_risk
 
     def _round_state(self, state):
+        """
+        Round state values to reduce the state space and avoid similar states.
+        
+        Args:
+            state: The state to round
+            
+        Returns:
+            A tuple with rounded state values
+        """
         day, fatigue, risk, performance, _ = state
         return (
             day,
-            round(fatigue, 1),
-            round(risk, 1),
-            round(performance, 1)
+            round(fatigue, 1),  # Round fatigue to 1 decimal place
+            round(risk, 1),     # Round risk to 1 decimal place
+            round(performance, 1)  # Round performance to 1 decimal place
         )
 
     def reconstruct_path(self, node):
+        """
+        Reconstruct the path from the initial state to the goal state.
+        
+        Args:
+            node: The goal node
+            
+        Returns:
+            A list of actions that lead from the initial state to the goal state
+        """
         path = []
         while node and node.parent:
             path.append(node.action)
             node = node.parent
-        return path[::-1]
+        return path[::-1]  # reverse to get the correct order
 
 def test_dfs_search():
     print("Testing DFS Algorithm")

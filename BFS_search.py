@@ -1,28 +1,6 @@
-import queue
 from collections import deque
-import numpy as np
-import pandas as pd
 from Problem import AthletePerformanceProblem
-
-class Node:
-    """
-    A node in the search tree representing a state in the search space.
-    
-    Each node contains a state (day, fatigue, risk, performance, history),
-    a reference to its parent node, the action that led to this state,
-    and the depth in the search tree.
-    """
-    def __init__(self, state, parent=None, action=None):
-        self.state = state
-        self.parent = parent
-        self.action = action
-        self.depth = 0 if parent is None else parent.depth + 1
-
-    def __hash__(self):
-        return hash(self.state)  # Only hash the numeric part of state
-
-    def __eq__(self, other):
-        return isinstance(other, Node) and self.state == other.state
+from Node import Node
 
 class BFSSearch:
     """
@@ -53,7 +31,7 @@ class BFSSearch:
         """
         Perform breadth-first search to find an optimal training plan.
         """
-        start_node = Node(state=self.problem.initial_state)
+        start_node = Node(state=self.problem.initial_state, costless=True)
         
         # Use deque for more efficient BFS queue
         frontier = deque([start_node])
@@ -90,7 +68,7 @@ class BFSSearch:
                     continue
                 
                 # Create a new node for this state
-                child_node = Node(new_state, parent=current_node, action=action)
+                child_node = Node(new_state, parent=current_node, action=action, costless=True)
                 
                 # Skip if exceeds maximum depth
                 if child_node.depth > max_depth:
