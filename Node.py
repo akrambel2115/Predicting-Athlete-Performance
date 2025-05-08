@@ -15,13 +15,14 @@ class Node:
         h: Heuristic value (estimated cost to goal)
         depth: Depth of this node in the search tree
     """
-    def __init__(self, state, parent=None, action=None, g=0, f=0, h=0):
+    def __init__(self, state, parent=None, action=None, g=0, f=0, h=0, costless=False):
         self.state = state
         self.parent = parent
         self.action = action
-        self.g = g
-        self.f = f
-        self.h = h
+        if costless == False:
+            self.g = g
+            self.f = f
+            self.h = h
 
         if parent is None:
             self.depth = 0
