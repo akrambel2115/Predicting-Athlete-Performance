@@ -16,7 +16,7 @@ class AthleteTrainingCSP:
     def __init__(self, 
         initial_state=(0, 0.0, 0.0, 1.0),
         target_day=30,
-        max_fatigue=3.0,
+        max_fatigue=2.7,
         max_risk=0.5):
         
         """
@@ -299,10 +299,10 @@ def test_backtracking_csp_max_performance():
     
     # CSP problem with specific parameters
     problem = AthleteTrainingCSP(
-        initial_state=(0, 1.5, 0.1, 6.0),  # initial state
+        initial_state=(0, 1.8, 0.2, 6.0),  # initial state
         target_day=14,                    
-        max_fatigue=3,                 
-        max_risk=0.22                      
+        max_fatigue=2.75,                 
+        max_risk=0.3                      
     )
     
     print("Finding solution to maximize performance...")

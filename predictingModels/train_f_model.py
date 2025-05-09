@@ -39,13 +39,13 @@ df["delta_f"] = (
 FEATURES_F = [
     "load",
     "action_intensity",
-    "fatigue_post",       # ← now use the filled values
+    "fatigue_post",      
     "sleep_duration",
     "sleep_quality",
     "stress",
     "is_rest_day",
     "load_rolling_7",
-    "fatigue_post_rolling_7",    # ensure you compute this from fatigue_post_filled as well
+    "fatigue_post_rolling_7", 
     "stress_rolling_7",
     "sleep_duration_rolling_7",
     "sleep_quality_rolling_7",
@@ -65,7 +65,7 @@ Xf_train, Xf_val, yf_train, yf_val = train_test_split(
     Xf, yf, test_size=0.2, random_state=42
 )
 
-model_f = RandomForestRegressor(n_estimators=100, random_state=42)
+model_f = RandomForestRegressor(n_estimators=150, random_state=42)
 model_f.fit(Xf_train, yf_train)
 
 yf_pred = model_f.predict(Xf_val)
