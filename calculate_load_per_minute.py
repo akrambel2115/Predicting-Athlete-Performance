@@ -3,7 +3,7 @@
 import pandas as pd
 
 
-def calculate_load_per_minute(csv_path="data/soccerData/soccer_data_cleaned.csv"):
+def calculate_load_per_minute(csv_path="data/soccer_data_cleaned.csv"):
     df = pd.read_csv(csv_path, parse_dates=["date"])
 
     # Map intensity from action values
