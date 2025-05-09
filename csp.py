@@ -16,7 +16,7 @@ class AthleteTrainingCSP:
     def __init__(self, 
         initial_state=(0, 0.0, 0.0, 1.0),
         target_day=30,
-        max_fatigue=3.0,
+        max_fatigue=2.7,
         max_risk=0.5):
         
         """
@@ -340,8 +340,6 @@ class AthleteTrainingCSP:
                 recovery_value + 
                 long_term_value * LONG_TERM_POTENTIAL 
             )
-            print(day)
-            print(f"action_values[action] = ({performance_value*remaining_days_factor} +{efficiency * 50} + {(future_fatigue_headroom - fatigue_headroom) * FATIGUE_HEADROOM_WEIGHT} + {(future_risk_headroom - risk_headroom) * RISK_HEADROOM_WEIGHT} +{recovery_value} + {long_term_value * LONG_TERM_POTENTIAL} )")
         # Sort actions in descending order (best first) based on the scoring system we set
         return sorted(actions, key=lambda a: action_values.get(a, 0), reverse=True)
 
@@ -353,7 +351,7 @@ def test_backtracking_csp_max_performance():
     
     # CSP problem with specific parameters
     problem = AthleteTrainingCSP(
-        initial_state=(0, 1.5, 0.1, 6.0),  # initial state
+        initial_state=(0, 1.8, 0.2, 6.0),  # initial state
         target_day=14,                    
         max_fatigue=2.7,                 
         max_risk=0.22                      
