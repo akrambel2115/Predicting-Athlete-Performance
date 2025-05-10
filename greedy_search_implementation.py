@@ -27,7 +27,7 @@ class GreedySearch:
         self.problem.target_day = 30
         self.problem.target_perf = 9
         self.problem.max_fatigue = 2.7
-        self.problem.max_risk = 0.2
+        self.problem.max_risk = 0.3
         
     def search(self, max_depth=float('inf')):
         """
@@ -167,7 +167,7 @@ def test_greedy_search():
     
     # Create the athlete performance problem with specific parameters
     problem = AthletePerformanceProblem(
-        initial_state=(0, 1.5, 0.05, 6)  # Initial state (day, fatigue, risk, performance)
+        initial_state=(0, 1.5, 0.12, 6)  # Initial state (day, fatigue, risk, performance)
     )
     
     # Create the searcher

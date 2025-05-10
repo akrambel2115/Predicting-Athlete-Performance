@@ -16,7 +16,7 @@ class AthleteTrainingCSP:
     def __init__(self, 
         initial_state=(0, 0.0, 0.0, 1.0),
         target_day=30,
-        max_fatigue=3.0,
+        max_fatigue=2.7,
         max_risk=0.5):
         
         """
@@ -186,7 +186,7 @@ class AthleteTrainingCSP:
 
             # check if we've reached our goal - the target day
             if day >= self.target_day:
-                # done
+                # done, we assgined each day with of intensity and duration
                 solution_found = True
                 solution = assignment.copy()
                 return True
@@ -229,10 +229,14 @@ class AthleteTrainingCSP:
         
         return solution
     
+    
+    #### FUNCTION DEFINITION: ORDERING DOMAIN VALUES
+    # This function is the heart of the CSP optimizer's decision-making process.
+    # It determines which training actions should be tried first during backtracking search.
     def _get_ordered_domain_values(self, state):
         """
-        Order domain values (actions) by most promising first for the current state.
-        This function maximizes performance gain as the primary objective.
+        Advanced priority ordering of domain values (actions) with a sophisticated formula 
+        that heavily prioritizes performance maximization above all else.
         
         Args:
             state: Current state which includes day, fatigue, risk, performance and history
@@ -240,55 +244,103 @@ class AthleteTrainingCSP:
         Returns:
             List of actions ordered by most promising first (best actions at the beginning)
         """
-        # WEIGHTS TO define the priorities
-        #########################
-        PERFORMANCE_WEIGHT= 100
-        LOW_FATIGUE_WEIGHT= -5
-        LOW_RISK_WEIGHT= -5
-        TRAINING_EFFICIENCY= 20
-        ########################
-        
-        
-        day, fatigue, risk, performance, _ = state
-        
+        # Unpacking the state variables for easier access
+        day, fatigue, risk, performance, history = state
         actions = self.get_domains()
-        
-        # store the calculated action:priority 
         action_values = {}
         
+        
+        #### CONFIGURATION: OPTIMIZATION WEIGHTS
+        PERFORMANCE_WEIGHT = 1000      # 1000 because its our primary objective
+        
+        # Headroom refers to the remaining capacity between the current fatigue/risk levels and their maximum allowable limits.
+        # It indicates how much more stress the athlete can safely handle before reaching their physiological limits.
+        # Higher headroom means more flexibility for intense training in the future.
+        FATIGUE_HEADROOM_WEIGHT = 15   
+        RISK_HEADROOM_WEIGHT = 20      
+        
+        ## Training pattern weights ensure physiologically sound training progression
+        RECOVERY_BONUS = 30            # Value the recovery when fatigue is high
+        LONG_TERM_POTENTIAL = 80      # Value actions with potential future payoff
+        
+        EFFICIENCY= 200
+        
+        #### PREPARATION: CALCULATE CURRENT STATE METRICS
+        ## headroom: how much more fatigue/risk the athlete can handle
+        # 0 means he can handle nothing
+        fatigue_headroom = max(0, self.max_fatigue - fatigue)
+        risk_headroom = max(0, self.max_risk - risk)
+        
+        # Count consecutive training days (days without rest)
+        days_since_rest = sum(1 for h in reversed(history) if h.get('load', 0) > 0.1)
+        
+        # fatigue and risk status
+        # >80% of maximum?  
+        high_fatigue = fatigue > (self.max_fatigue * 0.8)
+        high_risk = risk > (self.max_risk * 0.8)
+        remaining_days_factor= ((day+1)/self.target_day)
+        #### EVALUATION: evaluate EACH POSSIBLE ACTION
         for action in actions:
             intensity, duration = action
             
             future_state = self.apply_action(state, action)
-            
             _, future_fatigue, future_risk, future_performance, _ = future_state
             
-            # we will use this to assign each action a priority
+            ## violate constraints are given negative infinity (so it goes to the end when the domain is sorted)
+            if future_fatigue > self.max_fatigue or future_risk > self.max_risk:
+                action_values[action] = -float('inf') 
+                self.backtrack_stats['pruning_count'] += 1 
+                continue  
+            
             perf_improvement = future_performance - performance
-            risk_added = future_risk - risk
-            fatigue_added= future_fatigue - fatigue 
-            # long_term_potential = intensity * (duration / 60) * 0.05  # estimated future gains
+            
+            ## Training efficiency metrics
+            # Calculate standardized training load (hours equivalent)
+            training_load = intensity * (duration / 60) 
 
-            if future_fatigue >= self.max_fatigue or future_risk >= self.max_risk:
-                # very negative value to actions that violate constraints
-                action_values[action] = -float('inf')
-                            
-            else:      
-                # performance improvement per hour
-                training_efficiency = perf_improvement / max(0.5, duration/60)
+            # Calculate performance gain per unit of training load (with safeguard against division by zero)
+            efficiency = perf_improvement / max(0.5, training_load) if training_load > 0 else 0
+            
+            # Calculate future headroom values to see how action affects future training capacity
+            future_fatigue_headroom = max(0, self.max_fatigue - future_fatigue)
+            future_risk_headroom = max(0, self.max_risk - future_risk)
+                        
+            recovery_value = 0
+            if intensity == 0 and duration == 0:  # Rest day
+                if high_fatigue:
+                    # we give bonuses for the rest if the athlete have high fatigue 
+                    recovery_value = fatigue * RECOVERY_BONUS
                 
-                ### with this formula we give the max priority to the performance 
-                ### and also taking in consideration some other things
-                action_values[action] = (
-                    perf_improvement * PERFORMANCE_WEIGHT +
-                    training_efficiency * TRAINING_EFFICIENCY +
-                    risk_added * LOW_RISK_WEIGHT +       # weights of risk and fatigue are negative
-                    fatigue_added * LOW_FATIGUE_WEIGHT
-                )
+                if days_since_rest > 3:  
+                    # bonus if the athlete hasn't rested in >3 days
+                    recovery_value += days_since_rest * 5
+            
+            
+            # this one has the most important impact on finding an optimal schudule            
+            # high intensity training -> future capacity
+            # we then multiply by the factor of the remaining days because we want the performance to be maximized at the target day not before
+            # this factor may be negative because remaining_days_factor
+            long_term_value = (intensity)*(duration / 60)* (1-remaining_days_factor) 
 
-                
-                
-        # Sort actions by their calculated values in descending order
+
+            ## Performance valuation with exponential weighting
+            # Square positive performance improvements to emphasize their value
+            # Linear weighting for negative performance (avoids excessively punishing small negatives)
+            performance_value = perf_improvement ** 2 * PERFORMANCE_WEIGHT if perf_improvement > 0 else perf_improvement * PERFORMANCE_WEIGHT
+            
+            #print(f"day:{day}")
+            #print(f"long_term_value: {long_term_value}")
+            #print(f"prformance: {performance_value}")
+            #### FINAL SCORING: COMBINE ALL COMPONENTS
+            action_values[action] = (
+                performance_value*remaining_days_factor +
+                efficiency * EFFICIENCY + 
+                (future_fatigue_headroom - fatigue_headroom) * FATIGUE_HEADROOM_WEIGHT + 
+                (future_risk_headroom - risk_headroom) * RISK_HEADROOM_WEIGHT +
+                recovery_value + 
+                long_term_value * LONG_TERM_POTENTIAL 
+            )
+        # Sort actions in descending order (best first) based on the scoring system we set
         return sorted(actions, key=lambda a: action_values.get(a, 0), reverse=True)
 
 def test_backtracking_csp_max_performance():
@@ -299,9 +351,9 @@ def test_backtracking_csp_max_performance():
     
     # CSP problem with specific parameters
     problem = AthleteTrainingCSP(
-        initial_state=(0, 1.5, 0.1, 6.0),  # initial state
+        initial_state=(0, 1.8, 0.2, 6.0),  # initial state
         target_day=14,                    
-        max_fatigue=3,                 
+        max_fatigue=2.7,                 
         max_risk=0.22                      
     )
     
