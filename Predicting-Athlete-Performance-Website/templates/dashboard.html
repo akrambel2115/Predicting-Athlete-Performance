@@ -217,35 +217,37 @@
                 </div>
             </div>
             
-            <!-- Training Intensity Heat Map -->
+            <!-- Risk Level Heat Map -->
             <div class="chart-card">
                 <div class="chart-header">
-                    <h4>Training Intensity Heat Map</h4>
+                    <h4>Risk Level Heat Map</h4>
                     <div class="chart-info">
-                        <span class="info-icon" data-tooltip="Shows training intensity patterns across days">
+                        <span class="info-icon" data-tooltip="Shows injury risk patterns across days">
                             <i class="fas fa-info-circle"></i>
                         </span>
                     </div>
                 </div>
-                <div class="heatmap-container" id="trainingHeatmap">
-                    <!-- Heatmap will be rendered here by JavaScript -->
+                <div class="heatmap-wrapper">
+                    <div class="heatmap-container" id="riskHeatmap">
+                        <!-- Heatmap will be rendered here by JavaScript -->
+                    </div>
                 </div>
                 <div class="heatmap-legend">
                     <div class="legend-item">
-                        <div class="legend-color" style="background-color: rgba(79, 121, 66, 0.1);"></div>
-                        <span>Low</span>
+                        <div class="legend-color" style="background-color: rgba(79, 121, 66, 0.2);"></div>
+                        <span>Low Risk (0-0.3)</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color" style="background-color: rgba(79, 121, 66, 0.4);"></div>
-                        <span>Medium</span>
+                        <span>Moderate Risk (0.3-0.6)</span>
                     </div>
                     <div class="legend-item">
-                        <div class="legend-color" style="background-color: rgba(79, 121, 66, 0.7);"></div>
-                        <span>High</span>
+                        <div class="legend-color" style="background-color: rgba(79, 121, 66, 0.6);"></div>
+                        <span>High Risk (0.6-0.8)</span>
                     </div>
                     <div class="legend-item">
-                        <div class="legend-color" style="background-color: rgba(79, 121, 66, 1);"></div>
-                        <span>Very High</span>
+                        <div class="legend-color" style="background-color: rgba(79, 121, 66, 0.8);"></div>
+                        <span>Critical Risk (0.8-1.0)</span>
                     </div>
                 </div>
             </div>
@@ -595,7 +597,7 @@
                         </div>
                         <div class="history-item-content">
                             <div class="item-title">A* Search Algorithm</div>
-                            <div class="item-details">Calculated optimal training intensity</div>
+                            <div class="item-details">Calculated optimal training intensity (0.72)</div>
                             <div class="item-metrics">
                                 <span class="metric">
                                     <i class="fas fa-clock"></i> 14:35
@@ -619,7 +621,7 @@
                         </div>
                         <div class="history-item-content">
                             <div class="item-title">DFS Search Algorithm</div>
-                            <div class="item-details">Optimized recovery schedule</div>
+                            <div class="item-details">Optimized recovery schedule (Fatigue: 1.8)</div>
                             <div class="item-metrics">
                                 <span class="metric">
                                     <i class="fas fa-clock"></i> 10:22
@@ -643,7 +645,7 @@
                         </div>
                         <div class="history-item-content">
                             <div class="item-title">CSP Solver Algorithm</div>
-                            <div class="item-details">Generated weekly training constraints</div>
+                            <div class="item-details">Generated weekly training constraints (Risk: 0.24)</div>
                             <div class="item-metrics">
                                 <span class="metric">
                                     <i class="fas fa-clock"></i> 16:48
@@ -746,18 +748,18 @@
                                 <tbody>
                                     <tr>
                                         <td>Optimal Training Intensity</td>
-                                        <td>72%</td>
-                                        <td class="positive-change">+4%</td>
+                                        <td>0.72</td>
+                                        <td class="positive-change">+0.04</td>
                                     </tr>
                                     <tr>
                                         <td>Risk Reduction</td>
-                                        <td>18%</td>
-                                        <td class="positive-change">+6%</td>
+                                        <td>0.18</td>
+                                        <td class="positive-change">+0.06</td>
                                     </tr>
                                     <tr>
                                         <td>Performance Improvement</td>
-                                        <td>8%</td>
-                                        <td class="positive-change">+2%</td>
+                                        <td>8.2</td>
+                                        <td class="positive-change">+0.2</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -777,7 +779,7 @@
                             </div>
                             <div class="perf-metric">
                                 <div class="perf-label">Convergence</div>
-                                <div class="perf-value">85%</div>
+                                <div class="perf-value">0.85</div>
                             </div>
                         </div>
                     </div>

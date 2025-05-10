@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize the combined metrics chart
         initCombinedMetricsChart();
         
-        // Initialize the heatmap
-        initTrainingHeatmap();
+        // Initialize the risk heatmap
+        initRiskHeatmap();
         
         // Initialize the metrics table
         initMetricsTable();
@@ -117,12 +117,11 @@ const globalChartOptions = {
 // Training Intensity vs Performance chart
 function initIntensityVsPerformanceChart() {
     const ctx = document.getElementById('intensityVsPerformanceChart').getContext('2d');
-    
-    // Sample data for the last 7 days
+
     const dates = getLastNDays(7);
-    const trainingIntensity = [65, 72, 85, 60, 55, 78, 82];
-    const performance = [76, 70, 65, 72, 78, 74, 80];
-    
+    const trainingIntensity = [0.3, 0.6, 0.9, 0.3, 0.3, 0.6, 0.9];
+    const performance = [7.6, 7.0, 6.5, 7.2, 7.8, 7.4, 8.0];
+
     const intensityPerformanceChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -173,16 +172,22 @@ function initIntensityVsPerformanceChart() {
                 },
                 y: {
                     beginAtZero: true,
-                    max: 100,
+                    max: 1.0,
                     title: {
                         display: true,
-                        text: 'Intensity (%)',
+                        text: 'Intensity (0.3, 0.6, 0.9)',
                         font: {
                             family: "'Poppins', sans-serif",
                             size: 12
                         }
                     },
                     ticks: {
+                        callback: function(value) {
+                            if ([0.3, 0.6, 0.9].includes(value)) {
+                                return value;
+                            }
+                            return '';
+                        },
                         font: {
                             family: "'Poppins', sans-serif"
                         }
@@ -193,11 +198,11 @@ function initIntensityVsPerformanceChart() {
                 },
                 y1: {
                     beginAtZero: true,
-                    max: 100,
+                    max: 10,
                     position: 'right',
                     title: {
                         display: true,
-                        text: 'Performance (%)',
+                        text: 'Performance (0-10)',
                         font: {
                             family: "'Poppins', sans-serif",
                             size: 12
@@ -235,8 +240,7 @@ function initIntensityVsPerformanceChart() {
             }
         }
     });
-    
-    // Store reference to chart for updates
+
     window.intensityPerformanceChart = intensityPerformanceChart;
 }
 
@@ -261,7 +265,16 @@ const enhancedDonutOptions = {
             ...globalChartOptions.plugins.tooltip,
             callbacks: {
                 label: function(context) {
-                    return context.label + ': ' + context.parsed + '%';
+                    // Different formatting based on the chart ID
+                    if (context.chart.canvas.id === 'performanceChart') {
+                        return context.label + ': ' + parseFloat(context.parsed).toFixed(1) + ' (0-10 scale)';
+                    } else if (context.chart.canvas.id === 'fatigueChart') {
+                        return context.label + ': ' + parseFloat(context.parsed).toFixed(1) + ' (0-4 scale)';
+                    } else if (context.chart.canvas.id === 'injuryRiskChart') {
+                        return context.label + ': ' + parseFloat(context.parsed).toFixed(2);
+                    } else {
+                        return context.label + ': ' + parseFloat(context.parsed).toFixed(1);
+                    }
                 }
             }
         }
@@ -278,8 +291,9 @@ const enhancedDonutOptions = {
 function initInjuryRiskChart() {
     const ctx = document.getElementById('injuryRiskChart').getContext('2d');
     
-    // Current injury risk (24%)
-    const injuryRisk = 24;
+    // Current injury risk (0.24 on a relative scale)
+    const injuryRisk = 0.24;
+    const riskPercentage = injuryRisk * 100; // Convert to percentage for chart display
     
     // Create gradient
     const riskGradient = ctx.createLinearGradient(0, 0, 0, 200);
@@ -291,7 +305,7 @@ function initInjuryRiskChart() {
         data: {
             labels: ['Risk', 'Safe'],
             datasets: [{
-                data: [injuryRisk, 100 - injuryRisk],
+                data: [riskPercentage, 100 - riskPercentage],
                 backgroundColor: [
                     riskGradient,
                     '#f5f5f5'
@@ -308,23 +322,23 @@ function initInjuryRiskChart() {
     });
     
     // Draw center text with smooth animation
-    let currentPercentage = 0;
-    const targetPercentage = injuryRisk;
+    let currentValue = 0;
+    const targetValue = injuryRisk;
     
-    const renderPercentage = () => {
-        if (currentPercentage < targetPercentage) {
-            const step = Math.max(1, Math.ceil((targetPercentage - currentPercentage) / 10));
-            currentPercentage = Math.min(currentPercentage + step, targetPercentage);
+    const renderValue = () => {
+        if (currentValue < targetValue) {
+            const step = Math.max(0.01, (targetValue - currentValue) / 10);
+            currentValue = Math.min(currentValue + step, targetValue);
             
             // Update DOM element
             const valueEl = document.getElementById('injuryRiskValue');
-            if (valueEl) valueEl.textContent = currentPercentage + '%';
+            if (valueEl) valueEl.textContent = currentValue.toFixed(2);
             
-            requestAnimationFrame(renderPercentage);
+            requestAnimationFrame(renderValue);
         }
     };
     
-    setTimeout(renderPercentage, 500); // Start a bit after chart animation begins
+    setTimeout(renderValue, 500); // Start a bit after chart animation begins
     
     // Draw center text in chart
     Chart.register({
@@ -339,12 +353,12 @@ function initInjuryRiskChart() {
                 const fontSize = (height / 150).toFixed(2);
                 const fontFamily = "'Poppins', sans-serif";
                 
-                // Draw risk percentage
+                // Draw risk value
                 ctx.font = `bold ${fontSize}em ${fontFamily}`;
                 ctx.textBaseline = 'middle';
                 ctx.textAlign = 'center';
                 
-                const text = currentPercentage + '%';
+                const text = currentValue.toFixed(2);
                 const textY = height / 2 - 10;
                 
                 ctx.fillStyle = chartColors.danger;
@@ -369,9 +383,9 @@ function initInjuryRiskChart() {
 // Performance Chart (Donut)
 function initPerformanceChart() {
     const ctx = document.getElementById('performanceChart').getContext('2d');
-    
-    // Current performance level (83%)
-    const performanceLevel = 83;
+      // Current performance level (8.3 on scale of 0-10)
+    const performanceLevel = 8.3;
+    const performancePercentage = (performanceLevel / 10) * 100; // Convert to percentage for chart display
     
     // Create gradient
     const performanceGradient = ctx.createLinearGradient(0, 0, 0, 200);
@@ -383,7 +397,7 @@ function initPerformanceChart() {
         data: {
             labels: ['Performance', 'Gap'],
             datasets: [{
-                data: [performanceLevel, 100 - performanceLevel],
+                data: [performancePercentage, 100 - performancePercentage],
                 backgroundColor: [
                     performanceGradient,
                     '#f5f5f5'
@@ -400,23 +414,23 @@ function initPerformanceChart() {
     });
     
     // Draw center text with smooth animation
-    let currentPercentage = 0;
-    const targetPercentage = performanceLevel;
+    let currentValue = 0;
+    const targetValue = performanceLevel;
     
-    const renderPercentage = () => {
-        if (currentPercentage < targetPercentage) {
-            const step = Math.max(1, Math.ceil((targetPercentage - currentPercentage) / 10));
-            currentPercentage = Math.min(currentPercentage + step, targetPercentage);
+    const renderValue = () => {
+        if (currentValue < targetValue) {
+            const step = Math.max(0.1, (targetValue - currentValue) / 10);
+            currentValue = Math.min(currentValue + step, targetValue);
             
             // Update DOM element
             const valueEl = document.getElementById('performanceValue');
-            if (valueEl) valueEl.textContent = currentPercentage + '%';
+            if (valueEl) valueEl.textContent = currentValue.toFixed(1);
             
-            requestAnimationFrame(renderPercentage);
+            requestAnimationFrame(renderValue);
         }
     };
     
-    setTimeout(renderPercentage, 800); // Start a bit after chart animation begins
+    setTimeout(renderValue, 800); // Start a bit after chart animation begins
     
     // Draw center text in chart
     Chart.register({
@@ -431,12 +445,12 @@ function initPerformanceChart() {
                 const fontSize = (height / 150).toFixed(2);
                 const fontFamily = "'Poppins', sans-serif";
                 
-                // Draw performance percentage
+                // Draw performance value
                 ctx.font = `bold ${fontSize}em ${fontFamily}`;
                 ctx.textBaseline = 'middle';
                 ctx.textAlign = 'center';
                 
-                const text = currentPercentage + '%';
+                const text = currentValue.toFixed(1);
                 const textY = height / 2 - 10;
                 
                 ctx.fillStyle = chartColors.primary;
@@ -462,8 +476,9 @@ function initPerformanceChart() {
 function initFatigueChart() {
     const ctx = document.getElementById('fatigueChart').getContext('2d');
     
-    // Current fatigue level (41%)
-    const fatigueLevel = 41;
+    // Current fatigue level (1.6 on scale of 0-4)
+    const fatigueLevel = 1.6;
+    const fatiguePercentage = (fatigueLevel / 4) * 100; // Convert to percentage for chart display - scale of 0-4
     
     // Create gradient
     const fatigueGradient = ctx.createLinearGradient(0, 0, 0, 200);
@@ -475,7 +490,7 @@ function initFatigueChart() {
         data: {
             labels: ['Fatigue', 'Freshness'],
             datasets: [{
-                data: [fatigueLevel, 100 - fatigueLevel],
+                data: [fatiguePercentage, 100 - fatiguePercentage],
                 backgroundColor: [
                     fatigueGradient,
                     '#f5f5f5'
@@ -492,23 +507,23 @@ function initFatigueChart() {
     });
     
     // Draw center text with smooth animation
-    let currentPercentage = 0;
-    const targetPercentage = fatigueLevel;
+    let currentValue = 0;
+    const targetValue = fatigueLevel;
     
-    const renderPercentage = () => {
-        if (currentPercentage < targetPercentage) {
-            const step = Math.max(1, Math.ceil((targetPercentage - currentPercentage) / 10));
-            currentPercentage = Math.min(currentPercentage + step, targetPercentage);
+    const renderValue = () => {
+        if (currentValue < targetValue) {
+            const step = Math.max(0.1, (targetValue - currentValue) / 10);
+            currentValue = Math.min(currentValue + step, targetValue);
             
             // Update DOM element
             const valueEl = document.getElementById('fatigueValue');
-            if (valueEl) valueEl.textContent = currentPercentage + '%';
+            if (valueEl) valueEl.textContent = currentValue.toFixed(1);
             
-            requestAnimationFrame(renderPercentage);
+            requestAnimationFrame(renderValue);
         }
     };
     
-    setTimeout(renderPercentage, 1100); // Start a bit after chart animation begins
+    setTimeout(renderValue, 1100); // Start a bit after chart animation begins
     
     // Draw center text in chart
     Chart.register({
@@ -523,12 +538,12 @@ function initFatigueChart() {
                 const fontSize = (height / 150).toFixed(2);
                 const fontFamily = "'Poppins', sans-serif";
                 
-                // Draw fatigue percentage
+                // Draw fatigue value
                 ctx.font = `bold ${fontSize}em ${fontFamily}`;
                 ctx.textBaseline = 'middle';
                 ctx.textAlign = 'center';
                 
-                const text = currentPercentage + '%';
+                const text = currentValue.toFixed(1);
                 const textY = height / 2 - 10;
                 
                 ctx.fillStyle = chartColors.info;
@@ -536,7 +551,7 @@ function initFatigueChart() {
                 
                 // Draw label
                 ctx.font = `${fontSize * 0.45}em ${fontFamily}`;
-                const subText = 'Fatigue';
+                const subText = 'Fatigue (0-4)';
                 const subTextY = height / 2 + 15;
                 
                 ctx.fillStyle = '#888';
@@ -588,33 +603,33 @@ function initInjuryRiskPredictionChart() {
     const futureDates = getNextNDays(days);
     
     // Generate simulated injury risk prediction data
-    const baseRisk = 32; // Current risk level
+    const baseRisk = 0.32; // Current risk level (0-1)
     let riskPredictions = [];
     let highRiskPeriodStart = Math.floor(Math.random() * (days - 3)) + 2;
     
     for (let i = 0; i < days; i++) {
-        let dailyRisk = baseRisk + (Math.sin(i * 0.5) * 5) + (Math.random() * 6 - 3);
+        let dailyRisk = baseRisk + (Math.sin(i * 0.5) * 0.05) + (Math.random() * 0.06 - 0.03);
         
         if (i >= highRiskPeriodStart && i <= highRiskPeriodStart + 2) {
-            dailyRisk += 15;
+            dailyRisk += 0.15;
         }
         
-        dailyRisk = Math.min(100, Math.max(0, Math.round(dailyRisk)));
+        dailyRisk = Math.min(1.0, Math.max(0, dailyRisk));
         riskPredictions.push(dailyRisk);
     }
     
     const peakRisk = Math.max(...riskPredictions);
-    const avgRisk = Math.round(riskPredictions.reduce((a, b) => a + b, 0) / riskPredictions.length);
+    const avgRisk = riskPredictions.reduce((a, b) => a + b, 0) / riskPredictions.length;
     
-    document.getElementById('currentRiskValue').textContent = `${baseRisk}%`;
-    document.getElementById('peakRiskValue').textContent = `${peakRisk}%`;
-    document.getElementById('avgRiskValue').textContent = `${avgRisk}%`;
+    document.getElementById('currentRiskValue').textContent = baseRisk.toFixed(2);
+    document.getElementById('peakRiskValue').textContent = peakRisk.toFixed(2);
+    document.getElementById('avgRiskValue').textContent = avgRisk.toFixed(2);
     
     const riskLevelBadge = document.querySelector('.risk-level');
-    if (peakRisk < 30) {
+    if (peakRisk < 0.3) {
         riskLevelBadge.textContent = 'Low Risk Period';
         riskLevelBadge.className = 'risk-level low';
-    } else if (peakRisk < 45) {
+    } else if (peakRisk < 0.45) {
         riskLevelBadge.textContent = 'Moderate Risk Period';
         riskLevelBadge.className = 'risk-level medium';
     } else {
@@ -661,10 +676,10 @@ function initInjuryRiskPredictionChart() {
                 },
                 y: {
                     beginAtZero: true,
-                    max: 100,
+                    max: 1.0,
                     title: {
                         display: true,
-                        text: 'Risk Level (%)',
+                        text: 'Risk Level (0-1)',
                         font: {
                             family: "'Poppins', sans-serif",
                             size: 12
@@ -675,7 +690,7 @@ function initInjuryRiskPredictionChart() {
                             family: "'Poppins', sans-serif"
                         },
                         callback: function(value) {
-                            return value + '%';
+                            return value.toFixed(2);
                         }
                     },
                     grid: {
@@ -689,8 +704,8 @@ function initInjuryRiskPredictionChart() {
                     annotations: {
                         thresholdLine1: {
                             type: 'line',
-                            yMin: 40,
-                            yMax: 40,
+                            yMin: 0.4,
+                            yMax: 0.4,
                             borderColor: 'rgba(255, 152, 0, 0.5)',
                             borderWidth: 2,
                             borderDash: [6, 6],
@@ -703,8 +718,8 @@ function initInjuryRiskPredictionChart() {
                         },
                         thresholdLine2: {
                             type: 'line',
-                            yMin: 65,
-                            yMax: 65,
+                            yMin: 0.65,
+                            yMax: 0.65,
                             borderColor: 'rgba(244, 67, 54, 0.5)',
                             borderWidth: 2,
                             borderDash: [6, 6],
@@ -731,44 +746,51 @@ function initFatiguePredictionChart() {
     const days = parseInt(document.getElementById('predictionTimeSelector')?.value || 7);
     const futureDates = getNextNDays(days);
     
-    const baseFatigue = 45;
+    // Base fatigue level on 0-4 scale
+    const baseFatigue = 1.8;
     let fatiguePredictions = [];
     
-    const trainingPattern = [1, 1, 0.7, 1.2, 1, 0.5, 0];
+    // Training pattern affects fatigue changes (values represent relative impact)
+    const trainingPattern = [0.3, 0.6, 0.9, 0.3, 0.6, 0.3, 0];
     
     for (let i = 0; i < days; i++) {
         const dayInPattern = i % trainingPattern.length;
-        const trainingLoad = trainingPattern[dayInPattern];
+        const trainingIntensity = trainingPattern[dayInPattern];
         
         let dailyChange = 0;
         
-        if (trainingLoad === 0) {
-            dailyChange = -Math.floor(Math.random() * 8) - 5;
+        if (trainingIntensity === 0) {
+            // Rest day reduces fatigue
+            dailyChange = -(Math.random() * 0.3 + 0.2);
         } else {
-            dailyChange = Math.floor(trainingLoad * (Math.random() * 7 + 3));
+            // Training increases fatigue based on intensity
+            dailyChange = trainingIntensity * (Math.random() * 0.3 + 0.1);
         }
         
         let previousFatigue = i === 0 ? baseFatigue : fatiguePredictions[i-1];
-        let fatigueMultiplier = previousFatigue > 60 ? 1.2 : previousFatigue > 40 ? 1 : 0.8;
+        let fatigueMultiplier = previousFatigue > 3 ? 1.2 : previousFatigue > 2 ? 1 : 0.8;
         
         let dailyFatigue = previousFatigue + (dailyChange * fatigueMultiplier);
         
-        dailyFatigue = Math.min(100, Math.max(0, Math.round(dailyFatigue)));
+        // Ensure fatigue stays within 0-4 scale
+        dailyFatigue = Math.min(4, Math.max(0, dailyFatigue));
         fatiguePredictions.push(dailyFatigue);
     }
     
     const peakFatigue = Math.max(...fatiguePredictions);
-    const avgFatigue = Math.round(fatiguePredictions.reduce((a, b) => a + b, 0) / fatiguePredictions.length);
+    const avgFatigue = fatiguePredictions.reduce((a, b) => a + b, 0) / fatiguePredictions.length;
     
-    document.getElementById('currentFatigueValue').textContent = `${baseFatigue}%`;
-    document.getElementById('peakFatigueValue').textContent = `${peakFatigue}%`;
-    document.getElementById('avgFatigueValue').textContent = `${avgFatigue}%`;
+    // Update display values using 0-4 scale
+    document.getElementById('currentFatigueValue').textContent = baseFatigue.toFixed(1);
+    document.getElementById('peakFatigueValue').textContent = peakFatigue.toFixed(1);
+    document.getElementById('avgFatigueValue').textContent = avgFatigue.toFixed(1);
     
+    // Update fatigue level badge
     const fatigueLevelBadge = document.querySelector('.fatigue-level');
-    if (peakFatigue < 40) {
+    if (peakFatigue < 1.5) {
         fatigueLevelBadge.textContent = 'Low Fatigue';
         fatigueLevelBadge.className = 'fatigue-level low';
-    } else if (peakFatigue < 65) {
+    } else if (peakFatigue < 2.5) {
         fatigueLevelBadge.textContent = 'Moderate Fatigue';
         fatigueLevelBadge.className = 'fatigue-level medium';
     } else {
@@ -785,7 +807,7 @@ function initFatiguePredictionChart() {
         data: {
             labels: futureDates,
             datasets: [{
-                label: 'Predicted Fatigue Level',
+                label: 'Predicted Fatigue Level (0-4)',
                 data: fatiguePredictions,
                 borderColor: chartColors.info,
                 backgroundColor: gradient,
@@ -815,10 +837,10 @@ function initFatiguePredictionChart() {
                 },
                 y: {
                     beginAtZero: true,
-                    max: 100,
+                    max: 4,
                     title: {
                         display: true,
-                        text: 'Fatigue Level (%)',
+                        text: 'Fatigue Level (0-4)',
                         font: {
                             family: "'Poppins', sans-serif",
                             size: 12
@@ -827,46 +849,6 @@ function initFatiguePredictionChart() {
                     ticks: {
                         font: {
                             family: "'Poppins', sans-serif"
-                        },
-                        callback: function(value) {
-                            return value + '%';
-                        }
-                    },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
-                }
-            },
-            plugins: {
-                ...globalChartOptions.plugins,
-                annotation: {
-                    annotations: {
-                        restDay1: {
-                            type: 'line',
-                            xMin: 6,
-                            xMax: 6,
-                            borderColor: 'rgba(76, 175, 80, 0.5)',
-                            borderWidth: 2,
-                            label: {
-                                backgroundColor: 'rgba(76, 175, 80, 0.8)',
-                                content: 'Rest Day',
-                                enabled: true,
-                                position: 'start'
-                            }
-                        },
-                        thresholdLine: {
-                            type: 'line',
-                            yMin: 70,
-                            yMax: 70,
-                            borderColor: 'rgba(244, 67, 54, 0.5)',
-                            borderWidth: 2,
-                            borderDash: [6, 6],
-                            label: {
-                                backgroundColor: 'rgba(244, 67, 54, 0.8)',
-                                content: 'Excessive Fatigue',
-                                enabled: true,
-                                position: 'end'
-                            }
                         }
                     }
                 }
@@ -883,28 +865,20 @@ function initIntensityVsRiskChart() {
     
     const scatterData = [];
     
-    for (let i = 0; i < 8; i++) {
-        const intensity = Math.floor(Math.random() * 20) + 35;
-        const risk = Math.floor(Math.random() * 15) + 10;
-        scatterData.push({ x: intensity, y: risk });
-    }
-    
-    for (let i = 0; i < 12; i++) {
-        const intensity = Math.floor(Math.random() * 20) + 55;
-        const risk = Math.floor(Math.random() * 20) + 20;
-        scatterData.push({ x: intensity, y: risk });
-    }
-    
-    for (let i = 0; i < 10; i++) {
-        const intensity = Math.floor(Math.random() * 20) + 75;
-        const risk = Math.floor(Math.random() * 30) + 35;
-        scatterData.push({ x: intensity, y: risk });
+    // Generate data points for each intensity level
+    const intensities = [0.3, 0.6, 0.9];
+    for (const intensity of intensities) {
+        // Generate multiple points for each intensity level
+        for (let i = 0; i < 10; i++) {
+            const risk = (Math.random() * 0.15 + 0.1).toFixed(2);
+            scatterData.push({ x: intensity, y: risk });
+        }
     }
     
     const trendlinePoints = [];
-    for (let x = 30; x <= 95; x += 5) {
-        const y = 0.015 * Math.pow(x, 2) - 0.5 * x + 15;
-        trendlinePoints.push({ x, y: Math.max(5, Math.min(100, y)) });
+    for (let x = 0.3; x <= 0.9; x += 0.1) {
+        const y = 0.15 * Math.pow(x, 2) + 0.1;
+        trendlinePoints.push({ x, y: Math.max(0.05, Math.min(1.0, y)) });
     }
     
     const intensityVsRiskChart = new Chart(ctx, {
@@ -934,11 +908,11 @@ function initIntensityVsRiskChart() {
             ...globalChartOptions,
             scales: {
                 x: {
-                    min: 30,
-                    max: 95,
+                    min: 0.2,
+                    max: 1.0,
                     title: {
                         display: true,
-                        text: 'Training Intensity (%)',
+                        text: 'Training Intensity (0.3, 0.6, 0.9)',
                         font: {
                             family: "'Poppins', sans-serif",
                             size: 12
@@ -949,16 +923,19 @@ function initIntensityVsRiskChart() {
                             family: "'Poppins', sans-serif"
                         },
                         callback: function(value) {
-                            return value + '%';
+                            if ([0.3, 0.6, 0.9].includes(value)) {
+                                return value;
+                            }
+                            return '';
                         }
                     }
                 },
                 y: {
                     min: 0,
-                    max: 80,
+                    max: 1.0,
                     title: {
                         display: true,
-                        text: 'Injury Risk (%)',
+                        text: 'Injury Risk (0-1)',
                         font: {
                             family: "'Poppins', sans-serif",
                             size: 12
@@ -969,7 +946,7 @@ function initIntensityVsRiskChart() {
                             family: "'Poppins', sans-serif"
                         },
                         callback: function(value) {
-                            return value + '%';
+                            return value.toFixed(2);
                         }
                     },
                     grid: {
@@ -983,10 +960,10 @@ function initIntensityVsRiskChart() {
                     annotations: {
                         highRiskZone: {
                             type: 'box',
-                            xMin: 75,
-                            xMax: 100,
-                            yMin: 40,
-                            yMax: 100,
+                            xMin: 0.75,
+                            xMax: 1.0,
+                            yMin: 0.4,
+                            yMax: 1.0,
                             backgroundColor: 'rgba(244, 67, 54, 0.1)',
                             borderColor: 'rgba(244, 67, 54, 0.3)',
                             borderWidth: 1,
@@ -1009,7 +986,7 @@ function initIntensityVsRiskChart() {
     
     window.intensityVsRiskChart = intensityVsRiskChart;
     
-    document.getElementById('riskInsight').textContent = 'Risk increases significantly when intensity exceeds 75% for 3+ consecutive days.';
+    document.getElementById('riskInsight').textContent = 'Risk increases significantly when intensity exceeds 0.6 for 3+ consecutive days.';
 }
 
 // Initialize Intensity vs Fatigue Chart
@@ -1018,31 +995,30 @@ function initIntensityVsFatigueChart() {
     
     const scatterData = [];
     
-    // Generate scatter data points that show correlation between intensity and fatigue
-    for (let i = 0; i < 8; i++) {
-        const intensity = Math.floor(Math.random() * 20) + 35;
-        const fatigue = Math.floor(Math.random() * 15) + 15;
-        scatterData.push({ x: intensity, y: fatigue });
-    }
-    
-    for (let i = 0; i < 12; i++) {
-        const intensity = Math.floor(Math.random() * 20) + 55;
-        const fatigue = Math.floor(Math.random() * 25) + 30;
-        scatterData.push({ x: intensity, y: fatigue });
-    }
-    
-    for (let i = 0; i < 10; i++) {
-        const intensity = Math.floor(Math.random() * 20) + 75;
-        const fatigue = Math.floor(Math.random() * 35) + 50;
-        scatterData.push({ x: intensity, y: fatigue });
+    // Generate data points for each intensity level
+    const intensities = [0.3, 0.6, 0.9];
+    for (const intensity of intensities) {
+        // Generate multiple points for each intensity level
+        for (let i = 0; i < 10; i++) {
+            let fatigue;
+            if (intensity === 0.3) {
+                fatigue = (Math.random() * 0.6 + 0.6).toFixed(1); // 0.6-1.2 on 0-4 scale
+            } else if (intensity === 0.6) {
+                fatigue = (Math.random() * 1.0 + 1.2).toFixed(1); // 1.2-2.2 on 0-4 scale
+            } else {
+                fatigue = (Math.random() * 1.4 + 2.0).toFixed(1); // 2.0-3.4 on 0-4 scale
+            }
+            scatterData.push({ x: intensity, y: fatigue });
+        }
     }
     
     // Create trendline points showing exponential relationship
     const trendlinePoints = [];
-    for (let x = 30; x <= 95; x += 5) {
-        // Exponential curve that rises more steeply at higher intensities
-        const y = 10 + 0.012 * Math.pow(x, 2);
-        trendlinePoints.push({ x, y: Math.max(10, Math.min(90, y)) });
+    for (let x = 0.3; x <= 0.9; x += 0.1) {
+        // Quadratic relationship: fatigue = base + a*x + b*x^2
+        // This creates a more pronounced curve that better matches the scatter data
+        const y = 0.4 + 1.2 * x + 1.8 * Math.pow(x, 2);
+        trendlinePoints.push({ x, y: Math.max(0.4, Math.min(4.0, y)) });
     }
     
     const intensityVsFatigueChart = new Chart(ctx, {
@@ -1072,11 +1048,11 @@ function initIntensityVsFatigueChart() {
             ...globalChartOptions,
             scales: {
                 x: {
-                    min: 30,
-                    max: 95,
+                    min: 0.2,
+                    max: 1.0,
                     title: {
                         display: true,
-                        text: 'Training Intensity (%)',
+                        text: 'Training Intensity (0.3, 0.6, 0.9)',
                         font: {
                             family: "'Poppins', sans-serif",
                             size: 12
@@ -1087,16 +1063,19 @@ function initIntensityVsFatigueChart() {
                             family: "'Poppins', sans-serif"
                         },
                         callback: function(value) {
-                            return value + '%';
+                            if ([0.3, 0.6, 0.9].includes(value)) {
+                                return value;
+                            }
+                            return '';
                         }
                     }
                 },
                 y: {
                     min: 0,
-                    max: 90,
+                    max: 4.0,
                     title: {
                         display: true,
-                        text: 'Fatigue Level (%)',
+                        text: 'Fatigue Level (0-4)',
                         font: {
                             family: "'Poppins', sans-serif",
                             size: 12
@@ -1107,7 +1086,7 @@ function initIntensityVsFatigueChart() {
                             family: "'Poppins', sans-serif"
                         },
                         callback: function(value) {
-                            return value + '%';
+                            return value.toFixed(1);
                         }
                     },
                     grid: {
@@ -1121,10 +1100,10 @@ function initIntensityVsFatigueChart() {
                     annotations: {
                         highFatigueZone: {
                             type: 'box',
-                            xMin: 75,
-                            xMax: 100,
-                            yMin: 65,
-                            yMax: 100,
+                            xMin: 0.75,
+                            xMax: 1.0,
+                            yMin: 2.6,
+                            yMax: 4.0,
                             backgroundColor: 'rgba(33, 150, 243, 0.1)',
                             borderColor: 'rgba(33, 150, 243, 0.3)',
                             borderWidth: 1,
@@ -1147,7 +1126,7 @@ function initIntensityVsFatigueChart() {
     
     window.intensityVsFatigueChart = intensityVsFatigueChart;
     
-    document.getElementById('fatigueInsight').textContent = 'Fatigue increases exponentially with training intensity. Sessions above 75% intensity contribute significantly more to accumulated fatigue.';
+    document.getElementById('fatigueInsight').textContent = 'Fatigue increases exponentially with training intensity. Sessions above 0.6 intensity contribute significantly more to accumulated fatigue.';
 }
 
 // Initialize Optimal Training Zone Chart
@@ -1394,10 +1373,14 @@ function initCombinedMetricsChart() {
     
     // Sample data for the last 14 days
     const dates = getLastNDays(14);
-    const trainingIntensity = [65, 72, 85, 60, 55, 78, 82, 70, 40, 65, 75, 80, 45, 65];
-    const performance = [76, 70, 65, 72, 78, 74, 80, 82, 85, 80, 75, 68, 78, 82];
-    const injuryRisk = [15, 18, 28, 25, 20, 23, 30, 25, 15, 20, 30, 45, 30, 25];
-    const fatigue = [30, 45, 60, 55, 40, 50, 65, 58, 35, 45, 55, 70, 55, 45];
+    // Training intensity using discrete values (0.3, 0.6, 0.9)
+    const trainingIntensity = [0.3, 0.6, 0.9, 0.3, 0.3, 0.6, 0.9, 0.6, 0.3, 0.6, 0.6, 0.9, 0.3, 0.6];
+    // Performance on scale 0-10
+    const performance = [7.6, 7.0, 6.5, 7.2, 7.8, 7.4, 8.0, 8.2, 8.5, 8.0, 7.5, 6.8, 7.8, 8.2];
+    // Risk as decimal (0-1)
+    const injuryRisk = [0.15, 0.18, 0.28, 0.25, 0.20, 0.23, 0.30, 0.25, 0.15, 0.20, 0.30, 0.45, 0.30, 0.25];
+    // Fatigue on scale 0-4
+    const fatigue = [1.2, 1.8, 2.4, 2.2, 1.6, 2.0, 2.6, 2.3, 1.4, 1.8, 2.2, 2.8, 2.2, 1.8];
     
     const combinedMetricsChart = new Chart(ctx, {
         type: 'line',
@@ -1405,7 +1388,7 @@ function initCombinedMetricsChart() {
             labels: dates,
             datasets: [
                 {
-                    label: 'Training Intensity',
+                    label: 'Training Intensity (0.3, 0.6, 0.9)',
                     data: trainingIntensity,
                     borderColor: chartColors.primary,
                     backgroundColor: 'transparent',
@@ -1416,10 +1399,10 @@ function initCombinedMetricsChart() {
                     pointRadius: 4,
                     pointHoverRadius: 6,
                     tension: 0.3,
-                    yAxisID: 'y'
+                    yAxisID: 'yIntensity'
                 },
                 {
-                    label: 'Performance',
+                    label: 'Performance (0-10)',
                     data: performance,
                     borderColor: chartColors.info,
                     backgroundColor: 'transparent',
@@ -1430,10 +1413,10 @@ function initCombinedMetricsChart() {
                     pointRadius: 4,
                     pointHoverRadius: 6,
                     tension: 0.3,
-                    yAxisID: 'y'
+                    yAxisID: 'yPerformance'
                 },
                 {
-                    label: 'Injury Risk',
+                    label: 'Injury Risk (0-1)',
                     data: injuryRisk,
                     borderColor: chartColors.danger,
                     backgroundColor: 'transparent',
@@ -1444,10 +1427,10 @@ function initCombinedMetricsChart() {
                     pointRadius: 4,
                     pointHoverRadius: 6,
                     tension: 0.3,
-                    yAxisID: 'y'
+                    yAxisID: 'yRisk'
                 },
                 {
-                    label: 'Fatigue',
+                    label: 'Fatigue (0-4)',
                     data: fatigue,
                     borderColor: chartColors.warning,
                     backgroundColor: 'transparent',
@@ -1458,7 +1441,7 @@ function initCombinedMetricsChart() {
                     pointRadius: 4,
                     pointHoverRadius: 6,
                     tension: 0.3,
-                    yAxisID: 'y'
+                    yAxisID: 'yFatigue'
                 }
             ]
         },
@@ -1476,148 +1459,189 @@ function initCombinedMetricsChart() {
                         }
                     }
                 },
-                y: {
+                yIntensity: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
                     beginAtZero: true,
-                    max: 100,
+                    max: 1.0,
                     title: {
                         display: true,
-                        text: 'Value (%)',
+                        text: 'Intensity',
                         font: {
                             family: "'Poppins', sans-serif",
                             size: 12
                         }
                     },
                     ticks: {
+                        callback: function(value) {
+                            if ([0.3, 0.6, 0.9].includes(value)) {
+                                return value;
+                            }
+                            return '';
+                        },
                         font: {
                             family: "'Poppins', sans-serif"
                         }
+                    }
+                },
+                yPerformance: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    beginAtZero: true,
+                    max: 10,
+                    title: {
+                        display: true,
+                        text: 'Performance',
+                        font: {
+                            family: "'Poppins', sans-serif",
+                            size: 12
+                        }
                     },
                     grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
+                        drawOnChartArea: false
                     }
-                }
-            },
-            interaction: {
-                mode: 'index',
-                intersect: false
-            },
-            plugins: {
-                ...globalChartOptions.plugins,
-                annotation: {
-                    annotations: {
-                        highRiskThreshold: {
-                            type: 'line',
-                            yMin: 40,
-                            yMax: 40,
-                            borderColor: 'rgba(244, 67, 54, 0.5)',
-                            borderWidth: 2,
-                            borderDash: [6, 6],
-                            yScaleID: 'y',
-                            label: {
-                                backgroundColor: 'rgba(244, 67, 54, 0.8)',
-                                content: 'High Risk Threshold',
-                                enabled: true,
-                                position: 'end'
-                            }
+                },
+                yRisk: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    beginAtZero: true,
+                    max: 1.0,
+                    title: {
+                        display: true,
+                        text: 'Risk (0-1)',
+                        font: {
+                            family: "'Poppins', sans-serif",
+                            size: 12
                         }
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                },
+                yFatigue: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    beginAtZero: true,
+                    max: 4,
+                    title: {
+                        display: true,
+                        text: 'Fatigue (0-4)',
+                        font: {
+                            family: "'Poppins', sans-serif",
+                            size: 12
+                        }
+                    },
+                    grid: {
+                        drawOnChartArea: false
                     }
                 }
             }
         }
     });
     
-    // Store chart reference for updates
     window.combinedMetricsChart = combinedMetricsChart;
 }
 
-// Initialize Training Heatmap
-function initTrainingHeatmap() {
-    const heatmapContainer = document.getElementById('trainingHeatmap');
+// Initialize Risk Heatmap
+function initRiskHeatmap() {
+    const heatmapContainer = document.getElementById('riskHeatmap');
     if (!heatmapContainer) return;
     
-    // Clear any existing content
+    // Clear existing content
     heatmapContainer.innerHTML = '';
     
-    // Create the heatmap
+    // Define weeks and days
+    const weeks = 4; // 4 weeks of data
+    const weekLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
     const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const weeks = 4; // Last 4 weeks
     
-    // Create heatmap grid
-    const heatmapGrid = document.createElement('div');
-    heatmapGrid.className = 'heatmap-grid';
-    heatmapGrid.style.display = 'grid';
-    heatmapGrid.style.gridTemplateColumns = `repeat(7, 1fr)`;
-    heatmapGrid.style.gap = '5px';
+    // Create table structure for better layout
+    const table = document.createElement('table');
+    table.className = 'heatmap-table';
     
-    // Add day of week headers
+    // Create header row with days
+    const headerRow = document.createElement('tr');
+    
+    // Add empty cell for corner
+    const cornerCell = document.createElement('th');
+    headerRow.appendChild(cornerCell);
+    
+    // Add day headers
     daysOfWeek.forEach(day => {
-        const dayHeader = document.createElement('div');
-        dayHeader.className = 'heatmap-header';
-        dayHeader.textContent = day;
-        dayHeader.style.textAlign = 'center';
-        dayHeader.style.fontWeight = 'bold';
-        dayHeader.style.fontSize = '12px';
-        dayHeader.style.padding = '5px 0';
-        heatmapGrid.appendChild(dayHeader);
+        const th = document.createElement('th');
+        th.textContent = day;
+        headerRow.appendChild(th);
     });
     
-    // Generate intensity data (random for example)
-    // In a real app, this would come from your API/backend
-    const intensityData = [];
-    for (let i = 0; i < weeks * 7; i++) {
-        // Generate random intensity values between 0-100
-        const randomIntensity = Math.floor(Math.random() * 101);
-        intensityData.push(randomIntensity);
-    }
+    table.appendChild(headerRow);
     
-    // Create heatmap cells
-    intensityData.forEach((intensity) => {
-        const cell = document.createElement('div');
-        cell.className = 'heatmap-day';
+    // Risk level ranges and colors
+    const riskLevels = [
+        { min: 0, max: 0.3, color: 'rgba(79, 121, 66, 0.2)' },    // Low risk - Light green
+        { min: 0.3, max: 0.6, color: 'rgba(79, 121, 66, 0.4)' },  // Moderate risk - Medium green
+        { min: 0.6, max: 0.8, color: 'rgba(79, 121, 66, 0.6)' },  // High risk - Dark green
+        { min: 0.8, max: 1.0, color: 'rgba(79, 121, 66, 0.8)' }   // Critical risk - Very dark green
+    ];
+    
+    // Create data rows for each week
+    for (let week = 0; week < weeks; week++) {
+        const row = document.createElement('tr');
         
-        // Set color based on intensity level
-        let bgColor;
-        if (intensity < 25) {
-            bgColor = 'rgba(79, 121, 66, 0.1)';
-        } else if (intensity < 50) {
-            bgColor = 'rgba(79, 121, 66, 0.4)';
-        } else if (intensity < 75) {
-            bgColor = 'rgba(79, 121, 66, 0.7)';
-        } else {
-            bgColor = 'rgba(79, 121, 66, 1)';
+        // Add week label
+        const weekLabelCell = document.createElement('td');
+        weekLabelCell.textContent = weekLabels[week];
+        row.appendChild(weekLabelCell);
+        
+        // Add day cells for this week
+        for (let day = 0; day < 7; day++) {
+            const cell = document.createElement('td');
+            
+            // Generate random risk value between 0 and 1
+            const risk = Math.random();
+            
+            // Find the appropriate risk level and color
+            const riskLevel = riskLevels.find(level => risk >= level.min && risk < level.max);
+            const bgColor = riskLevel ? riskLevel.color : 'rgba(79, 121, 66, 0.2)';
+            
+            cell.style.backgroundColor = bgColor;
+            
+            // Add tooltip with risk info
+            cell.title = `Risk Level: ${risk.toFixed(2)}`;
+            
+            row.appendChild(cell);
         }
         
-        cell.style.backgroundColor = bgColor;
-        cell.style.borderRadius = '4px';
-        cell.style.height = '30px';
-        
-        // Add tooltip with intensity value
-        cell.title = `Training Intensity: ${intensity}%`;
-        
-        // Add click event to show day details
-        cell.addEventListener('click', function() {
-            alert(`Training Intensity: ${intensity}%\nDate: ${getRandomPastDate()}`);
-        });
-        
-        heatmapGrid.appendChild(cell);
-    });
+        table.appendChild(row);
+    }
     
-    heatmapContainer.appendChild(heatmapGrid);
-}
-
-// Helper function for heatmap demo
-function getRandomPastDate() {
-    const today = new Date();
-    const daysAgo = Math.floor(Math.random() * 28) + 1;
-    const pastDate = new Date(today);
-    pastDate.setDate(today.getDate() - daysAgo);
-    return formatDate(pastDate);
+    heatmapContainer.appendChild(table);
 }
 
 // Initialize Metrics Table
 function initMetricsTable() {
-    const tableBody = document.querySelector('#metricsTable tbody');
-    if (!tableBody) return;
+    const tableElement = document.getElementById('metricsTable');
+    if (!tableElement) return;
+    
+    // Create the table structure first
+    tableElement.innerHTML = `
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Intensity<br><small>(0.3, 0.6, 0.9)</small></th>
+                <th>Performance<br><small>(0-10)</small></th>
+                <th>Risk<br><small>(0-1)</small></th>
+                <th>Fatigue<br><small>(0-4)</small></th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
+    
+    const tableBody = tableElement.querySelector('tbody');
     
     // Clear existing rows
     tableBody.innerHTML = '';
@@ -1626,12 +1650,15 @@ function initMetricsTable() {
     const days = 14; // Last 14 days
     const dates = getLastNDays(days);
     
+    // Standard intensity values
+    const intensityValues = [0.3, 0.6, 0.9];
+    
     for (let i = 0; i < days; i++) {
-        // Generate random data
-        const intensity = Math.floor(Math.random() * 41) + 40; // 40-80%
-        const performance = Math.floor(Math.random() * 31) + 60; // 60-90%
-        const risk = Math.floor(Math.random() * 41); // 0-40%
-        const fatigue = Math.floor(Math.random() * 51) + 20; // 20-70%
+        // Generate data using our standardized scales
+        const intensity = intensityValues[Math.floor(Math.random() * intensityValues.length)];
+        const performance = (Math.random() * 3 + 7).toFixed(1); // Performance between 7-10
+        const risk = (Math.random() * 0.4).toFixed(2); // Risk between 0-0.4
+        const fatigue = (Math.random() * 2.5 + 1).toFixed(1); // Fatigue between 1-3.5
         
         // Create table row
         const row = document.createElement('tr');
@@ -1639,10 +1666,10 @@ function initMetricsTable() {
         // Create cells
         row.innerHTML = `
             <td>${dates[i]}</td>
-            <td>${intensity}%</td>
-            <td>${performance}%</td>
-            <td>${risk}%</td>
-            <td>${fatigue}%</td>
+            <td>${intensity}</td>
+            <td>${performance}</td>
+            <td>${risk}</td>
+            <td>${fatigue}</td>
             <td class="actions-cell">
                 <button class="table-action-btn view" title="View Details">
                     <i class="fas fa-eye"></i>
@@ -1671,12 +1698,14 @@ function initMetricsTable() {
     actionButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            const action = this.classList.contains('view') ? 'view' : 
-                           this.classList.contains('edit') ? 'edit' : 'delete';
+            
+            const action = this.classList.contains('view') ? 'View' : 
+                          this.classList.contains('edit') ? 'Edit' : 'Delete';
+            
             const row = this.closest('tr');
             const date = row.cells[0].textContent;
             
-            alert(`Action: ${action} for date ${date}`);
+            alert(`${action} data for ${date}`);
         });
     });
 }
@@ -1696,7 +1725,7 @@ function setupScheduleControls() {
             
             setTimeout(function() {
                 initCombinedMetricsChart();
-                initTrainingHeatmap();
+                initRiskHeatmap();
                 initMetricsTable();
                 if (refreshBtn) refreshBtn.classList.remove('rotating');
             }, 800);
