@@ -11,7 +11,8 @@ class BFSSearch:
         self.solution = None
         self.execution_time = 0
 
-    def search(self, max_depth=float('inf')):
+    def search(self):
+        max_depth= self.problem.target_day
         """Returns standardized search result format"""
         start_time = time.time()
         start_node = Node(state=self.problem.initial_state, costless=True)
@@ -42,6 +43,7 @@ class BFSSearch:
             self.max_queue_size = max(self.max_queue_size, len(frontier))
 
         self.execution_time = time.time() - start_time
+        print("done")
         return self._format_result()
 
     def _format_result(self):

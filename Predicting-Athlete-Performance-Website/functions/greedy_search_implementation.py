@@ -11,7 +11,8 @@ class GreedySearch:
         self.execution_time = 0
         self.solution = None
 
-    def search(self, max_depth=float('inf')):
+    def search(self):
+        max_depth= self.problem.target_day
         """Returns standardized search result format"""
         start_time = time.time()
         initial_node = Node(self.problem.initial_state)
