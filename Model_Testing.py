@@ -80,7 +80,7 @@ test_plans = {
 if __name__ == "__main__":
     from Problem import AthletePerformanceProblem
     
-    problem = AthletePerformanceProblem(genetic=True)
+    problem = AthletePerformanceProblem(hgb=True)
     for label, info in test_plans.items():
         plan = info["plan"]
         description = info["description"]

@@ -23,7 +23,7 @@
     height: 4px;
     background-color: #4F7942;
     width: 25%;
-    margin-bottom: -2px;
+    margin-bottom: 1%;
     transition: width 0.4s ease;
     position: relative;
     z-index: 10;
