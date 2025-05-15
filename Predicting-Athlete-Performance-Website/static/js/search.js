@@ -123,9 +123,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 advancedParams: {}
             };
             
-            // Debug output of the search parameters
-            console.log("Search parameters:", JSON.stringify(searchParams, null, 2));
-            
             // Add advanced params based on algorithm
             switch (searchParams.algorithm) {
                 case 'astar':
@@ -162,6 +159,17 @@ document.addEventListener('DOMContentLoaded', function() {
             stepContents[3].style.display = 'block';
             
             progressBar.style.width = '100%';
+            
+            // Show search progress
+            document.getElementById('search-progress').style.display = 'block';
+            document.getElementById('search-results-success').style.display = 'none';
+            document.getElementById('search-results-failure').style.display = 'none';
+            document.getElementById('search-status').textContent = 'Search in progress...';
+            
+            // Reset progress stats
+            document.getElementById('nodes-explored').textContent = '0';
+            document.getElementById('queue-size').textContent = '0';
+            document.getElementById('elapsed-time').textContent = '0s';
             
             // Start search execution
             startSearch(searchParams);
@@ -202,50 +210,57 @@ document.addEventListener('DOMContentLoaded', function() {
     function startSearch(params) {
         console.log("Starting search with parameters:", JSON.stringify(params, null, 2));
         
-        // Show search progress
-        document.getElementById('search-progress').style.display = 'block';
-        document.getElementById('search-results-success').style.display = 'none';
-        document.getElementById('search-results-failure').style.display = 'none';
-        document.getElementById('search-status').textContent = 'Search in progress...';
-        
-        // Mock data for demonstration
-        setTimeout(() => {
-            const mockData = {
-                success: true,
-                finalState: {
-                    performance: 8.5,
-                    fatigue: 3.2,
-                    risk: 0.4
-                },
-                stats: {
-                    nodesExplored: 1500,
-                    maxQueueSize: 250,
-                    executionTime: 2.5,
-                    cacheHits: 100
-                },
-                schedule: [
-                    {
-                        day: 1,
-                        intensity: 7.0,
-                        duration: 60,
-                        description: 'High intensity training',
-                        performance: 7.8,
-                        fatigue: 2.5,
-                        risk: 0.3
-                    },
-                    // Add more mock schedule data as needed
-                ]
-            };
+        // Make API call to start the search
+        fetch('/api/run_search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(params)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Search completed:", data);
             
-            showSearchResults(mockData);
-        }, 2000);
-    }
-    
-    // Update search progress UI
-    function updateSearchProgress(data) {
-        document.getElementById('nodes-explored').textContent = data.nodesExplored.toLocaleString();
-        document.getElementById('queue-size').textContent = data.queueSize.toLocaleString();
-        document.getElementById('elapsed-time').textContent = data.elapsedTime + 's';
+            // Update the UI based on the response
+            if (data.success) {
+                showSearchResults(data);
+            } else {
+                showSearchFailure(data);
+            }
+        })
+        .catch(error => {
+            console.error("Search error:", error);
+            showSearchFailure({
+                success: false,
+                error: error.message,
+                stats: {
+                    nodesExplored: 0,
+                    maxQueueSize: 0,
+                    executionTime: 0
+                }
+            });
+        });
+        
+        // Start polling for progress updates if we want real-time updates
+        // Only needed for long-running searches
+        let progressInterval = setInterval(() => {
+            fetch('/api/search_progress')
+                .then(response => response.json())
+                .catch(error => {
+                    console.error("Error fetching progress:", error);
+                });
+        }, 1000);  // Update every second
+        
+        // Clear interval after 30 seconds (or could clear it when search completes)
+        setTimeout(() => {
+            clearInterval(progressInterval);
+        }, 30000);
     }
     
     // Show successful search results
@@ -264,16 +279,15 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('final-performance').textContent = data.finalState.performance.toFixed(2);
         document.getElementById('final-fatigue').textContent = data.finalState.fatigue.toFixed(2);
         document.getElementById('final-risk').textContent = data.finalState.risk.toFixed(2);
-        
+        console.log(data);
+        console.log("zbiii");
+        console.log(data.schedule)
         // Update algorithm stats
         document.getElementById('stat-nodes-explored').textContent = data.stats.nodesExplored.toLocaleString();
         document.getElementById('stat-max-queue').textContent = data.stats.maxQueueSize.toLocaleString();
         document.getElementById('stat-execution-time').textContent = data.stats.executionTime.toFixed(2) + 's';
         
-        if (data.stats.hasOwnProperty('cacheHits')) {
-            document.getElementById('stat-cache-hits').textContent = data.stats.cacheHits.toLocaleString();
-        }
-        
+
         // Create schedule table
         createScheduleTable(data.schedule);
         
@@ -304,21 +318,58 @@ document.addEventListener('DOMContentLoaded', function() {
         const tableBody = document.getElementById('schedule-body');
         tableBody.innerHTML = '';
         
+        // Validate schedule data
+        if (!Array.isArray(schedule)) {
+            console.error('Invalid schedule data:', schedule);
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="6" class="error">No training plan data available</td>`;
+            tableBody.appendChild(row);
+            return;
+        }
+
+        // Handle empty schedule case
+        if (schedule.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="6">No training activities recorded</td>`;
+            tableBody.appendChild(row);
+            return;
+        }
+
+        // Process valid schedule data
         schedule.forEach(day => {
             const row = document.createElement('tr');
-            
-            // Format values
-            const intensity = day.intensity !== null ? day.intensity.toFixed(1) : '-';
-            const duration = day.duration !== null ? day.duration : '-';
-            
+            const desc = {
+                '0,0.0': "Complete Rest",
+                '60,0.3': "Light Recovery",
+                '60,0.6': "Moderate Endurance",
+                '60,0.9': "High-Intensity Short Session",
+                '90,0.3': "Extended Recovery",
+                '90,0.6': "Steady Training",
+                '90,0.9': "Intense Conditioning",
+                '120,0.3': "Long Recovery",
+                '120,0.6': "Extended Training",
+                '120,0.9': "Endurance Max Effort"
+            };
+            // Safely access properties with defaults
+            const dayNumber = day.day ?? 'N/A';
+            const action = day.action || [null, null];
+            const intensity = day.intensity;
+            const duration = day.duration;
+            const performance = typeof day.performance === 'number' ? day.performance.toFixed(2) : '-';
+            const fatigue = typeof day.fatigue === 'number' ? day.fatigue.toFixed(2) : '-';
+            const risk = typeof day.risk === 'number' ? day.risk.toFixed(2) : '-';
+            const key = `${duration},${intensity}`;
+
+            const description = desc[key] ?? "Custom Session";
+
             row.innerHTML = `
-                <td>${day.day}</td>
+                <td>${dayNumber}</td>
                 <td>${intensity}</td>
                 <td>${duration}</td>
-                <td>${day.description}</td>
-                <td>${day.performance.toFixed(2)}</td>
-                <td>${day.fatigue.toFixed(2)}</td>
-                <td>${day.risk.toFixed(2)}</td>
+                <td>${description}</td>
+                <td>${performance}</td>
+                <td>${fatigue}</td>
+                <td>${risk}</td>
             `;
             
             tableBody.appendChild(row);
@@ -328,18 +379,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create performance chart
     function createPerformanceChart(schedule) {
         const ctx = document.getElementById('performance-chart').getContext('2d');
-        
-        // Extract data
-        const days = schedule.map(day => day.day);
-        const performances = schedule.map(day => day.performance);
-        const fatigues = schedule.map(day => day.fatigue);
-        const risks = schedule.map(day => day.risk);
-        
-        // Create chart
+        console.log("zbbi2");
+        console.log(schedule);
+        // Destroy existing chart instance
         if (window.performanceChart) {
             window.performanceChart.destroy();
         }
-        
+
+        // Process data with validation
+        const processed = schedule.map(day => ({
+            day: Number(day.day) || 0,
+            performance: Number(day.performance) || 0,
+            fatigue: Number(day.fatigue) || 0,
+            risk: Number(day.risk) || 0
+        })).sort((a, b) => a.day - b.day);
+
+        // Extract data with fallback values
+        const days = processed.map(d => d.day);
+        const performances = processed.map(d => d.performance);
+        const fatigues = processed.map(d => d.fatigue);
+        const risks = processed.map(d => d.risk);
+
+        // Calculate dynamic axis limits
+        const maxPerformance = Math.max(10, Math.ceil(Math.max(...performances) + 1));
+        const maxFatigue = Math.ceil(Math.max(...fatigues) + 1);
+        const maxRisk = Math.ceil(Math.max(...risks) + 0.1);
+
         window.performanceChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -382,70 +447,49 @@ document.addEventListener('DOMContentLoaded', function() {
                         title: {
                             display: true,
                             text: 'Day'
-                        }
+                        },
+                        type: 'linear',
+                        position: 'bottom'
                     },
                     performance: {
                         type: 'linear',
                         position: 'left',
-                        title: {
-                            display: true,
-                            text: 'Performance'
-                        },
+                        title: { display: true, text: 'Performance' },
                         min: 0,
-                        max: 10,
-                        grid: {
-                            borderColor: '#4F7942'
-                        },
-                        ticks: {
-                            color: '#4F7942'
-                        }
+                        max: maxPerformance,
+                        grid: { borderColor: '#4F7942' },
+                        ticks: { color: '#4F7942' }
                     },
                     fatigue: {
                         type: 'linear',
                         position: 'right',
-                        title: {
-                            display: true,
-                            text: 'Fatigue'
-                        },
+                        title: { display: true, text: 'Fatigue' },
                         min: 0,
-                        max: 5,
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            color: '#FF6B6B'
-                        }
+                        max: maxFatigue,
+                        grid: { display: false },
+                        ticks: { color: '#FF6B6B' }
                     },
                     risk: {
                         type: 'linear',
                         position: 'right',
-                        title: {
-                            display: true,
-                            text: 'Risk'
-                        },
+                        title: { display: true, text: 'Risk' },
                         min: 0,
-                        max: 1,
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            color: '#FFB347'
+                        max: maxRisk,
+                        grid: { display: false },
+                        ticks: { 
+                            color: '#FFB347',
+                            callback: value => value.toFixed(1)
                         }
                     }
                 },
                 plugins: {
-                    legend: {
-                        position: 'top'
-                    },
+                    legend: { position: 'top' },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += context.parsed.y.toFixed(2);
-                                return label;
+                                const label = context.dataset.label || '';
+                                const value = context.parsed.y || 0;
+                                return `${label}: ${value.toFixed(2)}`;
                             }
                         }
                     }
