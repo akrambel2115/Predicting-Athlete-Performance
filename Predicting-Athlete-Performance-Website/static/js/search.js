@@ -280,7 +280,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('final-fatigue').textContent = data.finalState.fatigue.toFixed(2);
         document.getElementById('final-risk').textContent = data.finalState.risk.toFixed(2);
         console.log(data);
-        console.log("zbiii");
         console.log(data.schedule)
         // Update algorithm stats
         document.getElementById('stat-nodes-explored').textContent = data.stats.nodesExplored.toLocaleString();
@@ -379,7 +378,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create performance chart
     function createPerformanceChart(schedule) {
         const ctx = document.getElementById('performance-chart').getContext('2d');
-        console.log("zbbi2");
         console.log(schedule);
         // Destroy existing chart instance
         if (window.performanceChart) {
