@@ -180,9 +180,9 @@
                                 <label for="training-days">Training Period (Days)</label>
                                 <p class="field-description">How many days do you want your training plan to cover?</p>
                                 <div class="range-slider-container">
-                                    <input type="range" id="training-days" name="training-days" min="5" max="15" step="1" value="10">
+                                    <input type="range" id="training-days" name="training-days" min="1" max="15" step="1" value="10">
                                     <div class="range-labels">
-                                        <span>5 Days</span>
+                                        <span>1 Days</span>
                                         <span class="value-display" id="training-days-display">10</span>
                                         <span>15 Days</span>
                                     </div>
@@ -272,6 +272,18 @@
                                             </div>
                                         </label>
                                     </div>
+                                    
+                                    
+                                    <div class="algorithm-option">
+                                        <input type="radio" name="algorithm" id="algorithm-csp" value="csp">
+                                        <label for="algorithm-csp">
+                                            <span class="option-icon"><i class="fas fa-puzzle-piece"></i></span>
+                                            <div class="option-content">
+                                                <h4>CSP Search</h4>
+                                                <p>Solves training constraints systematically using backtracking</p>
+                                            </div>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -349,6 +361,14 @@
                                         <div class="form-group">
                                             <label for="greedy-time-limit">Time Limit (seconds)</label>
                                             <input type="number" id="greedy-time-limit" name="greedy-time-limit" min="10" max="300" step="10" value="60">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- CSP Parameters -->
+                                    <div class="algorithm-params" id="csp-params" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="csp-time-limit">Time Limit (seconds)</label>
+                                            <input type="number" id="csp-time-limit" name="csp-time-limit" min="10" max="300" step="10" value="60">
                                         </div>
                                     </div>
                                 </div>
