@@ -12,6 +12,10 @@ class GeneticAlgorithm:
         self.num_generations = num_generations
         self.mutation_rate = mutation_rate
     
+        print(self.population_size)
+        print(self.num_generations)
+        print(self.mutation_rate)
+        
     def initialize_population(self):
         population = []
         for _ in range(self.population_size):

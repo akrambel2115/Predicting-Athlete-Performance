@@ -155,6 +155,7 @@ def run_search():
     goal = data.get('goalState', {})
     algo_key = data.get('algorithm', 'astar')
     params = data.get('advancedParams', {})
+    print(params)
     print(data)
     print(init)
     print(goal)
@@ -181,8 +182,7 @@ def run_search():
                 target_day=goal['days'],
                 target_perf=goal['targetPerformance'],
                 target_fatigue=goal['maxFatigue'],
-                target_risk=goal['maxRisk'],
-                genetic= (algo_key=='genetic')
+                target_risk=goal['maxRisk']
             )
         else:
             initial_state = (
@@ -213,9 +213,10 @@ def run_search():
             return jsonify(result)            
 
         elif algo_key=='genetic':
-            algorithm = AlgoClass(problem)
+            algorithm = AlgoClass(problem, population_size= params['populationSize'], num_generations=params['generations'], mutation_rate= params['mutationRate'])
             result = algorithm.run()
             return jsonify(result)
+
         else:
             algorithm = AlgoClass(problem)
             result = algorithm.search()
