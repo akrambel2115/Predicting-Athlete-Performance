@@ -28,6 +28,9 @@ class AthletePerformanceProblem:
                  target_perf: int = 8,
                  target_fatigue: float = 2.4,
                  target_risk: float = 0.2,
+                 sleep_duration: float = 7.5,
+                 sleep_quality: float = 3.0,
+                 stress_level: float = 2.5,
                  genetic: bool = False):
 
         # Load models
@@ -54,10 +57,7 @@ class AthletePerformanceProblem:
             raise ValueError("Unable to extract injury classifier and features")
         # Compute load-per-minute mapping
         self.LOAD_PER_MIN = calculate_load_per_minute()
-        # Defaults
-        self.SLEEP_DUR = 7.5
-        self.SLEEP_QLT = 3.0
-        self.STRESS    = 2.5
+        
         self.f_feats = list(self.delta_f.feature_names_in_)
         self.p_feats = list(self.delta_p.feature_names_in_)
         # Initialize state history
@@ -74,6 +74,11 @@ class AthletePerformanceProblem:
         self.target_perf = target_perf
         self.target_fatigue = target_fatigue
         self.target_risk = target_risk
+        
+        #physiological parameters
+        self.sleep_quality = sleep_quality
+        self.sleep_duration = sleep_duration
+        self.stress_level = stress_level
 
     def actions(self):
         train_actions = [(i, d) for i in (0.3, 0.6, 0.9) for d in (60, 120)]
@@ -100,16 +105,16 @@ class AthletePerformanceProblem:
             'action_intensity': intensity,
             'fatigue_post': F,
             'performance_lag_1': P,
-            'sleep_duration': self.SLEEP_DUR,
-            'sleep_quality':  self.SLEEP_QLT,
-            'stress':         self.STRESS,
+            'sleep_duration': self.sleep_duration,
+            'sleep_quality':  self.sleep_quality,
+            'stress':         self.stress_level,
             'is_rest_day':    int(is_rest),
             'injury_flag_lag_1': inj_lag1,
             'load_rolling_7':      load7,
             'fatigue_post_rolling_7': fat7,
-            'sleep_duration_rolling_7': self.SLEEP_DUR,
-            'sleep_quality_rolling_7':  self.SLEEP_QLT,
-            'stress_rolling_7':        self.STRESS,
+            'sleep_duration_rolling_7': self.sleep_duration,
+            'sleep_quality_rolling_7':  self.sleep_quality,
+            'stress_rolling_7':        self.stress_level,
             'load_lag_1':      prev['load'],
             'total_duration':  duration,
             'injury_count':    prev['injury_count'],
@@ -321,5 +326,3 @@ class AthletePerformanceProblem:
             current_state = self.apply_action(current_state, indiv_action) 
 
         return current_state[:-1]
-
-        

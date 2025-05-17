@@ -17,10 +17,17 @@ class AthleteTrainingCSP:
         initial_state=(0, 0.0, 0.0, 1.0),
         target_day=30,
         target_fatigue=2.7,
-        target_risk=0.5):
+        target_risk=0.5,
+        sleep_duration = 7.5,
+        sleep_quality = 3.0,
+        stress_level = 2.5):
         
         # an object of the problem definition
-        self.athlete_problem = AthletePerformanceProblem(initial_state=initial_state)
+        self.athlete_problem = AthletePerformanceProblem(
+            initial_state=initial_state,
+            sleep_duration=sleep_duration,
+            sleep_quality=sleep_quality,
+            stress_level=stress_level)
         
         # Thresholds
         self.target_day = target_day
@@ -36,6 +43,10 @@ class AthleteTrainingCSP:
             'days_since_game': 0,
             'days_since_last_injury': 0}
         ])
+        #physiological parameters
+        self.sleep_quality = sleep_quality
+        self.sleep_duration = sleep_duration
+        self.stress_level = stress_level
         
         self.intensities = [0.0, 0.3, 0.6, 0.9]
         self.durations = [0, 60, 90, 120]

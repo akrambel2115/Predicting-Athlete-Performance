@@ -119,6 +119,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     maxRisk: parseFloat(document.getElementById('max-risk').value),
                     days: parseInt(document.getElementById('training-days').value)
                 },
+                physicological_parameters:
+                {
+                    stressLevel: parseFloat(document.getElementById('stress-level').value),
+                    sleepDuration: parseFloat(document.getElementById('sleep-duration').value),
+                    sleepQuality: parseFloat(document.getElementById('sleep-quality').value)
+                },
                 algorithm: document.querySelector('input[name="algorithm"]:checked').value,
                 advancedParams: {}
             };

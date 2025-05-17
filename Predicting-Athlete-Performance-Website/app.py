@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify
 import os
 from datetime import datetime
@@ -152,14 +151,12 @@ def run_search():
     }
     data = request.get_json()
     init = data.get('initialState', {})
+    physic = data.get('physicological_parameters', {})
     goal = data.get('goalState', {})
     algo_key = data.get('algorithm', 'astar')
     params = data.get('advancedParams', {})
-    print(params)
-    print(data)
-    print(init)
-    print(goal)
-    print(algo_key)
+
+    print(physic)
     
 
     # Convert camelCase params to snake_case
@@ -182,7 +179,10 @@ def run_search():
                 target_day=goal['days'],
                 target_perf=goal['targetPerformance'],
                 target_fatigue=goal['maxFatigue'],
-                target_risk=goal['maxRisk']
+                target_risk=goal['maxRisk'],
+                sleep_duration=physic['sleepDuration'],
+                sleep_quality=physic['sleepQuality'],
+                stress_level=physic['stressLevel']
             )
         else:
             initial_state = (
@@ -195,8 +195,13 @@ def run_search():
                 initial_state=initial_state,
                 target_day=goal['days'],
                 target_fatigue=goal['maxFatigue'],
-                target_risk=goal['maxRisk']
+                target_risk=goal['maxRisk'],
+                sleep_duration=physic['sleepDuration'],
+                sleep_quality=physic['sleepQuality'],
+                stress_level=physic['stressLevel']
             )
+            print(problem)
+
             
     except KeyError as e:
         return jsonify(success=False, error=f"Missing parameter: {e}"), 400

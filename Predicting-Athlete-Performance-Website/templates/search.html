@@ -124,6 +124,45 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="form-group">
+                                <label for="sleep-duration">Sleep Duration</label>
+                                <p class="field-description">How many hours do you typically sleep per night?</p>
+                                <div class="range-slider-container">
+                                    <input type="range" id="sleep-duration" name="sleep-duration" min="4" max="10" step="0.1" value="7.5">
+                                    <div class="range-labels">
+                                        <span>4 Hours</span>
+                                        <span class="value-display" id="sleep-duration-display">7.5</span>
+                                        <span>10 Hours</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sleep-quality">Sleep Quality</label>
+                                <p class="field-description">How would you rate your sleep quality?</p>
+                                <div class="range-slider-container">
+                                    <input type="range" id="sleep-quality" name="sleep-quality" min="1" max="5" step="0.1" value="3.0">
+                                    <div class="range-labels">
+                                        <span>Poor (1)</span>
+                                        <span class="value-display" id="sleep-quality-display">3.0</span>
+                                        <span>Excellent (5)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="stress-level">Stress Level</label>
+                                <p class="field-description">How stressed are you feeling?</p>
+                                <div class="range-slider-container">
+                                    <input type="range" id="stress-level" name="stress-level" min="1" max="5" step="0.1" value="2.5">
+                                    <div class="range-labels">
+                                        <span>Low (1)</span>
+                                        <span class="value-display" id="stress-level-display">2.5</span>
+                                        <span>High (5)</span>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <div class="form-actions">
                                 <button type="button" class="btn btn-primary btn-next" data-next="2">Next: Set Your Goals</button>
