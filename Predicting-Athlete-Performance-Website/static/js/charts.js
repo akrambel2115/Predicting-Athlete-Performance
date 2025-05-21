@@ -39,9 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
         initIntensityVsRiskChart();
         initIntensityVsFatigueChart();
         
-        // Initialize optimal training zone chart
-        initOptimalTrainingZoneChart();
-        
         // Setup predictions controls
         setupPredictionsControls();
     }
@@ -114,13 +111,113 @@ const globalChartOptions = {
     }
 };
 
-// Training Intensity vs Performance chart
-function initIntensityVsPerformanceChart() {
-    const ctx = document.getElementById('intensityVsPerformanceChart').getContext('2d');
+// Add Chart.js plugin for center text
+Chart.register({
+    id: 'centerText',
+    beforeDraw: function(chart) {
+        if (chart.config.options.plugins.centerText) {
+            const centerText = chart.config.options.plugins.centerText;
+            const ctx = chart.ctx;
+            const width = chart.width;
+            const height = chart.height;
+            
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = centerText.color || '#666';
+            ctx.font = `${centerText.fontStyle || 'normal'} ${centerText.minFontSize || 16}px 'Poppins', sans-serif`;
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            ctx.fillText(centerText.text, centerX, centerY);
+            ctx.restore();
+        }
+    }
+});
 
-    const dates = getLastNDays(7);
-    const trainingIntensity = [0.3, 0.6, 0.9, 0.3, 0.3, 0.6, 0.9];
-    const performance = [7.6, 7.0, 6.5, 7.2, 7.8, 7.4, 8.0];
+// Helper function to show a notice if no search data exists
+function showNoSearchNotice(containerSelector) {
+    const container = document.querySelector(containerSelector) || document.body;
+    // Remove any previous notice
+    const oldNotice = document.getElementById('no-search-notice');
+    if (oldNotice) oldNotice.remove();
+    // Create notice
+    const notice = document.createElement('div');
+    notice.id = 'no-search-notice';
+    notice.style.background = '#fff3cd';
+    notice.style.color = '#856404';
+    notice.style.border = '1px solid #ffeeba';
+    notice.style.padding = '1.5rem';
+    notice.style.margin = '2rem auto';
+    notice.style.borderRadius = '8px';
+    notice.style.maxWidth = '500px';
+    notice.style.textAlign = 'center';
+    notice.style.fontFamily = "'Poppins', sans-serif";
+    notice.innerHTML = `
+        <strong>No search has been performed yet.</strong><br>
+        Please <a href="/search" style="color: #4F7942; text-decoration: underline; font-weight: bold;">run a search</a> to see your performance, schedule, and predictions.
+    `;
+    container.prepend(notice);
+}
+
+// Helper function to load current search data (with notice)
+async function loadCurrentSearchDataWithNotice(containerSelector) {
+    try {
+        const response = await fetch('/static/js/current/current_search.json');
+        if (!response.ok) throw new Error('No search data');
+        const data = await response.json();
+        // Remove notice if present
+        const oldNotice = document.getElementById('no-search-notice');
+        if (oldNotice) oldNotice.remove();
+        return data;
+    } catch (error) {
+        showNoSearchNotice(containerSelector);
+        return null;
+    }
+}
+
+// Helper function to get dates based on search timestamp
+function getDatesFromSearch(searchData) {
+    const searchDate = new Date(searchData.timestamp);
+    const days = searchData.goal_state.days;
+    const dates = [];
+    
+    for (let i = 0; i < days; i++) {
+        const date = new Date(searchDate);
+        date.setDate(date.getDate() + i);
+        dates.push(formatDate(date));
+    }
+    
+    return dates;
+}
+
+// Helper function to get today's metrics
+function getTodayMetrics(searchData) {
+    const searchDate = new Date(searchData.timestamp);
+    const today = new Date();
+    const diffTime = Math.abs(today - searchDate);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // If we're beyond the search period, return the last day's metrics
+    if (diffDays >= searchData.goal_state.days) {
+        return searchData.result.schedule[searchData.result.schedule.length - 1];
+    }
+    
+    // Return the metrics for the current day
+    return searchData.result.schedule[diffDays];
+}
+
+// Training Intensity vs Performance chart
+async function initIntensityVsPerformanceChart() {
+    const searchData = await loadCurrentSearchDataWithNotice('.overview-container');
+    if (!searchData) return;
+
+    const ctx = document.getElementById('intensityVsPerformanceChart').getContext('2d');
+    const dates = getDatesFromSearch(searchData);
+    
+    const trainingIntensity = searchData.result.schedule.map(day => day.intensity);
+    const performance = searchData.result.schedule.map(day => day.performance);
 
     const intensityPerformanceChart = new Chart(ctx, {
         type: 'bar',
@@ -288,12 +385,16 @@ const enhancedDonutOptions = {
 };
 
 // Injury Risk Chart (Donut)
-function initInjuryRiskChart() {
+async function initInjuryRiskChart() {
+    const searchData = await loadCurrentSearchDataWithNotice('.overview-container');
+    if (!searchData) return;
+
     const ctx = document.getElementById('injuryRiskChart').getContext('2d');
+    const todayMetrics = getTodayMetrics(searchData);
     
-    // Current injury risk (0.24 on a relative scale)
-    const injuryRisk = 0.24;
-    const riskPercentage = injuryRisk * 100; // Convert to percentage for chart display
+    // Current injury risk
+    const injuryRisk = todayMetrics.risk;
+    const riskPercentage = injuryRisk * 100;
     
     // Create gradient
     const riskGradient = ctx.createLinearGradient(0, 0, 0, 200);
@@ -305,7 +406,7 @@ function initInjuryRiskChart() {
         data: {
             labels: ['Risk', 'Safe'],
             datasets: [{
-                data: [riskPercentage, 100 - riskPercentage],
+                data: [injuryRisk, 1 - injuryRisk],
                 backgroundColor: [
                     riskGradient,
                     '#f5f5f5'
@@ -318,74 +419,61 @@ function initInjuryRiskChart() {
                 borderWidth: 0
             }]
         },
-        options: enhancedDonutOptions
-    });
-    
-    // Draw center text with smooth animation
-    let currentValue = 0;
-    const targetValue = injuryRisk;
-    
-    const renderValue = () => {
-        if (currentValue < targetValue) {
-            const step = Math.max(0.01, (targetValue - currentValue) / 10);
-            currentValue = Math.min(currentValue + step, targetValue);
-            
-            // Update DOM element
-            const valueEl = document.getElementById('injuryRiskValue');
-            if (valueEl) valueEl.textContent = currentValue.toFixed(2);
-            
-            requestAnimationFrame(renderValue);
-        }
-    };
-    
-    setTimeout(renderValue, 500); // Start a bit after chart animation begins
-    
-    // Draw center text in chart
-    Chart.register({
-        id: 'centerTextPlugin',
-        afterDraw: function(chart) {
-            if (chart.canvas.id === 'injuryRiskChart') {
-                const width = chart.width;
-                const height = chart.height;
-                const ctx = chart.ctx;
-                
-                ctx.restore();
-                const fontSize = (height / 150).toFixed(2);
-                const fontFamily = "'Poppins', sans-serif";
-                
-                // Draw risk value
-                ctx.font = `bold ${fontSize}em ${fontFamily}`;
-                ctx.textBaseline = 'middle';
-                ctx.textAlign = 'center';
-                
-                const text = currentValue.toFixed(2);
-                const textY = height / 2 - 10;
-                
-                ctx.fillStyle = chartColors.danger;
-                ctx.fillText(text, width / 2, textY);
-                
-                // Draw label
-                ctx.font = `${fontSize * 0.45}em ${fontFamily}`;
-                const subText = 'Risk Level';
-                const subTextY = height / 2 + 15;
-                
-                ctx.fillStyle = '#888';
-                ctx.fillText(subText, width / 2, subTextY);
-                ctx.save();
+        options: {
+            ...enhancedDonutOptions,
+            plugins: {
+                ...enhancedDonutOptions.plugins,
+                tooltip: {
+                    ...enhancedDonutOptions.plugins.tooltip,
+                    callbacks: {
+                        label: function(context) {
+                            return `Risk Level: ${(context.parsed).toFixed(2)}`;
+                        }
+                    }
+                },
+                centerText: {
+                    text: `${(injuryRisk * 100).toFixed(1)}%`,
+                    color: '#666',
+                    fontStyle: 'bold',
+                    minFontSize: 16
+                }
             }
         }
     });
     
-    // Store reference to chart for updates
+    // Update DOM element with current risk value
+    const valueEl = document.getElementById('injuryRiskValue');
+    if (valueEl) valueEl.textContent = injuryRisk.toFixed(2);
+    
+    // Update risk level badge
+    const riskBadge = document.querySelector('.prediction-card:nth-child(1) .metric-badge');
+    if (riskBadge) {
+        if (injuryRisk < 0.3) {
+            riskBadge.textContent = 'Low';
+            riskBadge.className = 'metric-badge low';
+        } else if (injuryRisk < 0.6) {
+            riskBadge.textContent = 'Medium';
+            riskBadge.className = 'metric-badge medium';
+        } else {
+            riskBadge.textContent = 'High';
+            riskBadge.className = 'metric-badge high';
+        }
+    }
+    
     window.injuryRiskChart = injuryRiskChart;
 }
 
 // Performance Chart (Donut)
-function initPerformanceChart() {
+async function initPerformanceChart() {
+    const searchData = await loadCurrentSearchDataWithNotice('.overview-container');
+    if (!searchData) return;
+
     const ctx = document.getElementById('performanceChart').getContext('2d');
-      // Current performance level (8.3 on scale of 0-10)
-    const performanceLevel = 8.3;
-    const performancePercentage = (performanceLevel / 10) * 100; // Convert to percentage for chart display
+    const todayMetrics = getTodayMetrics(searchData);
+    
+    // Current performance level
+    const performanceLevel = todayMetrics.performance;
+    const performancePercentage = (performanceLevel / 10) * 100;
     
     // Create gradient
     const performanceGradient = ctx.createLinearGradient(0, 0, 0, 200);
@@ -410,75 +498,61 @@ function initPerformanceChart() {
                 borderWidth: 0
             }]
         },
-        options: enhancedDonutOptions
-    });
-    
-    // Draw center text with smooth animation
-    let currentValue = 0;
-    const targetValue = performanceLevel;
-    
-    const renderValue = () => {
-        if (currentValue < targetValue) {
-            const step = Math.max(0.1, (targetValue - currentValue) / 10);
-            currentValue = Math.min(currentValue + step, targetValue);
-            
-            // Update DOM element
-            const valueEl = document.getElementById('performanceValue');
-            if (valueEl) valueEl.textContent = currentValue.toFixed(1);
-            
-            requestAnimationFrame(renderValue);
-        }
-    };
-    
-    setTimeout(renderValue, 800); // Start a bit after chart animation begins
-    
-    // Draw center text in chart
-    Chart.register({
-        id: 'centerTextPlugin2',
-        afterDraw: function(chart) {
-            if (chart.canvas.id === 'performanceChart') {
-                const width = chart.width;
-                const height = chart.height;
-                const ctx = chart.ctx;
-                
-                ctx.restore();
-                const fontSize = (height / 150).toFixed(2);
-                const fontFamily = "'Poppins', sans-serif";
-                
-                // Draw performance value
-                ctx.font = `bold ${fontSize}em ${fontFamily}`;
-                ctx.textBaseline = 'middle';
-                ctx.textAlign = 'center';
-                
-                const text = currentValue.toFixed(1);
-                const textY = height / 2 - 10;
-                
-                ctx.fillStyle = chartColors.primary;
-                ctx.fillText(text, width / 2, textY);
-                
-                // Draw label
-                ctx.font = `${fontSize * 0.45}em ${fontFamily}`;
-                const subText = 'Performance';
-                const subTextY = height / 2 + 15;
-                
-                ctx.fillStyle = '#888';
-                ctx.fillText(subText, width / 2, subTextY);
-                ctx.save();
+        options: {
+            ...enhancedDonutOptions,
+            plugins: {
+                ...enhancedDonutOptions.plugins,
+                tooltip: {
+                    ...enhancedDonutOptions.plugins.tooltip,
+                    callbacks: {
+                        label: function(context) {
+                            return `Performance: ${(context.parsed / 100 * 10).toFixed(1)}/10`;
+                        }
+                    }
+                },
+                centerText: {
+                    text: `${performancePercentage.toFixed(1)}%`,
+                    color: '#666',
+                    fontStyle: 'bold',
+                    minFontSize: 16
+                }
             }
         }
     });
     
-    // Store reference to chart for updates
+    // Update DOM element with current performance value
+    const valueEl = document.getElementById('performanceValue');
+    if (valueEl) valueEl.textContent = performanceLevel.toFixed(1);
+    
+    // Update performance badge
+    const perfBadge = document.querySelector('.prediction-card:nth-child(2) .metric-badge');
+    if (perfBadge) {
+        if (performanceLevel >= 8) {
+            perfBadge.textContent = 'High';
+            perfBadge.className = 'metric-badge high';
+        } else if (performanceLevel >= 6) {
+            perfBadge.textContent = 'Medium';
+            perfBadge.className = 'metric-badge medium';
+        } else {
+            perfBadge.textContent = 'Low';
+            perfBadge.className = 'metric-badge low';
+        }
+    }
+    
     window.performanceChart = performanceChart;
 }
 
 // Fatigue Chart (Donut)
-function initFatigueChart() {
+async function initFatigueChart() {
+    const searchData = await loadCurrentSearchDataWithNotice('.overview-container');
+    if (!searchData) return;
+
     const ctx = document.getElementById('fatigueChart').getContext('2d');
+    const todayMetrics = getTodayMetrics(searchData);
     
-    // Current fatigue level (1.6 on scale of 0-4)
-    const fatigueLevel = 1.6;
-    const fatiguePercentage = (fatigueLevel / 4) * 100; // Convert to percentage for chart display - scale of 0-4
+    // Current fatigue level
+    const fatigueLevel = todayMetrics.fatigue;
+    const fatiguePercentage = (fatigueLevel / 4) * 100;
     
     // Create gradient
     const fatigueGradient = ctx.createLinearGradient(0, 0, 0, 200);
@@ -503,65 +577,47 @@ function initFatigueChart() {
                 borderWidth: 0
             }]
         },
-        options: enhancedDonutOptions
-    });
-    
-    // Draw center text with smooth animation
-    let currentValue = 0;
-    const targetValue = fatigueLevel;
-    
-    const renderValue = () => {
-        if (currentValue < targetValue) {
-            const step = Math.max(0.1, (targetValue - currentValue) / 10);
-            currentValue = Math.min(currentValue + step, targetValue);
-            
-            // Update DOM element
-            const valueEl = document.getElementById('fatigueValue');
-            if (valueEl) valueEl.textContent = currentValue.toFixed(1);
-            
-            requestAnimationFrame(renderValue);
-        }
-    };
-    
-    setTimeout(renderValue, 1100); // Start a bit after chart animation begins
-    
-    // Draw center text in chart
-    Chart.register({
-        id: 'centerTextPlugin3',
-        afterDraw: function(chart) {
-            if (chart.canvas.id === 'fatigueChart') {
-                const width = chart.width;
-                const height = chart.height;
-                const ctx = chart.ctx;
-                
-                ctx.restore();
-                const fontSize = (height / 150).toFixed(2);
-                const fontFamily = "'Poppins', sans-serif";
-                
-                // Draw fatigue value
-                ctx.font = `bold ${fontSize}em ${fontFamily}`;
-                ctx.textBaseline = 'middle';
-                ctx.textAlign = 'center';
-                
-                const text = currentValue.toFixed(1);
-                const textY = height / 2 - 10;
-                
-                ctx.fillStyle = chartColors.info;
-                ctx.fillText(text, width / 2, textY);
-                
-                // Draw label
-                ctx.font = `${fontSize * 0.45}em ${fontFamily}`;
-                const subText = 'Fatigue (0-4)';
-                const subTextY = height / 2 + 15;
-                
-                ctx.fillStyle = '#888';
-                ctx.fillText(subText, width / 2, subTextY);
-                ctx.save();
+        options: {
+            ...enhancedDonutOptions,
+            plugins: {
+                ...enhancedDonutOptions.plugins,
+                tooltip: {
+                    ...enhancedDonutOptions.plugins.tooltip,
+                    callbacks: {
+                        label: function(context) {
+                            return `Fatigue Level: ${(context.parsed / 100 * 4).toFixed(1)}/4`;
+                        }
+                    }
+                },
+                centerText: {
+                    text: `${fatiguePercentage.toFixed(1)}%`,
+                    color: '#666',
+                    fontStyle: 'bold',
+                    minFontSize: 16
+                }
             }
         }
     });
     
-    // Store reference to chart for updates
+    // Update DOM element with current fatigue value
+    const valueEl = document.getElementById('fatigueValue');
+    if (valueEl) valueEl.textContent = fatigueLevel.toFixed(1);
+    
+    // Update fatigue badge
+    const fatigueBadge = document.querySelector('.prediction-card:nth-child(3) .metric-badge');
+    if (fatigueBadge) {
+        if (fatigueLevel < 1.5) {
+            fatigueBadge.textContent = 'Low';
+            fatigueBadge.className = 'metric-badge low';
+        } else if (fatigueLevel < 2.5) {
+            fatigueBadge.textContent = 'Medium';
+            fatigueBadge.className = 'metric-badge medium';
+        } else {
+            fatigueBadge.textContent = 'High';
+            fatigueBadge.className = 'metric-badge high';
+        }
+    }
+    
     window.fatigueChart = fatigueChart;
 }
 
@@ -595,31 +651,19 @@ function formatDate(date) {
 }
 
 // Initialize Injury Risk Prediction Chart
-function initInjuryRiskPredictionChart() {
+async function initInjuryRiskPredictionChart() {
+    const searchData = await loadCurrentSearchDataWithNotice('.predictions-container');
+    if (!searchData) return;
+
     const ctx = document.getElementById('injuryRiskPredictionChart').getContext('2d');
     
-    // Number of days to predict
-    const days = parseInt(document.getElementById('predictionTimeSelector')?.value || 7);
-    const futureDates = getNextNDays(days);
+    // Get risk data from search results
+    const riskData = searchData.result.schedule.map(day => day.risk);
+    const dates = getDatesFromSearch(searchData);
     
-    // Generate simulated injury risk prediction data
-    const baseRisk = 0.32; // Current risk level (0-1)
-    let riskPredictions = [];
-    let highRiskPeriodStart = Math.floor(Math.random() * (days - 3)) + 2;
-    
-    for (let i = 0; i < days; i++) {
-        let dailyRisk = baseRisk + (Math.sin(i * 0.5) * 0.05) + (Math.random() * 0.06 - 0.03);
-        
-        if (i >= highRiskPeriodStart && i <= highRiskPeriodStart + 2) {
-            dailyRisk += 0.15;
-        }
-        
-        dailyRisk = Math.min(1.0, Math.max(0, dailyRisk));
-        riskPredictions.push(dailyRisk);
-    }
-    
-    const peakRisk = Math.max(...riskPredictions);
-    const avgRisk = riskPredictions.reduce((a, b) => a + b, 0) / riskPredictions.length;
+    const baseRisk = riskData[0]; // Current risk level
+    const peakRisk = Math.max(...riskData);
+    const avgRisk = riskData.reduce((a, b) => a + b, 0) / riskData.length;
     
     document.getElementById('currentRiskValue').textContent = baseRisk.toFixed(2);
     document.getElementById('peakRiskValue').textContent = peakRisk.toFixed(2);
@@ -644,10 +688,10 @@ function initInjuryRiskPredictionChart() {
     const riskPredictionChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: futureDates,
+            labels: dates,
             datasets: [{
                 label: 'Predicted Injury Risk',
-                data: riskPredictions,
+                data: riskData,
                 borderColor: chartColors.danger,
                 backgroundColor: gradient,
                 borderWidth: 3,
@@ -740,52 +784,24 @@ function initInjuryRiskPredictionChart() {
 }
 
 // Initialize Fatigue Prediction Chart
-function initFatiguePredictionChart() {
+async function initFatiguePredictionChart() {
+    const searchData = await loadCurrentSearchDataWithNotice('.predictions-container');
+    if (!searchData) return;
+
     const ctx = document.getElementById('fatiguePredictionChart').getContext('2d');
     
-    const days = parseInt(document.getElementById('predictionTimeSelector')?.value || 7);
-    const futureDates = getNextNDays(days);
+    // Get fatigue data from search results
+    const fatigueData = searchData.result.schedule.map(day => day.fatigue);
+    const dates = getDatesFromSearch(searchData);
     
-    // Base fatigue level on 0-4 scale
-    const baseFatigue = 1.8;
-    let fatiguePredictions = [];
+    const baseFatigue = fatigueData[0];
+    const peakFatigue = Math.max(...fatigueData);
+    const avgFatigue = fatigueData.reduce((a, b) => a + b, 0) / fatigueData.length;
     
-    // Training pattern affects fatigue changes (values represent relative impact)
-    const trainingPattern = [0.3, 0.6, 0.9, 0.3, 0.6, 0.3, 0];
-    
-    for (let i = 0; i < days; i++) {
-        const dayInPattern = i % trainingPattern.length;
-        const trainingIntensity = trainingPattern[dayInPattern];
-        
-        let dailyChange = 0;
-        
-        if (trainingIntensity === 0) {
-            // Rest day reduces fatigue
-            dailyChange = -(Math.random() * 0.3 + 0.2);
-        } else {
-            // Training increases fatigue based on intensity
-            dailyChange = trainingIntensity * (Math.random() * 0.3 + 0.1);
-        }
-        
-        let previousFatigue = i === 0 ? baseFatigue : fatiguePredictions[i-1];
-        let fatigueMultiplier = previousFatigue > 3 ? 1.2 : previousFatigue > 2 ? 1 : 0.8;
-        
-        let dailyFatigue = previousFatigue + (dailyChange * fatigueMultiplier);
-        
-        // Ensure fatigue stays within 0-4 scale
-        dailyFatigue = Math.min(4, Math.max(0, dailyFatigue));
-        fatiguePredictions.push(dailyFatigue);
-    }
-    
-    const peakFatigue = Math.max(...fatiguePredictions);
-    const avgFatigue = fatiguePredictions.reduce((a, b) => a + b, 0) / fatiguePredictions.length;
-    
-    // Update display values using 0-4 scale
     document.getElementById('currentFatigueValue').textContent = baseFatigue.toFixed(1);
     document.getElementById('peakFatigueValue').textContent = peakFatigue.toFixed(1);
     document.getElementById('avgFatigueValue').textContent = avgFatigue.toFixed(1);
     
-    // Update fatigue level badge
     const fatigueLevelBadge = document.querySelector('.fatigue-level');
     if (peakFatigue < 1.5) {
         fatigueLevelBadge.textContent = 'Low Fatigue';
@@ -805,10 +821,10 @@ function initFatiguePredictionChart() {
     const fatiguePredictionChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: futureDates,
+            labels: dates,
             datasets: [{
                 label: 'Predicted Fatigue Level (0-4)',
-                data: fatiguePredictions,
+                data: fatigueData,
                 borderColor: chartColors.info,
                 backgroundColor: gradient,
                 borderWidth: 3,
@@ -860,26 +876,17 @@ function initFatiguePredictionChart() {
 }
 
 // Initialize Intensity vs Risk Chart
-function initIntensityVsRiskChart() {
+async function initIntensityVsRiskChart() {
+    const searchData = await loadCurrentSearchDataWithNotice('.predictions-container');
+    if (!searchData) return;
+
     const ctx = document.getElementById('intensityVsRiskChart').getContext('2d');
     
-    const scatterData = [];
-    
-    // Generate data points for each intensity level
-    const intensities = [0.3, 0.6, 0.9];
-    for (const intensity of intensities) {
-        // Generate multiple points for each intensity level
-        for (let i = 0; i < 10; i++) {
-            const risk = (Math.random() * 0.15 + 0.1).toFixed(2);
-            scatterData.push({ x: intensity, y: risk });
-        }
-    }
-    
-    const trendlinePoints = [];
-    for (let x = 0.3; x <= 0.9; x += 0.1) {
-        const y = 0.15 * Math.pow(x, 2) + 0.1;
-        trendlinePoints.push({ x, y: Math.max(0.05, Math.min(1.0, y)) });
-    }
+    // Get intensity and risk data from search results
+    const scatterData = searchData.result.schedule.map(day => ({
+        x: day.intensity,
+        y: day.risk
+    }));
     
     const intensityVsRiskChart = new Chart(ctx, {
         type: 'scatter',
@@ -891,16 +898,6 @@ function initIntensityVsRiskChart() {
                     backgroundColor: 'rgba(244, 67, 54, 0.7)',
                     pointRadius: 6,
                     pointHoverRadius: 8
-                },
-                {
-                    label: 'Risk Correlation',
-                    data: trendlinePoints,
-                    type: 'line',
-                    fill: false,
-                    borderColor: 'rgba(76, 175, 80, 0.7)',
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    tension: 0.4
                 }
             ]
         },
@@ -956,27 +953,10 @@ function initIntensityVsRiskChart() {
             },
             plugins: {
                 ...globalChartOptions.plugins,
-                annotation: {
-                    annotations: {
-                        highRiskZone: {
-                            type: 'box',
-                            xMin: 0.75,
-                            xMax: 1.0,
-                            yMin: 0.4,
-                            yMax: 1.0,
-                            backgroundColor: 'rgba(244, 67, 54, 0.1)',
-                            borderColor: 'rgba(244, 67, 54, 0.3)',
-                            borderWidth: 1,
-                            label: {
-                                display: true,
-                                content: 'High Risk Zone',
-                                position: 'center',
-                                font: {
-                                    family: "'Poppins', sans-serif",
-                                    size: 12
-                                },
-                                color: 'rgba(244, 67, 54, 0.7)'
-                            }
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Intensity: ${context.parsed.x.toFixed(2)}, Risk: ${context.parsed.y.toFixed(2)}`;
                         }
                     }
                 }
@@ -986,40 +966,24 @@ function initIntensityVsRiskChart() {
     
     window.intensityVsRiskChart = intensityVsRiskChart;
     
-    document.getElementById('riskInsight').textContent = 'Risk increases significantly when intensity exceeds 0.6 for 3+ consecutive days.';
+    // Update insight based on actual data
+    const highIntensityDays = scatterData.filter(point => point.x >= 0.6).length;
+    document.getElementById('riskInsight').textContent = 
+        `Risk increases significantly when intensity exceeds 0.6 for ${highIntensityDays}+ consecutive days.`;
 }
 
 // Initialize Intensity vs Fatigue Chart
-function initIntensityVsFatigueChart() {
+async function initIntensityVsFatigueChart() {
+    const searchData = await loadCurrentSearchDataWithNotice('.predictions-container');
+    if (!searchData) return;
+
     const ctx = document.getElementById('intensityVsFatigueChart').getContext('2d');
     
-    const scatterData = [];
-    
-    // Generate data points for each intensity level
-    const intensities = [0.3, 0.6, 0.9];
-    for (const intensity of intensities) {
-        // Generate multiple points for each intensity level
-        for (let i = 0; i < 10; i++) {
-            let fatigue;
-            if (intensity === 0.3) {
-                fatigue = (Math.random() * 0.6 + 0.6).toFixed(1); // 0.6-1.2 on 0-4 scale
-            } else if (intensity === 0.6) {
-                fatigue = (Math.random() * 1.0 + 1.2).toFixed(1); // 1.2-2.2 on 0-4 scale
-            } else {
-                fatigue = (Math.random() * 1.4 + 2.0).toFixed(1); // 2.0-3.4 on 0-4 scale
-            }
-            scatterData.push({ x: intensity, y: fatigue });
-        }
-    }
-    
-    // Create trendline points showing exponential relationship
-    const trendlinePoints = [];
-    for (let x = 0.3; x <= 0.9; x += 0.1) {
-        // Quadratic relationship: fatigue = base + a*x + b*x^2
-        // This creates a more pronounced curve that better matches the scatter data
-        const y = 0.4 + 1.2 * x + 1.8 * Math.pow(x, 2);
-        trendlinePoints.push({ x, y: Math.max(0.4, Math.min(4.0, y)) });
-    }
+    // Get intensity and fatigue data from search results
+    const scatterData = searchData.result.schedule.map(day => ({
+        x: day.intensity,
+        y: day.fatigue
+    }));
     
     const intensityVsFatigueChart = new Chart(ctx, {
         type: 'scatter',
@@ -1031,16 +995,6 @@ function initIntensityVsFatigueChart() {
                     backgroundColor: 'rgba(33, 150, 243, 0.7)',
                     pointRadius: 6,
                     pointHoverRadius: 8
-                },
-                {
-                    label: 'Fatigue Correlation',
-                    data: trendlinePoints,
-                    type: 'line',
-                    fill: false,
-                    borderColor: 'rgba(76, 175, 80, 0.7)',
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    tension: 0.4
                 }
             ]
         },
@@ -1096,27 +1050,10 @@ function initIntensityVsFatigueChart() {
             },
             plugins: {
                 ...globalChartOptions.plugins,
-                annotation: {
-                    annotations: {
-                        highFatigueZone: {
-                            type: 'box',
-                            xMin: 0.75,
-                            xMax: 1.0,
-                            yMin: 2.6,
-                            yMax: 4.0,
-                            backgroundColor: 'rgba(33, 150, 243, 0.1)',
-                            borderColor: 'rgba(33, 150, 243, 0.3)',
-                            borderWidth: 1,
-                            label: {
-                                display: true,
-                                content: 'High Fatigue Zone',
-                                position: 'center',
-                                font: {
-                                    family: "'Poppins', sans-serif",
-                                    size: 12
-                                },
-                                color: 'rgba(33, 150, 243, 0.7)'
-                            }
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Intensity: ${context.parsed.x.toFixed(2)}, Fatigue: ${context.parsed.y.toFixed(2)}`;
                         }
                     }
                 }
@@ -1126,203 +1063,10 @@ function initIntensityVsFatigueChart() {
     
     window.intensityVsFatigueChart = intensityVsFatigueChart;
     
-    document.getElementById('fatigueInsight').textContent = 'Fatigue increases exponentially with training intensity. Sessions above 0.6 intensity contribute significantly more to accumulated fatigue.';
-}
-
-// Initialize Optimal Training Zone Chart
-function initOptimalTrainingZoneChart() {
-    const ctx = document.getElementById('optimalTrainingZoneChart').getContext('2d');
-    
-    const intensityRange = [];
-    for (let i = 0; i <= 100; i += 5) {
-        intensityRange.push(i);
-    }
-    
-    const performanceBenefit = intensityRange.map(x => {
-        return 100 * Math.exp(-0.001 * Math.pow(x - 75, 2));
-    });
-    
-    const injuryRisk = intensityRange.map(x => {
-        if (x < 40) return 2;
-        if (x < 60) return 5 + (x - 40) * 0.3;
-        if (x < 75) return 11 + (x - 60) * 1;
-        return 26 + (x - 75) * 3;
-    });
-    
-    const fatigueAccumulation = intensityRange.map(x => {
-        return Math.min(100, 10 + x * 0.7 + Math.pow(x/100, 2) * 20);
-    });
-    
-    const benefitScore = intensityRange.map((x, i) => {
-        return performanceBenefit[i] * 0.8 - injuryRisk[i] * 0.5 - fatigueAccumulation[i] * 0.3;
-    });
-    
-    const maxBenefitScore = Math.max(...benefitScore);
-    const thresholdScore = maxBenefitScore * 0.8;
-    
-    let optimalMin = 0, optimalMax = 0;
-    for (let i = 0; i < benefitScore.length; i++) {
-        if (benefitScore[i] >= thresholdScore) {
-            optimalMin = intensityRange[i];
-            break;
-        }
-    }
-    
-    for (let i = benefitScore.length - 1; i >= 0; i--) {
-        if (benefitScore[i] >= thresholdScore) {
-            optimalMax = intensityRange[i];
-            break;
-        }
-    }
-    
-    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, 'rgba(79, 121, 66, 0.7)');
-    gradient.addColorStop(1, 'rgba(79, 121, 66, 0.0)');
-    
-    const optimalTrainingZoneChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: intensityRange.map(x => x + '%'),
-            datasets: [
-                {
-                    label: 'Performance Benefit',
-                    data: performanceBenefit,
-                    borderColor: chartColors.primary,
-                    backgroundColor: 'transparent',
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    yAxisID: 'y'
-                },
-                {
-                    label: 'Injury Risk',
-                    data: injuryRisk,
-                    borderColor: chartColors.danger,
-                    backgroundColor: 'transparent',
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    yAxisID: 'y'
-                },
-                {
-                    label: 'Fatigue',
-                    data: fatigueAccumulation,
-                    borderColor: chartColors.info,
-                    backgroundColor: 'transparent',
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    yAxisID: 'y'
-                },
-                {
-                    label: 'Overall Benefit',
-                    data: benefitScore.map(x => Math.max(0, x)),
-                    borderColor: 'rgba(79, 121, 66, 1)',
-                    backgroundColor: gradient,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    fill: true,
-                    yAxisID: 'y1'
-                }
-            ]
-        },
-        options: {
-            ...globalChartOptions,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Training Intensity',
-                        font: {
-                            family: "'Poppins', sans-serif",
-                            size: 12
-                        }
-                    },
-                    ticks: {
-                        maxTicksLimit: 11,
-                        font: {
-                            family: "'Poppins', sans-serif"
-                        }
-                    },
-                    grid: {
-                        display: false
-                    }
-                },
-                y: {
-                    min: 0,
-                    max: 100,
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'Value (%)',
-                        font: {
-                            family: "'Poppins', sans-serif",
-                            size: 12
-                        }
-                    },
-                    ticks: {
-                        font: {
-                            family: "'Poppins', sans-serif"
-                        }
-                    },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
-                },
-                y1: {
-                    min: 0,
-                    max: 100,
-                    position: 'right',
-                    title: {
-                        display: true,
-                        text: 'Overall Benefit',
-                        font: {
-                            family: "'Poppins', sans-serif",
-                            size: 12
-                        }
-                    },
-                    ticks: {
-                        font: {
-                            family: "'Poppins', sans-serif"
-                        }
-                    },
-                    grid: {
-                        drawOnChartArea: false
-                    }
-                }
-            },
-            plugins: {
-                ...globalChartOptions.plugins,
-                annotation: {
-                    annotations: {
-                        optimalRange: {
-                            type: 'box',
-                            xMin: optimalMin + '%',
-                            xMax: optimalMax + '%',
-                            backgroundColor: 'rgba(79, 121, 66, 0.1)',
-                            borderColor: 'rgba(79, 121, 66, 0.5)',
-                            borderWidth: 1,
-                            label: {
-                                display: true,
-                                content: 'Optimal Training Zone',
-                                position: 'center',
-                                font: {
-                                    family: "'Poppins', sans-serif",
-                                    size: 12
-                                },
-                                color: 'rgba(79, 121, 66, 0.8)'
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    });
-    
-    window.optimalTrainingZoneChart = optimalTrainingZoneChart;
-    
-    document.getElementById('optimalIntensityValue').textContent = `${optimalMin}-${optimalMax}%`;
+    // Update insight based on actual data
+    const highIntensityDays = scatterData.filter(point => point.x >= 0.6).length;
+    document.getElementById('fatigueInsight').textContent = 
+        `Fatigue increases exponentially with training intensity. Sessions above 0.6 intensity contribute significantly more to accumulated fatigue.`;
 }
 
 // Setup Predictions Controls
@@ -1332,29 +1076,6 @@ function setupPredictionsControls() {
         timeSelector.addEventListener('change', function() {
             const days = parseInt(this.value);
             updatePredictionTimeHorizon(days);
-        });
-    }
-    
-    const downloadBtn = document.getElementById('downloadZoneChart');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', function() {
-            const canvas = document.getElementById('optimalTrainingZoneChart');
-            const link = document.createElement('a');
-            link.download = 'optimal-training-zone.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        });
-    }
-    
-    const refreshBtn = document.getElementById('refreshZoneChart');
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', function() {
-            refreshBtn.classList.add('rotating');
-            
-            setTimeout(function() {
-                initOptimalTrainingZoneChart();
-                refreshBtn.classList.remove('rotating');
-            }, 1000);
         });
     }
 }
@@ -1368,19 +1089,18 @@ function updatePredictionTimeHorizon(days) {
 // Schedule Tab Charts and Controls
 
 // Initialize Combined Metrics Chart
-function initCombinedMetricsChart() {
+async function initCombinedMetricsChart() {
+    const searchData = await loadCurrentSearchDataWithNotice('.schedule-container');
+    if (!searchData) return;
+
     const ctx = document.getElementById('combinedMetricsChart').getContext('2d');
+    const dates = getDatesFromSearch(searchData);
     
-    // Sample data for the last 14 days
-    const dates = getLastNDays(14);
-    // Training intensity using discrete values (0.3, 0.6, 0.9)
-    const trainingIntensity = [0.3, 0.6, 0.9, 0.3, 0.3, 0.6, 0.9, 0.6, 0.3, 0.6, 0.6, 0.9, 0.3, 0.6];
-    // Performance on scale 0-10
-    const performance = [7.6, 7.0, 6.5, 7.2, 7.8, 7.4, 8.0, 8.2, 8.5, 8.0, 7.5, 6.8, 7.8, 8.2];
-    // Risk as decimal (0-1)
-    const injuryRisk = [0.15, 0.18, 0.28, 0.25, 0.20, 0.23, 0.30, 0.25, 0.15, 0.20, 0.30, 0.45, 0.30, 0.25];
-    // Fatigue on scale 0-4
-    const fatigue = [1.2, 1.8, 2.4, 2.2, 1.6, 2.0, 2.6, 2.3, 1.4, 1.8, 2.2, 2.8, 2.2, 1.8];
+    // Get metrics from search data
+    const trainingIntensity = searchData.result.schedule.map(day => day.intensity);
+    const performance = searchData.result.schedule.map(day => day.performance);
+    const injuryRisk = searchData.result.schedule.map(day => day.risk);
+    const fatigue = searchData.result.schedule.map(day => day.fatigue);
     
     const combinedMetricsChart = new Chart(ctx, {
         type: 'line',
@@ -1547,17 +1267,18 @@ function initCombinedMetricsChart() {
 }
 
 // Initialize Risk Heatmap
-function initRiskHeatmap() {
+async function initRiskHeatmap() {
+    const searchData = await loadCurrentSearchDataWithNotice('.schedule-container');
+    if (!searchData) return;
+
     const heatmapContainer = document.getElementById('riskHeatmap');
     if (!heatmapContainer) return;
     
     // Clear existing content
     heatmapContainer.innerHTML = '';
     
-    // Define weeks and days
-    const weeks = 4; // 4 weeks of data
-    const weekLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-    const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    // Get risk data from search results
+    const riskData = searchData.result.schedule.map(day => day.risk);
     
     // Create table structure for better layout
     const table = document.createElement('table');
@@ -1571,11 +1292,11 @@ function initRiskHeatmap() {
     headerRow.appendChild(cornerCell);
     
     // Add day headers
-    daysOfWeek.forEach(day => {
+    for (let i = 1; i <= riskData.length; i++) {
         const th = document.createElement('th');
-        th.textContent = day;
+        th.textContent = `Day ${i}`;
         headerRow.appendChild(th);
-    });
+    }
     
     table.appendChild(headerRow);
     
@@ -1587,42 +1308,40 @@ function initRiskHeatmap() {
         { min: 0.8, max: 1.0, color: 'rgba(79, 121, 66, 0.8)' }   // Critical risk - Very dark green
     ];
     
-    // Create data rows for each week
-    for (let week = 0; week < weeks; week++) {
-        const row = document.createElement('tr');
+    // Create data row
+    const row = document.createElement('tr');
+    
+    // Add row label
+    const rowLabelCell = document.createElement('td');
+    rowLabelCell.textContent = 'Risk Level';
+    row.appendChild(rowLabelCell);
+    
+    // Add day cells with actual risk data
+    riskData.forEach(risk => {
+        const cell = document.createElement('td');
         
-        // Add week label
-        const weekLabelCell = document.createElement('td');
-        weekLabelCell.textContent = weekLabels[week];
-        row.appendChild(weekLabelCell);
+        // Find the appropriate risk level and color
+        const riskLevel = riskLevels.find(level => risk >= level.min && risk < level.max);
+        const bgColor = riskLevel ? riskLevel.color : 'rgba(79, 121, 66, 0.2)';
         
-        // Add day cells for this week
-        for (let day = 0; day < 7; day++) {
-            const cell = document.createElement('td');
-            
-            // Generate random risk value between 0 and 1
-            const risk = Math.random();
-            
-            // Find the appropriate risk level and color
-            const riskLevel = riskLevels.find(level => risk >= level.min && risk < level.max);
-            const bgColor = riskLevel ? riskLevel.color : 'rgba(79, 121, 66, 0.2)';
-            
-            cell.style.backgroundColor = bgColor;
-            
-            // Add tooltip with risk info
-            cell.title = `Risk Level: ${risk.toFixed(2)}`;
-            
-            row.appendChild(cell);
-        }
+        cell.style.backgroundColor = bgColor;
         
-        table.appendChild(row);
-    }
+        // Add tooltip with risk info
+        cell.title = `Risk Level: ${risk.toFixed(2)}`;
+        
+        row.appendChild(cell);
+    });
+    
+    table.appendChild(row);
     
     heatmapContainer.appendChild(table);
 }
 
 // Initialize Metrics Table
-function initMetricsTable() {
+async function initMetricsTable() {
+    const searchData = await loadCurrentSearchDataWithNotice('.schedule-container');
+    if (!searchData) return;
+
     const tableElement = document.getElementById('metricsTable');
     if (!tableElement) return;
     
@@ -1646,30 +1365,20 @@ function initMetricsTable() {
     // Clear existing rows
     tableBody.innerHTML = '';
     
-    // Generate sample data for the table
-    const days = 14; // Last 14 days
-    const dates = getLastNDays(days);
+    // Get dates and metrics from search data
+    const dates = getDatesFromSearch(searchData);
+    const schedule = searchData.result.schedule;
     
-    // Standard intensity values
-    const intensityValues = [0.3, 0.6, 0.9];
-    
-    for (let i = 0; i < days; i++) {
-        // Generate data using our standardized scales
-        const intensity = intensityValues[Math.floor(Math.random() * intensityValues.length)];
-        const performance = (Math.random() * 3 + 7).toFixed(1); // Performance between 7-10
-        const risk = (Math.random() * 0.4).toFixed(2); // Risk between 0-0.4
-        const fatigue = (Math.random() * 2.5 + 1).toFixed(1); // Fatigue between 1-3.5
-        
-        // Create table row
+    // Add rows for each day
+    schedule.forEach((day, index) => {
         const row = document.createElement('tr');
         
-        // Create cells
         row.innerHTML = `
-            <td>${dates[i]}</td>
-            <td>${intensity}</td>
-            <td>${performance}</td>
-            <td>${risk}</td>
-            <td>${fatigue}</td>
+            <td>${dates[index]}</td>
+            <td>${day.intensity}</td>
+            <td>${day.performance.toFixed(1)}</td>
+            <td>${day.risk.toFixed(2)}</td>
+            <td>${day.fatigue.toFixed(1)}</td>
             <td class="actions-cell">
                 <button class="table-action-btn view" title="View Details">
                     <i class="fas fa-eye"></i>
@@ -1683,9 +1392,8 @@ function initMetricsTable() {
             </td>
         `;
         
-        // Add row to table
         tableBody.appendChild(row);
-    }
+    });
     
     // Setup pagination
     const pageIndicator = document.getElementById('pageIndicator');
@@ -2075,4 +1783,191 @@ function initializeHistoryTab() {
             }
         });
     }
+}
+
+// ================= EDIT HISTORY TAB =================
+
+// Helper: Fetch list of history JSON files
+async function fetchHistoryFiles() {
+    try {
+        const response = await fetch('/api/history/list');
+        const files = await response.json();
+        return files;
+    } catch (e) {
+        console.error('Could not fetch history files:', e);
+        return [];
+    }
+}
+
+// Helper: Load a single history JSON file
+async function loadHistoryFile(filename) {
+    try {
+        const response = await fetch(`/api/history/${filename}`);
+        return await response.json();
+    } catch (e) {
+        console.error('Could not load history file:', filename, e);
+        return null;
+    }
+}
+
+// Render Edit History List
+async function renderEditHistoryList() {
+    const container = document.getElementById('editHistoryList');
+    if (!container) return;
+    container.innerHTML = '<div>Loading...</div>';
+    const files = await fetchHistoryFiles();
+    if (!files.length) {
+        container.innerHTML = '<div>No edit/search history found.</div>';
+        return;
+    }
+    container.innerHTML = '';
+    for (const file of files.reverse()) { // newest first
+        const data = await loadHistoryFile(file);
+        if (!data) continue;
+        const div = document.createElement('div');
+        div.className = 'edit-history-entry';
+        div.innerHTML = `
+            <strong>${data.timestamp ? new Date(data.timestamp).toLocaleString() : file}</strong>
+            <span>Algorithm: ${data.algorithm || 'N/A'}</span>
+            <span>Goal: ${data.goal_state ? JSON.stringify(data.goal_state) : ''}</span>
+            <button class="view-log-btn" data-filename="${file}">View Details</button>
+        `;
+        container.appendChild(div);
+    }
+    // Attach click handlers
+    container.querySelectorAll('.view-log-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const filename = this.getAttribute('data-filename');
+            const data = await loadHistoryFile(filename);
+            showLogModalFromData(data, filename);
+        });
+    });
+}
+
+// Show modal with real data
+function showLogModalFromData(data, filename) {
+    document.getElementById('modalTitle').textContent = 'Edit/Search Log Details';
+    document.getElementById('logAlgorithm').textContent = data.algorithm || 'N/A';
+    document.getElementById('logDateTime').textContent = data.timestamp ? new Date(data.timestamp).toLocaleString() : '';
+    document.getElementById('logParams').textContent = data.search_params ? JSON.stringify(data.search_params) : '';
+    document.getElementById('logSummary').textContent = data.summary || '';
+    // Fill results table
+    const tbody = document.querySelector('#logResultsTable tbody');
+    tbody.innerHTML = '';
+    if (data.result && data.result.schedule) {
+        data.result.schedule.forEach((day, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${idx + 1}</td>
+                <td>${day.intensity}</td>
+                <td>${day.performance.toFixed(1)}</td>
+                <td>${day.risk.toFixed(2)}</td>
+                <td>${day.fatigue.toFixed(1)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+    // Export button
+    const exportBtn = document.getElementById('exportLogBtn');
+    exportBtn.onclick = function() {
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename || 'log.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+    // Show modal
+    document.getElementById('logDetailsModal').style.display = 'block';
+}
+
+// Close modal
+const closeModalBtn = document.querySelector('.close-modal-btn');
+if (closeModalBtn) {
+    closeModalBtn.onclick = function() {
+        document.getElementById('logDetailsModal').style.display = 'none';
+    };
+}
+
+// Auto-render edit history if section exists
+if (document.getElementById('editHistoryList')) {
+    renderEditHistoryList();
+}
+
+// ================= ACTIVITY HISTORY & ALGORITHM LOGS (DYNAMIC) =================
+
+// Render Activity History Grid and List Views
+async function renderActivityHistory() {
+    const files = await fetchHistoryFiles();
+    if (!files.length) return;
+
+    // Algorithm color mapping
+    const algorithmColors = {
+        'astar': 'astar',
+        'bfs': 'bfs',
+        'dfs': 'dfs',
+        'genetic': 'genetic',
+        'csp': 'csp',
+        'greedy': 'astar', // Using astar color for greedy as it's not in the legend
+        'ucs': 'bfs'      // Using bfs color for ucs as it's not in the legend
+    };
+
+    // Grid view
+    const grid = document.querySelector('.log-grid');
+    if (grid) {
+        grid.innerHTML = '';
+        files.reverse().forEach((file, idx) => {
+            loadHistoryFile(file).then(data => {
+                if (!data) return;
+                const div = document.createElement('div');
+                div.className = `grid-item has-activity ${algorithmColors[data.algorithm] || 'astar'}`;
+                div.setAttribute('data-log-id', file);
+                div.innerHTML = `
+                    <div class="log-id">${idx + 1}</div>
+                    <div class="activity-dot" title="${data.algorithm || 'Algorithm'}"></div>
+                `;
+                div.onclick = () => showLogModalFromData(data, file);
+                grid.appendChild(div);
+            });
+        });
+    }
+
+    // List view
+    const list = document.querySelector('.history-list');
+    if (list) {
+        list.innerHTML = '';
+        files.reverse().forEach((file, idx) => {
+            loadHistoryFile(file).then(data => {
+                if (!data) return;
+                const item = document.createElement('div');
+                item.className = `history-item ${algorithmColors[data.algorithm] || 'astar'}`;
+                item.setAttribute('data-log-id', file);
+                const date = data.timestamp ? new Date(data.timestamp) : null;
+                item.innerHTML = `
+                    <div class="history-item-date">
+                        <div class="date-day">${date ? date.getDate().toString().padStart(2, '0') : ''}</div>
+                        <div class="date-month">${date ? date.toLocaleString('default', {month: 'short'}) : ''}</div>
+                    </div>
+                    <div class="history-item-content">
+                        <div class="item-title">${data.algorithm || 'Algorithm'}</div>
+                        <div class="item-details">${data.summary || ''}</div>
+                        <div class="item-metrics">
+                            <span class="metric"><i class="fas fa-clock"></i> ${date ? date.toLocaleTimeString() : ''}</span>
+                        </div>
+                    </div>
+                    <div class="history-item-actions">
+                        <button class="view-log-btn" data-log-id="${file}"><i class="fas fa-eye"></i></button>
+                    </div>
+                `;
+                item.querySelector('.view-log-btn').onclick = () => showLogModalFromData(data, file);
+                list.appendChild(item);
+            });
+        });
+    }
+}
+
+// Auto-render activity history if grid or list exists
+if (document.querySelector('.log-grid') || document.querySelector('.history-list')) {
+    renderActivityHistory();
 }

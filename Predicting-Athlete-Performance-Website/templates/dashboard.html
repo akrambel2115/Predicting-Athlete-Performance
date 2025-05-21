@@ -121,52 +121,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Recent Activities -->
-            <div class="recent-activities-card">
-                <h4>Recent Activities</h4>
-                <ul class="activities-list">
-                    <li class="activity-item">
-                        <div class="activity-icon training">
-                            <i class="fas fa-running"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">High Intensity Training</div>
-                            <div class="activity-time">3 hours ago</div>
-                        </div>
-                        <div class="activity-details">
-                            <span class="activity-duration">45 min</span>
-                            <span class="activity-intensity">High</span>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon recovery">
-                            <i class="fas fa-hot-tub"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Recovery Session</div>
-                            <div class="activity-time">Yesterday</div>
-                        </div>
-                        <div class="activity-details">
-                            <span class="activity-duration">30 min</span>
-                            <span class="activity-intensity">Low</span>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon match">
-                            <i class="fas fa-futbol"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Match Performance</div>
-                            <div class="activity-time">2 days ago</div>
-                        </div>
-                        <div class="activity-details">
-                            <span class="activity-duration">90 min</span>
-                            <span class="activity-score">8.2/10</span>
-                        </div>
-                    </li>
-                </ul>
-            </div>
         </div>
     {% elif active_page == 'schedule' %}
         <div class="schedule-container">
@@ -417,39 +371,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Optimal Training Zone Recommendation -->
-            <div class="chart-card optimal-zone-card">
-                <div class="chart-header">
-                    <h4>Optimal Training Zone Analysis</h4>
-                    <div class="chart-actions">
-                        <button class="chart-action-btn" id="downloadZoneChart">
-                            <i class="fas fa-download"></i>
-                        </button>
-                        <button class="chart-action-btn" id="refreshZoneChart">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="optimalTrainingZoneChart"></canvas>
-                </div>
-                <div class="optimal-zone-summary">
-                    <div class="recommendation-box">
-                        <div class="recommendation-header">
-                            <h5>Recommended Training Intensity</h5>
-                            <div class="recommendation-badge optimal">Optimal</div>
-                        </div>
-                        <div class="recommendation-body">
-                            <div class="recommendation-value" id="optimalIntensityValue">65-75%</div>
-                            <p class="recommendation-text">
-                                This is your personalized optimal training zone based on your historical data and current condition.
-                                Stay within this range to maximize performance while minimizing injury risk.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     {% elif active_page == 'history' %}
         <div class="history-container">
@@ -474,63 +395,7 @@
                 </div>
                 
                 <div class="log-grid">
-                    <!-- Grid logs (static examples, would be populated dynamically in a real app) -->
-                    <div class="grid-item has-activity" data-log-id="25050701">
-                        <div class="log-id">2505-0701</div>
-                        <div class="activity-dot astar" title="A* Algorithm"></div>
-                    </div>
-                    
-                    <div class="grid-item has-activity" data-log-id="25050608">
-                        <div class="log-id">2505-0608</div>
-                        <div class="activity-dot bfs" title="BFS Algorithm"></div>
-                    </div>
-                    
-                    <div class="grid-item has-activity" data-log-id="25050512">
-                        <div class="log-id">2505-0512</div>
-                        <div class="activity-dot genetic" title="Genetic Algorithm"></div>
-                    </div>
-                    
-                    <div class="grid-item has-activity current-item" data-log-id="25050705">
-                        <div class="log-id">2505-0705</div>
-                        <div class="activity-dot dfs" title="DFS Algorithm"></div>
-                    </div>
-                    
-                    <div class="grid-item has-activity" data-log-id="25050613">
-                        <div class="log-id">2505-0613</div>
-                        <div class="activity-dot csp" title="CSP Algorithm"></div>
-                    </div>
-                    
-                    <div class="grid-item has-activity" data-log-id="25050602">
-                        <div class="log-id">2505-0602</div>
-                        <div class="activity-dot astar" title="A* Algorithm"></div>
-                    </div>
-
-                    <div class="grid-item has-activity" data-log-id="25050514">
-                        <div class="log-id">2505-0514</div>
-                        <div class="activity-dot bfs" title="BFS Algorithm"></div>
-                    </div>
-                    
-                    <div class="grid-item has-activity" data-log-id="25050415">
-                        <div class="log-id">2505-0415</div>
-                        <div class="activity-dot dfs" title="DFS Algorithm"></div>
-                    </div>
-                    
-                    <div class="grid-item has-activity" data-log-id="25050323">
-                        <div class="log-id">2505-0323</div>
-                        <div class="activity-dot genetic" title="Genetic Algorithm"></div>
-                    </div>
-                    
-                    <div class="grid-item" data-log-id="">
-                        <div class="log-id"></div>
-                    </div>
-                    
-                    <div class="grid-item" data-log-id="">
-                        <div class="log-id"></div>
-                    </div>
-                    
-                    <div class="grid-item" data-log-id="">
-                        <div class="log-id"></div>
-                    </div>
+                    <!-- JS will populate grid items here -->
                 </div>
                 
                 <div class="grid-legend">
@@ -592,79 +457,7 @@
                 </div>
                 
                 <div class="history-list">
-                    <div class="history-item" data-log-id="25050701">
-                        <div class="history-item-date">
-                            <div class="date-day">07</div>
-                            <div class="date-month">May</div>
-                        </div>
-                        <div class="history-item-content">
-                            <div class="item-title">A* Search Algorithm</div>
-                            <div class="item-details">Calculated optimal training intensity (0.72)</div>
-                            <div class="item-metrics">
-                                <span class="metric">
-                                    <i class="fas fa-clock"></i> 14:35
-                                </span>
-                                <span class="metric">
-                                    <i class="fas fa-bolt"></i> Runtime: 0.45s
-                                </span>
-                            </div>
-                        </div>
-                        <div class="history-item-actions">
-                            <button class="view-log-btn" data-log-id="25050701">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="history-item" data-log-id="25050705">
-                        <div class="history-item-date">
-                            <div class="date-day">07</div>
-                            <div class="date-month">May</div>
-                        </div>
-                        <div class="history-item-content">
-                            <div class="item-title">DFS Search Algorithm</div>
-                            <div class="item-details">Optimized recovery schedule (Fatigue: 1.8)</div>
-                            <div class="item-metrics">
-                                <span class="metric">
-                                    <i class="fas fa-clock"></i> 10:22
-                                </span>
-                                <span class="metric">
-                                    <i class="fas fa-bolt"></i> Runtime: 0.32s
-                                </span>
-                            </div>
-                        </div>
-                        <div class="history-item-actions">
-                            <button class="view-log-btn" data-log-id="25050705">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="history-item" data-log-id="25050613">
-                        <div class="history-item-date">
-                            <div class="date-day">06</div>
-                            <div class="date-month">May</div>
-                        </div>
-                        <div class="history-item-content">
-                            <div class="item-title">CSP Solver Algorithm</div>
-                            <div class="item-details">Generated weekly training constraints (Risk: 0.24)</div>
-                            <div class="item-metrics">
-                                <span class="metric">
-                                    <i class="fas fa-clock"></i> 16:48
-                                </span>
-                                <span class="metric">
-                                    <i class="fas fa-bolt"></i> Runtime: 0.67s
-                                </span>
-                            </div>
-                        </div>
-                        <div class="history-item-actions">
-                            <button class="view-log-btn" data-log-id="25050613">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- More history items would be listed here -->
+                    <!-- JS will populate history items here -->
                 </div>
                 
                 <div class="pagination-controls">
@@ -679,7 +472,7 @@
         <div class="modal" id="logDetailsModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 id="modalTitle">Algorithm Log Details</h4>
+                    <h4 id="modalTitle">Edit/Search Log Details</h4>
                     <button class="close-modal-btn">&times;</button>
                 </div>
                 <div class="modal-body">
@@ -687,111 +480,45 @@
                         <div class="log-info-grid">
                             <div class="log-info-item">
                                 <div class="info-label">Algorithm</div>
-                                <div class="info-value" id="logAlgorithm">A* Search</div>
+                                <div class="info-value" id="logAlgorithm"></div>
                             </div>
                             <div class="log-info-item">
                                 <div class="info-label">Date & Time</div>
-                                <div class="info-value" id="logDateTime">May 7, 2025 - 14:35</div>
+                                <div class="info-value" id="logDateTime"></div>
                             </div>
                             <div class="log-info-item">
-                                <div class="info-label">Runtime</div>
-                                <div class="info-value" id="logRuntime">0.45 seconds</div>
+                                <div class="info-label">Parameters</div>
+                                <div class="info-value" id="logParams"></div>
                             </div>
                             <div class="log-info-item">
-                                <div class="info-label">Status</div>
-                                <div class="info-value success" id="logStatus">Successful</div>
+                                <div class="info-label">Summary</div>
+                                <div class="info-value" id="logSummary"></div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="log-details-section">
-                        <h5>Algorithm Parameters</h5>
-                        <div class="table-container">
-                            <table class="metrics-table">
-                                <thead>
-                                    <tr>
-                                        <th>Parameter</th>
-                                        <th>Value</th>
-                                        <th>Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Heuristic</td>
-                                        <td>Euclidean Distance</td>
-                                        <td>Distance calculation method</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Max Iterations</td>
-                                        <td>1000</td>
-                                        <td>Maximum search iterations allowed</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Pruning</td>
-                                        <td>Enabled</td>
-                                        <td>Search space reduction technique</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
                     <div class="log-details-section">
                         <h5>Results</h5>
                         <div class="table-container">
-                            <table class="metrics-table">
+                            <table class="metrics-table" id="logResultsTable">
                                 <thead>
                                     <tr>
-                                        <th>Metric</th>
-                                        <th>Value</th>
-                                        <th>Change</th>
+                                        <th>Day</th>
+                                        <th>Intensity</th>
+                                        <th>Performance</th>
+                                        <th>Risk</th>
+                                        <th>Fatigue</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Optimal Training Intensity</td>
-                                        <td>0.72</td>
-                                        <td class="positive-change">+0.04</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Risk Reduction</td>
-                                        <td>0.18</td>
-                                        <td class="positive-change">+0.06</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Performance Improvement</td>
-                                        <td>8.2</td>
-                                        <td class="positive-change">+0.2</td>
-                                    </tr>
+                                    <!-- Results will be loaded by JS -->
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                    
-                    <div class="log-details-section">
-                        <h5>Runtime Performance</h5>
-                        <div class="performance-metrics">
-                            <div class="perf-metric">
-                                <div class="perf-label">Nodes Explored</div>
-                                <div class="perf-value">532</div>
-                            </div>
-                            <div class="perf-metric">
-                                <div class="perf-label">Memory Usage</div>
-                                <div class="perf-value">24.5 MB</div>
-                            </div>
-                            <div class="perf-metric">
-                                <div class="perf-label">Convergence</div>
-                                <div class="perf-value">0.85</div>
-                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button id="exportLogBtn" class="btn-primary">
                         <i class="fas fa-file-export"></i> Export Log
-                    </button>
-                    <button id="rerunAlgorithmBtn" class="btn-secondary">
-                        <i class="fas fa-redo"></i> Re-run
                     </button>
                 </div>
             </div>
