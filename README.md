@@ -1,7 +1,5 @@
 # Predicting Athlete Performance: A Data-Driven Approach to Training Optimization
 
-![Project Banner](https://your-image-url-here.com/banner.png) <!-- Optional: Add a project banner image -->
-
 ## 📖 Table of Contents
 
 - [📍 Introduction](#-introduction)
